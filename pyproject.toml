@@ -92,7 +92,7 @@ fail_under = 100
 
 [tool.deptry]
 [tool.deptry.per_rule_ignores]
-DEP002 = ["uvicorn", "uvloop", "asyncpg", "orjson"]
+DEP002 = ["uvicorn", "uvloop", "asyncpg", "orjson", "result"]
 
 [tool.deptry.package_module_name_map]
 uvloop = "uvloop"

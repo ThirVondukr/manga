@@ -1,17 +1,12 @@
 import contextlib
-from collections.abc import AsyncIterator, Iterable
+from collections.abc import AsyncIterator
 
 from aioinject.ext.fastapi import AioInjectMiddleware
-from fastapi import APIRouter, FastAPI
+from fastapi import FastAPI
 
 from app import sentry
-from app.adapters.api import books
 from app.adapters.graphql.app import create_graphql_app
 from app.core.di import create_container
-
-_routers: Iterable[APIRouter] = [
-    books.router,
-]
 
 
 def create_app() -> FastAPI:
@@ -25,9 +20,6 @@ def create_app() -> FastAPI:
 
     app = FastAPI(lifespan=lifespan)
     app.add_middleware(AioInjectMiddleware, container=container)
-
-    for router in _routers:
-        app.include_router(router)
 
     @app.get("/health")
     async def healthcheck() -> None:

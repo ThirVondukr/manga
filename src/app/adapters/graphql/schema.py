@@ -1,25 +1,20 @@
+import strawberry
 from aioinject.ext.strawberry import AioInjectExtension
 from strawberry import Schema
 from strawberry.extensions import ParserCache, ValidationCache
-from strawberry.tools import merge_types
 
 from app.core.di import create_container
 
-from .apps.books import BookMutation, BookQuery
 
-query = merge_types(
-    name="Query",
-    types=(BookQuery,),
-)
+@strawberry.type
+class Query:
+    @strawberry.field
+    async def hello_world(self) -> str:
+        return "Hello, World!"
 
-mutation = merge_types(
-    name="Mutation",
-    types=(BookMutation,),
-)
 
 schema = Schema(
-    query=query,
-    mutation=mutation,
+    query=Query,
     extensions=[
         ParserCache(maxsize=128),
         ValidationCache(maxsize=128),
