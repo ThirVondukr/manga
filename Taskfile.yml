@@ -59,10 +59,20 @@ tasks:
       - "{{.RUNNER}} coverage report -m"
       - "{{.RUNNER}} coverage xml"
 
+  export-graphql-schema:
+    desc: Export GraphQL Schema
+    cmds:
+      - >
+        {{.RUNNER}} strawberry export-schema
+        --app-dir src
+        --output schema.graphql
+        app.adapters.graphql.schema
+
   all:
     desc: Run the standard set of checks performed in CI
     cmds:
+      - task: export-graphql-schema  # Export graphql schema to write tests
       - task: format
       - task: deptry
       - task: typecheck
-      - task: test
+      - task: testcov

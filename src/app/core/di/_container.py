@@ -6,10 +6,11 @@ from typing import Any
 import aioinject
 from aioinject import Provider
 
-from ._modules import database
+from ._modules import database, users
 
 modules: Iterable[Iterable[Provider[Any]]] = [
     database.providers,
+    users.providers,
 ]
 
 

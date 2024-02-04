@@ -55,7 +55,10 @@ def test_adapters_dont_import_each_other() -> None:
         ),
     ],
 )
-def test_banned_libraries(modules: str | list[str], libraries: Sequence[str]) -> None:
+def test_banned_libraries(
+    modules: str | list[str],
+    libraries: Sequence[str],
+) -> None:
     if isinstance(modules, str):
         modules = [modules]
 

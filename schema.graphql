@@ -1,38 +1,48 @@
-# This file was generated. Do not edit manually.
-
-schema {
-  query: Query
-  mutation: Mutation
+type EntityAlreadyExistsError implements Error {
+  message: String!
 }
 
 interface Error {
   message: String!
 }
 
-union BookCreateErrors = EntityAlreadyExistsError
-
-type Book {
-  id: ID!
-  title: String!
-}
-
-type BookCreatePayload {
-  error: BookCreateErrors
-  result: Book
-}
-
-type EntityAlreadyExistsError implements Error {
-  message: String!
-}
-
 type Mutation {
-  createBook(input: BookCreateInput!): BookCreatePayload!
+  users: UserMutations!
 }
 
 type Query {
-  book(id: ID!): Book
+  helloWorld: String!
 }
 
-input BookCreateInput {
-  title: String!
+type UserGQL {
+  id: ID!
+  username: String!
+}
+
+type UserMutations {
+  register(input: UserRegisterInput!): UserRegisterResult!
+}
+
+union UserRegisterErrors = EntityAlreadyExistsError | ValidationErrors
+
+input UserRegisterInput {
+  email: String!
+  username: String!
+  password: String!
+}
+
+type UserRegisterResult {
+  user: UserGQL
+  error: UserRegisterErrors
+}
+
+type ValidationError implements Error {
+  message: String!
+  code: String!
+  location: [String!]!
+}
+
+type ValidationErrors implements Error {
+  message: String!
+  errors: [ValidationError!]!
 }

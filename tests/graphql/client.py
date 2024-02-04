@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from typing import Any, NotRequired, TypedDict, cast
 
 import httpx
@@ -13,10 +14,10 @@ class GraphQLClient:
         self._client = client
         self._endpoint = endpoint
 
-    async def __call__(
+    async def query(
         self,
         query: str,
-        variables: dict[str, Any] | None = None,
+        variables: Mapping[str, Any] | None = None,
     ) -> GraphQLResponse:
         response = await self._client.post(
             self._endpoint,

@@ -12,13 +12,15 @@ from lib.types import Providers
 
 
 @contextlib.asynccontextmanager
-async def create_engine() -> AsyncIterator[AsyncEngine]:
+async def create_engine() -> AsyncIterator[AsyncEngine]:  # pragma: no cover
     yield engine
     await engine.dispose()
 
 
 @contextlib.asynccontextmanager
-async def create_session(_: AsyncEngine) -> AsyncIterator[AsyncSession]:
+async def create_session(
+    _: AsyncEngine,
+) -> AsyncIterator[AsyncSession]:  # pragma: no cover
     async with async_session_factory.begin() as session:
         yield session
 
