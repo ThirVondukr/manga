@@ -4,8 +4,8 @@ import pytest
 from passlib.context import CryptContext
 from pydantic import SecretStr
 
+from app.core.domain.auth.dto import UserRegisterDTO
 from app.core.domain.users.commands import UserRegisterCommand
-from app.core.domain.users.dto import UserRegisterDTO
 from app.core.domain.users.errors import UserAlreadyExistsError
 from app.db.models import User
 from tests.types import Resolver

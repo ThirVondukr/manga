@@ -1,8 +1,7 @@
 import strawberry
 from pydantic import SecretStr
 
-from app.core.domain.auth.dto import SignInDTO
-from app.core.domain.users.dto import UserRegisterDTO
+from app.core.domain.auth.dto import SignInDTO, UserRegisterDTO
 
 
 @strawberry.input(name="SignUpInput")

@@ -3,16 +3,16 @@ import uuid
 import pytest
 from pydantic import SecretStr
 
-from app.core.domain.users.dto import UserRegisterDTO
+from app.core.domain.auth.dto import UserRegisterDTO
+from app.core.domain.auth.services import AuthService
 from app.core.domain.users.repositories import UserRepository
-from app.core.domain.users.services import UserService
 from app.db.models import User
 from tests.types import Resolver
 
 
 @pytest.fixture
-async def user_service(resolver: Resolver) -> UserService:
-    return await resolver(UserService)
+async def auth_service(resolver: Resolver) -> AuthService:
+    return await resolver(AuthService)
 
 
 @pytest.fixture
@@ -27,10 +27,10 @@ async def user_password() -> str:
 
 @pytest.fixture
 async def user(
-    user_service: UserService,
+    auth_service: AuthService,
     user_password: str,
 ) -> User:
-    user = await user_service.register(
+    user = await auth_service.sign_up(
         dto=UserRegisterDTO(
             username=str(uuid.uuid4()),
             email="email@example.org",

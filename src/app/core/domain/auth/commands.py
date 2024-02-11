@@ -1,6 +1,5 @@
-from app.core.domain.auth.dto import SignInDTO
+from app.core.domain.auth.dto import SignInDTO, UserAuthResultDTO
 from app.core.domain.auth.services import AuthService, TokenService
-from app.core.domain.users.dto import UserAuthResultDTO
 
 
 class SignInCommand:
