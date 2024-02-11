@@ -1,12 +1,19 @@
+import dataclasses
 from collections.abc import Mapping
-from typing import Any, NotRequired, TypedDict, cast
+from typing import Any, NotRequired, TypedDict
 
 import httpx
 
 
-class GraphQLResponse(TypedDict):
+class GraphQLResponseData(TypedDict):
     data: dict[str, Any]
     errors: NotRequired[Any]
+
+
+@dataclasses.dataclass
+class GraphQLResponse:
+    response: httpx.Response
+    data: GraphQLResponseData
 
 
 class GraphQLClient:
@@ -15,6 +22,13 @@ class GraphQLClient:
         self._endpoint = endpoint
 
     async def query(
+        self,
+        query: str,
+        variables: Mapping[str, Any] | None = None,
+    ) -> GraphQLResponseData:
+        return (await self.request(query=query, variables=variables)).data
+
+    async def request(
         self,
         query: str,
         variables: Mapping[str, Any] | None = None,
@@ -27,4 +41,7 @@ class GraphQLClient:
             },
         )
         response.raise_for_status()
-        return cast(GraphQLResponse, response.json())
+        return GraphQLResponse(
+            response=response,
+            data=response.json(),
+        )

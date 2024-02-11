@@ -1,6 +1,7 @@
 import uuid
 
 import pytest
+from passlib.context import CryptContext
 from pydantic import SecretStr
 
 from app.core.domain.users.commands import UserRegisterCommand
@@ -17,16 +18,19 @@ async def command(resolver: Resolver) -> UserRegisterCommand:
     return await resolver(UserRegisterCommand)
 
 
-async def test_ok(command: UserRegisterCommand) -> None:
+async def test_ok(
+    command: UserRegisterCommand, crypt_context: CryptContext
+) -> None:
+    password = str(uuid.uuid4())
     dto = UserRegisterDTO(
         email="email@example.com",
-        password=SecretStr("pass"),
+        password=SecretStr(password),
         username="user",
     )
-    result = await command.execute(dto)
-    user = result.unwrap()
-    assert user.email == dto.email
-    assert user.username == dto.username
+    result = (await command.execute(dto)).unwrap()
+    assert result.user.email == dto.email
+    assert result.user.username == dto.username
+    assert crypt_context.verify(secret=password, hash=result.user.password_hash)
 
 
 async def test_user_exists(

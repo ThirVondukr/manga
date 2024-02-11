@@ -1,6 +1,11 @@
 from collections.abc import Iterable
-from typing import Any, TypeAlias
+from datetime import datetime
+from typing import Annotated, Any, TypeAlias
 
 from aioinject import Provider
+from pydantic import PlainSerializer
 
 Providers: TypeAlias = Iterable[Provider[Any]]
+
+
+DatetimeInt = Annotated[datetime, PlainSerializer(lambda t: int(t.timestamp()))]

@@ -1,5 +1,6 @@
 import pkgutil
 from collections.abc import AsyncIterator
+from datetime import datetime
 
 import aioinject
 import dotenv
@@ -12,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import tests.plugins
 from app.core.di import create_container
+from lib.time import utc_now
 from tests.types import Resolver
 
 dotenv.load_dotenv(".env")
@@ -72,3 +74,8 @@ async def resolver(
     with container.override(Object(session, AsyncSession)):
         async with container.context() as ctx:
             yield ctx.resolve
+
+
+@pytest.fixture
+def now() -> datetime:
+    return utc_now()

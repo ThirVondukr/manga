@@ -1,3 +1,4 @@
+from passlib.context import CryptContext
 from result import Err, Ok, Result
 
 from app.core.domain.users.dto import UserRegisterDTO
@@ -13,9 +14,11 @@ class UserService:
         self,
         repository: UserRepository,
         db_context: DBContext,
+        crypt_context: CryptContext,
     ) -> None:
         self._repository = repository
         self._db = db_context
+        self._crypt_context = crypt_context
 
     async def register(
         self,
@@ -25,10 +28,13 @@ class UserService:
             UserFilter(username=dto.username, email=dto.email),
         ):
             return Err(UserAlreadyExistsError())
+
         user = User(
             email=dto.email,
             username=dto.username,
-            password_hash=dto.password.get_secret_value(),
+            password_hash=self._crypt_context.hash(
+                dto.password.get_secret_value(),
+            ),
         )
         self._db.add(user)
         await self._db.flush()

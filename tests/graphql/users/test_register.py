@@ -6,16 +6,19 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import User
+from app.settings import AuthSettings
 from tests.graphql.client import GraphQLClient
 
 pytestmark = pytest.mark.anyio
 
 _QUERY = """mutation ($input: UserRegisterInput!) {
-  users {
+  auth {
     register(input: $input) {
-      user {
-        id
-        username
+      result {
+        user {
+          id
+          username
+        }
       }
       error {
         __typename
@@ -36,15 +39,15 @@ def input(faker: Faker) -> dict[str, str]:
 
 
 def _tpl(
-    error: dict[str, str] | None = None,
-    user: dict[str, str] | None = None,
+    error: dict[str, object] | None = None,
+    result: dict[str, object] | None = None,
 ) -> dict[str, Any]:
     return {
         "data": {
-            "users": {
+            "auth": {
                 "register": {
                     "error": error,
-                    "user": user,
+                    "result": result,
                 },
             },
         },
@@ -55,15 +58,19 @@ async def test_ok(
     graphql_client: GraphQLClient,
     input: dict[str, str],
     session: AsyncSession,
+    auth_settings: AuthSettings,
 ) -> None:
-    response = await graphql_client.query(_QUERY, {"input": input})
+    response = await graphql_client.request(_QUERY, {"input": input})
     new_user = (await session.scalars(select(User))).one()
-    assert response == _tpl(
-        user={
-            "id": str(new_user.id),
-            "username": new_user.username,
+    assert response.data == _tpl(
+        result={
+            "user": {
+                "id": str(new_user.id),
+                "username": new_user.username,
+            },
         },
     )
+    assert auth_settings.refresh_token_cookie in response.response.cookies
 
 
 async def test_validation_err(

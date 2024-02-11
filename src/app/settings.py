@@ -1,4 +1,6 @@
 import enum
+from datetime import timedelta
+from typing import Literal
 from urllib.parse import quote_plus
 
 from pydantic import Field
@@ -34,3 +36,16 @@ class SentrySettings(BaseSettings):
     dsn: str = ""
     environment: SentryEnvironment = SentryEnvironment.production
     traces_sample_rate: float = Field(default=1.0, ge=0.0, le=1.0)
+
+
+class AuthSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="auth_")
+
+    algorithm: Literal["RS256"] = "RS256"
+    public_key: str
+    private_key: str
+    access_token_lifetime: timedelta = timedelta(minutes=15)
+    refresh_token_lifetime: timedelta = timedelta(days=3)
+    refresh_token_cookie: str = "refresh-token"
+
+    hashing_schemes: list[str] = ["argon2"]

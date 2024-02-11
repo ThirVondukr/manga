@@ -4,13 +4,24 @@ from collections.abc import Iterable
 from typing import Any
 
 import aioinject
-from aioinject import Provider
+from aioinject import Object, Provider
+from pydantic_settings import BaseSettings
 
-from ._modules import database, users
+from app.settings import AuthSettings, DatabaseSettings, SentrySettings
+from lib.settings import get_settings
+
+from ._modules import auth, database, users
 
 modules: Iterable[Iterable[Provider[Any]]] = [
+    auth.providers,
     database.providers,
     users.providers,
+]
+
+settings_classes: Iterable[type[BaseSettings]] = [
+    AuthSettings,
+    DatabaseSettings,
+    SentrySettings,
 ]
 
 
@@ -20,5 +31,8 @@ def create_container() -> aioinject.Container:
 
     for provider in itertools.chain.from_iterable(modules):
         container.register(provider)
+
+    for settings_cls in settings_classes:
+        container.register(Object(get_settings(settings_cls)))
 
     return container

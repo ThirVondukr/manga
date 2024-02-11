@@ -1,3 +1,7 @@
+type AuthMutations {
+  register(input: UserRegisterInput!): UserRegisterResult!
+}
+
 type EntityAlreadyExistsError implements Error {
   message: String!
 }
@@ -7,20 +11,21 @@ interface Error {
 }
 
 type Mutation {
-  users: UserMutations!
+  auth: AuthMutations!
 }
 
 type Query {
   helloWorld: String!
 }
 
+type UserAndToken {
+  user: UserGQL!
+  accessToken: String!
+}
+
 type UserGQL {
   id: ID!
   username: String!
-}
-
-type UserMutations {
-  register(input: UserRegisterInput!): UserRegisterResult!
 }
 
 union UserRegisterErrors = EntityAlreadyExistsError | ValidationErrors
@@ -32,7 +37,7 @@ input UserRegisterInput {
 }
 
 type UserRegisterResult {
-  user: UserGQL
+  result: UserAndToken
   error: UserRegisterErrors
 }
 

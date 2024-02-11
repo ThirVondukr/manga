@@ -5,7 +5,7 @@ from app.core.domain.users.dto import UserRegisterDTO
 
 
 @strawberry.input(name="UserRegisterInput")
-class UserRegisterInputGQL:
+class RegisterInputGQL:
     email: str
     username: str
     password: str

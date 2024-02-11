@@ -59,7 +59,7 @@ tasks:
       - "{{.RUNNER}} coverage report -m"
       - "{{.RUNNER}} coverage xml"
 
-  export-graphql-schema:
+  gql:
     desc: Export GraphQL Schema
     cmds:
       - >
@@ -71,7 +71,6 @@ tasks:
   all:
     desc: Run the standard set of checks performed in CI
     cmds:
-      - task: export-graphql-schema  # Export graphql schema to write tests
       - task: format
       - task: deptry
       - task: typecheck

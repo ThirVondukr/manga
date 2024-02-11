@@ -1,17 +1,35 @@
-from result import Result
+from result import Err, Ok, Result
 
-from app.core.domain.users.dto import UserRegisterDTO
+from app.core.domain.auth.services import TokenService
+from app.core.domain.users.dto import UserRegisterDTO, UserRegisterResultDTO
 from app.core.domain.users.errors import UserAlreadyExistsError
 from app.core.domain.users.services import UserService
-from app.db.models import User
 
 
 class UserRegisterCommand:
-    def __init__(self, service: UserService) -> None:
-        self._service = service
+    def __init__(
+        self,
+        user_service: UserService,
+        token_service: TokenService,
+    ) -> None:
+        self._user_service = user_service
+        self._token_service = token_service
 
     async def execute(
         self,
         dto: UserRegisterDTO,
-    ) -> Result[User, UserAlreadyExistsError]:
-        return await self._service.register(dto=dto)
+    ) -> Result[UserRegisterResultDTO, UserAlreadyExistsError]:
+        user = await self._user_service.register(dto=dto)
+        if isinstance(user, Err):
+            return user
+
+        result = UserRegisterResultDTO(
+            user=user.ok_value,
+            access_token=self._token_service.create_access_token(
+                user=user.ok_value,
+            ),
+            refresh_token=self._token_service.create_refresh_token(
+                user=user.ok_value,
+            ),
+        )
+        return Ok(result)
