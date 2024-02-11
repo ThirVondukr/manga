@@ -19,7 +19,8 @@ async def command(resolver: Resolver) -> UserRegisterCommand:
 
 
 async def test_ok(
-    command: UserRegisterCommand, crypt_context: CryptContext
+    command: UserRegisterCommand,
+    crypt_context: CryptContext,
 ) -> None:
     password = str(uuid.uuid4())
     dto = UserRegisterDTO(

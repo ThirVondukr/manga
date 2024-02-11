@@ -1,5 +1,11 @@
 type AuthMutations {
-  register(input: UserRegisterInput!): UserRegisterResult!
+  signUp(input: SignUpInput!): SignUpPayload!
+  signIn(input: SignInInput!): SignInPayload!
+}
+
+type AuthenticationResult {
+  user: UserGQL!
+  accessToken: String!
 }
 
 type EntityAlreadyExistsError implements Error {
@@ -7,6 +13,10 @@ type EntityAlreadyExistsError implements Error {
 }
 
 interface Error {
+  message: String!
+}
+
+type InvalidCredentialsError implements Error {
   message: String!
 }
 
@@ -18,27 +28,34 @@ type Query {
   helloWorld: String!
 }
 
-type UserAndToken {
-  user: UserGQL!
-  accessToken: String!
+union SignInErrors = InvalidCredentialsError | ValidationErrors
+
+input SignInInput {
+  email: String!
+  password: String!
 }
 
-type UserGQL {
-  id: ID!
-  username: String!
+type SignInPayload {
+  result: AuthenticationResult
+  error: SignInErrors
 }
 
-union UserRegisterErrors = EntityAlreadyExistsError | ValidationErrors
+union SignUpErrors = EntityAlreadyExistsError | ValidationErrors
 
-input UserRegisterInput {
+input SignUpInput {
   email: String!
   username: String!
   password: String!
 }
 
-type UserRegisterResult {
-  result: UserAndToken
-  error: UserRegisterErrors
+type SignUpPayload {
+  result: AuthenticationResult
+  error: SignUpErrors
+}
+
+type UserGQL {
+  id: ID!
+  username: String!
 }
 
 type ValidationError implements Error {

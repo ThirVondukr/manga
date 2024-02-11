@@ -11,7 +11,7 @@ class UserRegisterDTO(BaseDTO):
     email: EmailStr
 
 
-class UserRegisterResultDTO(BaseDTO):
+class UserAuthResultDTO(BaseDTO):
     user: User
     access_token: TokenWrapper
     refresh_token: TokenWrapper

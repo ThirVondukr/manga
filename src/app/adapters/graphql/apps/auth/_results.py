@@ -3,22 +3,36 @@ from typing import Annotated
 import strawberry
 
 from app.adapters.graphql.apps.users.types import UserGQL
-from app.adapters.graphql.errors import EntityAlreadyExistsErrorGQL
+from app.adapters.graphql.errors import (
+    EntityAlreadyExistsErrorGQL,
+    InvalidCredentialsErrorGQL,
+)
 from app.adapters.graphql.validation import ValidationErrorsGQL
 
-RegisterErrorsGQL = Annotated[
+SignUpErrorsGQL = Annotated[
     EntityAlreadyExistsErrorGQL | ValidationErrorsGQL,
-    strawberry.union(name="UserRegisterErrors"),
+    strawberry.union(name="SignUpErrors"),
+]
+
+SignInErrorsGQL = Annotated[
+    InvalidCredentialsErrorGQL | ValidationErrorsGQL,
+    strawberry.union(name="SignInErrors"),
 ]
 
 
-@strawberry.type(name="UserAndToken")
-class UserAndTokenGQL:
+@strawberry.type(name="AuthenticationResult")
+class AuthenticationResultGQL:
     user: UserGQL
     access_token: str
 
 
-@strawberry.type(name="UserRegisterResult")
-class RegisterResultGQL:
-    result: UserAndTokenGQL | None = None
-    error: RegisterErrorsGQL | None
+@strawberry.type(name="SignUpPayload")
+class SignUpPayloadGQL:
+    result: AuthenticationResultGQL | None = None
+    error: SignUpErrorsGQL | None
+
+
+@strawberry.type(name="SignInPayload")
+class SignInPayloadGQL:
+    result: AuthenticationResultGQL | None = None
+    error: SignInErrorsGQL | None

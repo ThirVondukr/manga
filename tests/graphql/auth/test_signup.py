@@ -11,9 +11,9 @@ from tests.graphql.client import GraphQLClient
 
 pytestmark = pytest.mark.anyio
 
-_QUERY = """mutation ($input: UserRegisterInput!) {
+_QUERY = """mutation ($input: SignUpInput!) {
   auth {
-    register(input: $input) {
+    signUp(input: $input) {
       result {
         user {
           id
@@ -45,7 +45,7 @@ def _tpl(
     return {
         "data": {
             "auth": {
-                "register": {
+                "signUp": {
                     "error": error,
                     "result": result,
                 },

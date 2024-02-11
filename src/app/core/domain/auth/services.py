@@ -1,6 +1,9 @@
 import jwt
+from passlib.context import CryptContext
 
-from app.core.domain.auth.dto import TokenClaims, TokenWrapper
+from app.core.domain.auth.dto import SignInDTO, TokenClaims, TokenWrapper
+from app.core.domain.users.filters import UserFilter
+from app.core.domain.users.repositories import UserRepository
 from app.db.models import User
 from app.settings import AuthSettings
 from lib.time import utc_now
@@ -47,3 +50,26 @@ class TokenService:
                 algorithm=self._settings.algorithm,
             ),
         )
+
+
+class AuthService:
+    def __init__(
+        self,
+        repository: UserRepository,
+        crypt_context: CryptContext,
+    ) -> None:
+        self._repository = repository
+        self._crypt_context = crypt_context
+
+    async def authenticate(self, dto: SignInDTO) -> User | None:
+        user = await self._repository.get(filter=UserFilter(email=dto.email))
+        if user is None:
+            return None
+
+        if not self._crypt_context.verify(
+            secret=dto.password.get_secret_value(),
+            hash=user.password_hash,
+        ):
+            return None
+
+        return user

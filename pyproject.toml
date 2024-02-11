@@ -85,7 +85,9 @@ test = { composite = [
 [tool]
 [tool.pytest.ini_options]
 pythonpath = "src"
-
+filterwarnings = [
+    "ignore:Accessing argon2\\.__version__ is deprecated and will be removed in a future release\\. Use importlib\\.metadata directly to query for structlog's packaging metadata\\."
+]
 
 [tool.coverage.run]
 source = ["src"]

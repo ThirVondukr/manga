@@ -2,8 +2,9 @@ import dataclasses
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 
+from lib.dto import BaseDTO
 from lib.types import DatetimeInt
 
 
@@ -18,3 +19,8 @@ class TokenClaims(BaseModel):
 class TokenWrapper:
     claims: TokenClaims
     token: str
+
+
+class SignInDTO(BaseDTO):
+    email: str
+    password: SecretStr
