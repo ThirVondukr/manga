@@ -1,11 +1,13 @@
 import pkgutil
 from collections.abc import AsyncIterator
 from datetime import datetime
+from typing import cast
 
 import aioinject
 import dotenv
 import httpx
 import pytest
+from _pytest.fixtures import SubRequest
 from aioinject import Object
 from asgi_lifespan import LifespanManager
 from fastapi import FastAPI
@@ -81,3 +83,8 @@ async def resolver(
 @pytest.fixture
 def now() -> datetime:
     return utc_now()
+
+
+@pytest.fixture(params=[0, 1, 10])
+def collection_size(request: SubRequest) -> int:
+    return cast(int, request.param)

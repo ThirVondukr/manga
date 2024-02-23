@@ -17,14 +17,14 @@ from app.db.models._manga import MangaInfo, MangaTag
 class MangaTagGQL(DTOMixin[MangaTag]):
     id: strawberry.ID
     name: str
-    name_slug: str
+    slug: str
 
     @classmethod
     def from_dto(cls, model: MangaTag) -> Self:
         return cls(
             id=strawberry.ID(str(model.id)),
             name=model.name,
-            name_slug=model.name_slug,
+            slug=model.name_slug,
         )
 
 

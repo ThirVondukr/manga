@@ -29,6 +29,7 @@ type Manga {
   titleSlug: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  tags: [MangaTag!]!
 }
 
 union MangaCreateError = ValidationErrors
@@ -54,6 +55,12 @@ type MangaMutations {
 type MangaPagePaginationResult {
   items: [Manga!]!
   pageInfo: PagePaginationInfo!
+}
+
+type MangaTag {
+  id: ID!
+  name: String!
+  slug: String!
 }
 
 input MangaTagFilter {

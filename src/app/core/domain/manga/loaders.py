@@ -47,12 +47,18 @@ class MangaTagLoader(LoaderProtocol[UUID, Sequence[MangaTag]]):
         self,
         keys: Sequence[UUID],
     ) -> Sequence[Sequence[MangaTag]]:
-        stmt = select(
-            manga_manga_tag_secondary_table.c.manga_id,
-            MangaTag,
-        ).join(
-            manga_manga_tag_secondary_table,
-            manga_manga_tag_secondary_table.c.tag_id == MangaTag.id,
+        stmt = (
+            select(
+                manga_manga_tag_secondary_table.c.manga_id,
+                MangaTag,
+            )
+            .join(
+                manga_manga_tag_secondary_table,
+                manga_manga_tag_secondary_table.c.tag_id == MangaTag.id,
+            )
+            .order_by(
+                MangaTag.name_slug,
+            )
         )
         tags = collections.defaultdict(list)
         for manga_id, tag in await self._session.execute(stmt):
