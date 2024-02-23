@@ -4,7 +4,7 @@ from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
-from app.db.models import Manga, MangaInfo, MangaTag
+from app.db.models import AltTitle, Manga, MangaTag
 from lib.pagination.pagination import (
     PagePaginationParamsDTO,
     PagePaginationResultDTO,
@@ -44,13 +44,13 @@ class MangaRepository:
         if filter.search_term:
             search_term = func.plainto_tsquery(filter.search_term)
             stmt = (
-                stmt.join(Manga.info, isouter=True)
-                .group_by(MangaInfo.search_ts_vector)
-                .where(MangaInfo.search_ts_vector.op("@@")(search_term))
+                stmt.join(Manga.alt_titles, isouter=True)
+                .group_by(AltTitle.search_ts_vector)
+                .where(AltTitle.search_ts_vector.op("@@")(search_term))
                 .order_by(None)
                 .order_by(
                     func.ts_rank_cd(
-                        MangaInfo.search_ts_vector,
+                        AltTitle.search_ts_vector,
                         search_term,
                     ).desc(),
                 )

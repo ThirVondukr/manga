@@ -81,7 +81,7 @@ class Manga(
         back_populates="manga",
         default_factory=list,
     )
-    info: Mapped[list[MangaInfo]] = relationship(
+    alt_titles: Mapped[list[AltTitle]] = relationship(
         back_populates="manga",
         default_factory=list,
     )
@@ -140,17 +140,19 @@ class MangaPage(PkUUID, MappedAsDataclass, Base, kw_only=True):
 
 
 def _regconfig_default(ctx: DefaultExecutionContext) -> str:
-    return RegConfigLanguage[ctx.current_parameters["language"].value].value  # type: ignore[index]
+    return RegConfigLanguage[
+        ctx.current_parameters["language"].value  # type: ignore[index]
+    ].value
 
 
-class MangaInfo(
+class AltTitle(
     PkUUID,
     HasTimestamps,
     MappedAsDataclass,
     Base,
     kw_only=True,
 ):
-    __tablename__ = "manga_info"
+    __tablename__ = "manga_alt_title"
     __table_args__ = (
         Index(
             "ix_manga_info_search_ts_vector",
@@ -164,7 +166,10 @@ class MangaInfo(
         index=True,
         default=None,
     )
-    manga: Mapped[Manga] = relationship(back_populates="info", default=None)
+    manga: Mapped[Manga] = relationship(
+        back_populates="alt_titles",
+        default=None,
+    )
     language: Mapped[Language]
     language_regconfig: Mapped[str] = mapped_column(
         REGCONFIG,
@@ -172,12 +177,10 @@ class MangaInfo(
         init=False,
     )
     title: Mapped[str] = mapped_column(String(250))
-    description: Mapped[str] = mapped_column(String(1000))
     search_ts_vector: Mapped[str] = mapped_column(
         TSVECTOR,
         Computed(
-            "setweight(to_tsvector(language_regconfig, coalesce(title, '')), 'A') || "
-            "setweight(to_tsvector(language_regconfig, coalesce(description, '')), 'D')",
+            "to_tsvector(language_regconfig, coalesce(title, '')",
             persisted=True,
         ),
         init=False,

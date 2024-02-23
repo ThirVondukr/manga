@@ -4,7 +4,7 @@ from collections.abc import Sequence
 
 from app.core.domain.manga.filters import MangaFilter, TagFilter
 from app.core.domain.manga.repositories import MangaRepository
-from app.db.models import Manga, MangaInfo, MangaTag
+from app.db.models import AltTitle, Manga, MangaTag
 from lib.db import DBContext
 from lib.pagination.pagination import PagePaginationParamsDTO
 from lib.types import Language
@@ -23,8 +23,8 @@ async def test_filter_search_term(
     manga_repository: MangaRepository,
     db_context: DBContext,
 ) -> None:
-    manga.info = [
-        MangaInfo(title="Search title", description="", language=Language.eng),
+    manga.alt_titles = [
+        AltTitle(title="Search title", language=Language.eng),
     ]
     db_context.add(manga)
     await db_context.flush()

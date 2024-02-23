@@ -2,15 +2,15 @@ import asyncio
 import random
 
 from sqlalchemy import delete
-from tests.factories import MangaFactory, MangaTagFactory
+from tests.factories import MangaAltTitleFactory, MangaFactory, MangaTagFactory
 
 from app.db import async_session_factory
-from app.db.models import Manga, MangaTag
+from app.db.models import AltTitle, Manga, MangaTag
 
 
 async def main() -> None:
     async with async_session_factory.begin() as session:
-        for model in [MangaTag, Manga]:
+        for model in [MangaTag, Manga, AltTitle]:
             await session.execute(delete(model))
 
     async with async_session_factory.begin() as session:
@@ -21,6 +21,9 @@ async def main() -> None:
             manga.tags = random.sample(
                 tags,
                 k=random.randint(1, 5),  # noqa: S311
+            )
+            manga.alt_titles = MangaAltTitleFactory.build_batch(
+                size=random.randint(1, 3),  # noqa: S311
             )
 
         session.add_all(mangas)

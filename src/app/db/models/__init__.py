@@ -1,8 +1,8 @@
 from ._manga import (
+    AltTitle,
     Manga,
     MangaBranch,
     MangaChapter,
-    MangaInfo,
     MangaPage,
     MangaTag,
 )
@@ -12,7 +12,7 @@ __all__ = [
     "Manga",
     "MangaBranch",
     "MangaChapter",
-    "MangaInfo",
+    "AltTitle",
     "MangaPage",
     "MangaTag",
     "User",

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 import factory  # type: ignore[import-untyped]
 from faker import Faker
 
-from app.db.models import Manga, MangaBranch, MangaChapter, MangaTag
+from app.db.models import AltTitle, Manga, MangaBranch, MangaChapter, MangaTag
 
 T = TypeVar("T")
 
@@ -38,6 +38,10 @@ class MangaFactory(GenericFactory[Manga]):
     title = factory.Faker("sentence")
     title_slug = factory.Faker("sentence")
     created_at = factory.Faker("date_time", tzinfo=UTC)
+
+
+class MangaAltTitleFactory(GenericFactory[AltTitle]):
+    title = factory.Faker("sentence", nb_words=4)
 
 
 class MangaTagFactory(GenericFactory[MangaTag]):

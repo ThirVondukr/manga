@@ -10,7 +10,7 @@ from app.adapters.graphql.dto import DTOMixin
 from app.adapters.graphql.types import LanguageGQL
 from app.core.domain.manga.loaders import MangaTagLoader
 from app.db.models import Manga
-from app.db.models._manga import MangaInfo, MangaTag
+from app.db.models._manga import AltTitle, MangaTag
 
 
 @strawberry.federation.type(name="MangaTag")
@@ -28,20 +28,18 @@ class MangaTagGQL(DTOMixin[MangaTag]):
         )
 
 
-@strawberry.type(name="MangaInfo")
-class MangaInfoGQL(DTOMixin[MangaInfo]):
+@strawberry.type(name="AltTitle")
+class AltTitleGQL(DTOMixin[AltTitle]):
     id: strawberry.ID
     language: LanguageGQL
     title: str
-    description: str
 
     @classmethod
-    def from_dto(cls, model: MangaInfo) -> Self:
+    def from_dto(cls, model: AltTitle) -> Self:
         return cls(
             id=strawberry.ID(str(model.id)),
             language=LanguageGQL(model.language.value),
             title=model.title,
-            description=model.description,
         )
 
 
@@ -77,11 +75,7 @@ class MangaGQL(DTOMixin[Manga]):
         return MangaTagGQL.from_dto_list(tags)
 
     # @strawberry.field
-    # async def infos(
-    #     self,
-    #     info: Info,
-    #     preferred_languages: list[LanguageGQL] | None = None,
-    # ) -> list[MangaInfoGQL]:
+    # async def infos(self, info: Info) -> Sequence[AltTitleGQL]:
     #     preferred_languages = preferred_languages or []
     #     preferred_languages = [Language[lang.value] for lang in preferred_languages]
     #     infos = await info.context.loaders.manga_info_by_manga_id.load(self.id)
@@ -94,7 +88,7 @@ class MangaGQL(DTOMixin[Manga]):
     #         )
     #         infos = preferred_infos or infos
     #
-    #     return MangaInfoGQL.from_orm_list(infos)
+    #     return AltTitleGQL.from_orm_list(infos)
 
     #
     # @strawberry.field
