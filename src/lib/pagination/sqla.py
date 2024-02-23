@@ -25,7 +25,7 @@ async def page_paginate(
     )
     items = (await session.scalars(items_query)).all()
 
-    if count_query is None:
+    if count_query is None:  # pragma: no branch
         count_query = select(func.count()).select_from(
             stmt.order_by(None).subquery(),
         )

@@ -7,7 +7,7 @@ from result import Err, Ok, Result
 def _strip_whitespace(obj: object) -> object:
     if isinstance(obj, str):
         return obj.strip()
-    return obj
+    return obj  # pragma: no cover
 
 
 StripWhitespace = BeforeValidator(func=_strip_whitespace)

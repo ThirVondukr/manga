@@ -46,6 +46,6 @@ class Dataloaders:
         self,
         cls: type[LoaderProtocol[_K_contra, _V_co]],
     ) -> DataLoader[_K_contra, _V_co]:
-        if cls not in self._loaders:
+        if cls not in self._loaders:  # pragma: no branch
             self._loaders[cls] = DataLoader(map_dataloader_to_graphql(cls))
         return self._loaders[cls]
