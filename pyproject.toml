@@ -94,7 +94,10 @@ filterwarnings = [
 
 [tool.coverage.run]
 source = ["src"]
-omit = ["src/app/db/migrations/*"]
+omit = [
+    "src/app/db/migrations/*",
+    "src/app/adapters/cli/seed.py",
+]
 command_line = "-m pytest -v --reuse-db"
 concurrency = ["greenlet"]
 branch = true
@@ -120,7 +123,7 @@ exclude = ["src/app/adapters/cli/seed\\.py"]
 DEP002 = [
     "argon2-cffi",
     "asyncpg",
-    "cryptography",  # PyJWT
+    "cryptography", # PyJWT
     "orjson",
     "python-multipart",
     "result",
