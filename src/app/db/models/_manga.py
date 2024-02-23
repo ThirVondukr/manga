@@ -33,8 +33,16 @@ from lib.types import Language
 manga_manga_tag_secondary_table = Table(
     "manga__manga_tag__secondary",
     Base.metadata,
-    Column("manga_id", ForeignKey("manga.id"), primary_key=True),
-    Column("tag_id", ForeignKey("manga_tag.id"), primary_key=True),
+    Column(
+        "manga_id",
+        ForeignKey("manga.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "tag_id",
+        ForeignKey("manga_tag.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
 )
 
 
@@ -46,6 +54,8 @@ class MangaTag(PkUUID, MappedAsDataclass, Base, kw_only=True):
     manga: Mapped[list[Manga]] = relationship(
         secondary=manga_manga_tag_secondary_table,
         back_populates="tags",
+        default_factory=list,
+        repr=False,
     )
 
 

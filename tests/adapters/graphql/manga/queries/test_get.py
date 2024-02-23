@@ -28,13 +28,15 @@ def _tpl(manga: object) -> dict[str, object]:
     }
 
 
+@pytest.mark.parametrize("manga_id", [str(uuid.uuid4()), "42"])
 async def test_not_found(
     graphql_client: GraphQLClient,
+    manga_id: str,
 ) -> None:
     response = await graphql_client.query(
         query=QUERY,
         variables={
-            "id": str(uuid.uuid4()),
+            "id": manga_id,
         },
     )
     assert response == _tpl(None)

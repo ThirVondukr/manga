@@ -1,11 +1,11 @@
 import math
-import operator
+import random
+from collections.abc import Sequence
 
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.models import Manga
 from tests.adapters.graphql.client import GraphQLClient
-from tests.factories import MangaFactory
 
 pytestmark = [pytest.mark.anyio, pytest.mark.usefixtures("session")]
 
@@ -38,16 +38,12 @@ def _tpl(mangas: object) -> object:
 
 async def test_search(
     graphql_client: GraphQLClient,
-    session: AsyncSession,
+    mangas: Sequence[Manga],
 ) -> None:
-    total_items = 50
+    total_items = len(mangas)
     page_size = 9
 
-    manga_list = MangaFactory.build_batch(size=total_items)
-    session.add_all(manga_list)
-    await session.flush()
-    manga_list.sort(key=operator.attrgetter("created_at"), reverse=True)
-
+    mangas = sorted(mangas, key=lambda m: m.created_at, reverse=True)
     total_pages = math.ceil(total_items / page_size)
 
     for page in range(1, total_pages + 1):
@@ -67,14 +63,46 @@ async def test_search(
                     "hasNextPage": page < total_pages,
                     "hasPreviousPage": page > 1,
                     "pageSize": page_size,
-                    "totalItems": len(manga_list),
+                    "totalItems": len(mangas),
                     "totalPages": total_pages,
                 },
                 "items": [
                     {"id": str(manga.id)}
-                    for manga in manga_list[
+                    for manga in mangas[
                         (page - 1) * page_size : page * page_size
                     ]
                 ],
             },
         )
+
+
+async def test_tags_search(
+    graphql_client: GraphQLClient,
+    mangas: Sequence[Manga],
+) -> None:
+    manga_with_tags = next(m for m in mangas if m.tags)
+    random_tag = random.choice(manga_with_tags.tags)
+    expected = [m for m in mangas if random_tag in m.tags]
+    expected.sort(key=lambda m: m.created_at, reverse=True)
+    response = await graphql_client.query(
+        query=QUERY,
+        variables={
+            "pagination": {
+                "pageSize": len(mangas),
+            },
+            "filter": {"tags": {"include": [random_tag.name_slug]}},
+        },
+    )
+    assert response == _tpl(
+        {
+            "pageInfo": {
+                "currentPage": 1,
+                "hasNextPage": False,
+                "hasPreviousPage": False,
+                "pageSize": len(mangas),
+                "totalItems": len(expected),
+                "totalPages": 1,
+            },
+            "items": [{"id": str(manga.id)} for manga in expected],
+        },
+    )

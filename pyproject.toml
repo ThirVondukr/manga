@@ -115,6 +115,7 @@ fail_under = 100
 
 
 [tool.deptry]
+exclude = ["src/app/adapters/cli/seed\\.py"]
 [tool.deptry.per_rule_ignores]
 DEP002 = [
     "argon2-cffi",
@@ -191,7 +192,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101"]
+"tests/*" = ["S101", "S311"]
 "src/app/alembic/*" = ["INP001"]
 "src/app/db/migrations/versions/*" = ["D400", "D415", "INP001"]
 "src/app/db/models/*" = ["A003"]

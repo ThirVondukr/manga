@@ -1,11 +1,14 @@
+from collections.abc import Sequence
 from datetime import datetime
 from typing import Self
 
 import strawberry
 from strawberry import Private
 
+from app.adapters.graphql.context import Info
 from app.adapters.graphql.dto import DTOMixin
 from app.adapters.graphql.types import LanguageGQL
+from app.core.domain.manga.loaders import MangaTagLoader
 from app.db.models import Manga
 from app.db.models._manga import MangaInfo, MangaTag
 
@@ -17,7 +20,7 @@ class MangaTagGQL(DTOMixin[MangaTag]):
     name_slug: str
 
     @classmethod
-    def from_orm(cls, model: MangaTag) -> Self:
+    def from_dto(cls, model: MangaTag) -> Self:
         return cls(
             id=strawberry.ID(str(model.id)),
             name=model.name,
@@ -33,7 +36,7 @@ class MangaInfoGQL(DTOMixin[MangaInfo]):
     description: str
 
     @classmethod
-    def from_orm(cls, model: MangaInfo) -> Self:
+    def from_dto(cls, model: MangaInfo) -> Self:
         return cls(
             id=strawberry.ID(str(model.id)),
             language=LanguageGQL(model.language.value),
@@ -63,6 +66,16 @@ class MangaGQL(DTOMixin[Manga]):
             updated_at=model.updated_at,
         )
 
+    @strawberry.field
+    async def tags(
+        self,
+        info: Info,
+    ) -> Sequence[MangaTagGQL]:
+        tags = await info.context.loaders.map(MangaTagLoader).load(
+            self._instance.id,
+        )
+        return MangaTagGQL.from_dto_list(tags)
+
     # @strawberry.field
     # async def infos(
     #     self,
@@ -83,13 +96,6 @@ class MangaGQL(DTOMixin[Manga]):
     #
     #     return MangaInfoGQL.from_orm_list(infos)
 
-    # @strawberry.field
-    # async def tags(
-    #     self,
-    #     info: Info,
-    # ) -> Sequence[MangaTagGQL]:
-    #     tags = await info.context.loaders.manga_tags.load(self.id)
-    #     return MangaTagGQL.from_orm_list(tags)
     #
     # @strawberry.field
     # async def chapters(

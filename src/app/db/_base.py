@@ -60,7 +60,6 @@ class HasTimestamps(MappedAsDataclass):
 
 class RegConfigLanguage(enum.Enum):
     eng = "english"
-    rus = "russian"
     ukr = "ukrainian"
 
 

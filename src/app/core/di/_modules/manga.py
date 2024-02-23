@@ -1,7 +1,7 @@
 from aioinject import Scoped
 
 from app.core.domain.manga.commands import MangaCreateCommand
-from app.core.domain.manga.loaders import MangaLoader
+from app.core.domain.manga.loaders import MangaLoader, MangaTagLoader
 from app.core.domain.manga.queries import MangaSearchQuery
 from app.core.domain.manga.repositories import MangaRepository
 from app.core.domain.manga.services import MangaService
@@ -13,4 +13,5 @@ providers: Providers = [
     Scoped(MangaSearchQuery),
     Scoped(MangaLoader),
     Scoped(MangaCreateCommand),
+    Scoped(MangaTagLoader),
 ]

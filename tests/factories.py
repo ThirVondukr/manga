@@ -6,10 +6,9 @@ from datetime import UTC
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 import factory  # type: ignore[import-untyped]
-import pytest
 from faker import Faker
 
-from app.db.models import Manga, MangaBranch, MangaChapter
+from app.db.models import Manga, MangaBranch, MangaChapter, MangaTag
 
 T = TypeVar("T")
 
@@ -41,6 +40,11 @@ class MangaFactory(GenericFactory[Manga]):
     created_at = factory.Faker("date_time", tzinfo=UTC)
 
 
+class MangaTagFactory(GenericFactory[MangaTag]):
+    name = factory.Faker("word")
+    name_slug = factory.Faker("word")
+
+
 class ChapterFactory:
     def __init__(self, fake: Faker) -> None:
         self.fake = fake
@@ -69,8 +73,3 @@ class ChapterFactory:
             branch=branch,
             **kwargs,
         )
-
-
-@pytest.fixture
-def chapter_factory(fake: Faker) -> ChapterFactory:
-    return ChapterFactory(fake=fake)
