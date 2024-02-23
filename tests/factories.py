@@ -41,8 +41,8 @@ class MangaFactory(GenericFactory[Manga]):
 
 
 class MangaTagFactory(GenericFactory[MangaTag]):
-    name = factory.Faker("word")
-    name_slug = factory.Faker("word")
+    name = factory.Faker("text", max_nb_chars=32)
+    name_slug = factory.Faker("text", max_nb_chars=32)
 
 
 class ChapterFactory:

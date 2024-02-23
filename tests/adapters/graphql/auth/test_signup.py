@@ -9,8 +9,6 @@ from app.db.models import User
 from app.settings import AuthSettings
 from tests.adapters.graphql.client import GraphQLClient
 
-pytestmark = pytest.mark.anyio
-
 _QUERY = """mutation ($input: SignUpInput!) {
   auth {
     signUp(input: $input) {

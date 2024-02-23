@@ -1,9 +1,6 @@
 from http import HTTPStatus
 
-import pytest
 from httpx import AsyncClient
-
-pytestmark = [pytest.mark.anyio]
 
 
 async def test_healthcheck(http_client: AsyncClient) -> None:

@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.models import Manga
 from tests.adapters.graphql.client import GraphQLClient
 
-pytestmark = [pytest.mark.anyio, pytest.mark.usefixtures("session")]
+pytestmark = [pytest.mark.usefixtures("session")]
 
 QUERY = """mutation Mutation($input: MangaCreateInput!) {
   manga {

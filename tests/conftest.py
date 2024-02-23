@@ -34,7 +34,7 @@ pytest_plugins = [
 ]
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def anyio_backend() -> str:
     return "asyncio"
 

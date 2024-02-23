@@ -1,13 +1,10 @@
 from datetime import UTC, datetime
 
 import freezegun
-import pytest
 
 from app.core.domain.auth.services import TokenService
 from app.db.models import User
 from app.settings import AuthSettings
-
-pytestmark = pytest.mark.anyio
 
 
 async def test_create_access_token_ok(

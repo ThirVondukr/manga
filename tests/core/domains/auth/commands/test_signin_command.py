@@ -6,7 +6,7 @@ from app.core.domain.auth.dto import SignInDTO
 from app.db.models import User
 from tests.types import Resolver
 
-pytestmark = [pytest.mark.anyio, pytest.mark.usefixtures("session")]
+pytestmark = [pytest.mark.usefixtures("session")]
 
 
 @pytest.fixture

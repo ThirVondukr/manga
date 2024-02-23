@@ -3,8 +3,6 @@ import pytest
 from app.core.domain.users.filters import UserFilter
 from app.core.domain.users.repositories import UserRepository
 
-pytestmark = pytest.mark.anyio
-
 
 @pytest.mark.usefixtures("user")
 async def test_exists_ok(user_repository: UserRepository) -> None:

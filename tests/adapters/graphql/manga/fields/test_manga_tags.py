@@ -1,11 +1,8 @@
-import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Manga
 from tests.adapters.graphql.client import GraphQLClient
 from tests.factories import MangaTagFactory
-
-pytestmark = pytest.mark.anyio
 
 _QUERY = """query ($id: ID!) {
   manga(id: $id) {

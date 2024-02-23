@@ -159,18 +159,20 @@ class MangaInfo(
         ),
     )
 
-    manga_id: Mapped[UUID] = mapped_column(ForeignKey("manga.id"), index=True)
-    manga: Mapped[Manga] = relationship(back_populates="info")
+    manga_id: Mapped[UUID] = mapped_column(
+        ForeignKey("manga.id"),
+        index=True,
+        default=None,
+    )
+    manga: Mapped[Manga] = relationship(back_populates="info", default=None)
     language: Mapped[Language]
     language_regconfig: Mapped[str] = mapped_column(
         REGCONFIG,
         insert_default=_regconfig_default,
+        init=False,
     )
     title: Mapped[str] = mapped_column(String(250))
-    description: Mapped[str] = mapped_column(
-        String(1000),
-        nullable=False,
-    )
+    description: Mapped[str] = mapped_column(String(1000))
     search_ts_vector: Mapped[str] = mapped_column(
         TSVECTOR,
         Computed(
@@ -178,4 +180,5 @@ class MangaInfo(
             "setweight(to_tsvector(language_regconfig, coalesce(description, '')), 'D')",
             persisted=True,
         ),
+        init=False,
     )

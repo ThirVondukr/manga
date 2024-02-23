@@ -1,11 +1,12 @@
 from collections.abc import Sequence
-from typing import Protocol, TypeVar
+from typing import Protocol, TypeVar, runtime_checkable
 
 from sqlalchemy.orm import DeclarativeBase
 
 T = TypeVar("T", bound=DeclarativeBase)
 
 
+@runtime_checkable
 class DBContext(Protocol):
     """
     Constrained interface for sqlalchemy AsyncSession.
