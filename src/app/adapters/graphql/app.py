@@ -3,8 +3,9 @@ from starlette.responses import Response
 from starlette.websockets import WebSocket
 from strawberry.asgi import GraphQL
 
+from lib.loaders import Dataloaders
+
 from .context import Context
-from .dataloaders import create_dataloaders
 from .schema import schema
 
 
@@ -17,7 +18,7 @@ class GraphQLApp(GraphQL[Context, None]):
         return Context(
             request=request,
             response=response,
-            loaders=create_dataloaders(),
+            loaders=Dataloaders(),
         )
 
 

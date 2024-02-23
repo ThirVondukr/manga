@@ -2,16 +2,17 @@ import strawberry
 from aioinject.ext.strawberry import AioInjectExtension
 from strawberry import Schema
 from strawberry.extensions import ParserCache, ValidationCache
+from strawberry.tools import merge_types
 
 from app.adapters.graphql.apps.auth.mutation import AuthMutationsGQL
+from app.adapters.graphql.apps.manga.mutation import MangaMutationsGQL
+from app.adapters.graphql.apps.manga.query import MangaQuery
 from app.core.di import create_container
 
-
-@strawberry.type
-class Query:
-    @strawberry.field
-    async def hello_world(self) -> str:  # pragma: no cover
-        return "Hello, World!"
+Query = merge_types(
+    name="Query",
+    types=(MangaQuery,),
+)
 
 
 @strawberry.type
@@ -19,6 +20,10 @@ class Mutation:
     @strawberry.field
     async def auth(self) -> AuthMutationsGQL:
         return AuthMutationsGQL()
+
+    @strawberry.field
+    async def manga(self) -> MangaMutationsGQL:
+        return MangaMutationsGQL()
 
 
 schema = Schema(

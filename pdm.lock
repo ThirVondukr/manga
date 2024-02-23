@@ -5,7 +5,7 @@
 groups = ["default", "dev", "testing", "graphql", "types"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:738deea5698375047e335d41a4915cb9e99995817cf865c722fa69e65acb427d"
+content_hash = "sha256:d614eb6de8cd57673dcedc6bae34010a4fa1dcb5d74787db956250ab8ac0506d"
 
 [[package]]
 name = "aioinject"
@@ -367,6 +367,19 @@ dependencies = [
 files = [
     {file = "email_validator-2.1.0.post1-py3-none-any.whl", hash = "sha256:c973053efbeddfef924dc0bd93f6e77a1ea7ee0fce935aea7103c7a3d6d2d637"},
     {file = "email_validator-2.1.0.post1.tar.gz", hash = "sha256:a4b0bd1cf55f073b924258d19321b1f3aa74b4b5a71a42c305575dba920e1a44"},
+]
+
+[[package]]
+name = "factory-boy"
+version = "3.3.0"
+requires_python = ">=3.7"
+summary = "A versatile test fixtures replacement based on thoughtbot's factory_bot for Ruby."
+dependencies = [
+    "Faker>=0.7.0",
+]
+files = [
+    {file = "factory_boy-3.3.0-py2.py3-none-any.whl", hash = "sha256:a2cdbdb63228177aa4f1c52f4b6d83fab2b8623bf602c7dedd7eb83c0f69c04c"},
+    {file = "factory_boy-3.3.0.tar.gz", hash = "sha256:bc76d97d1a65bbd9842a6d722882098eb549ec8ee1081f9fb2e8ff29f0c300f1"},
 ]
 
 [[package]]
@@ -913,6 +926,19 @@ files = [
 ]
 
 [[package]]
+name = "python-slugify"
+version = "8.0.4"
+requires_python = ">=3.7"
+summary = "A Python slugify application that also handles Unicode"
+dependencies = [
+    "text-unidecode>=1.3",
+]
+files = [
+    {file = "python-slugify-8.0.4.tar.gz", hash = "sha256:59202371d1d05b54a9e7720c5e038f928f45daaffe41dd10822f3907b937c856"},
+    {file = "python_slugify-8.0.4-py2.py3-none-any.whl", hash = "sha256:276540b79961052b66b7d116620b36518847f52d5fd9e3a70164fc8c50faa6b8"},
+]
+
+[[package]]
 name = "pyyaml"
 version = "6.0.1"
 requires_python = ">=3.6"
@@ -1103,6 +1129,15 @@ files = [
 ]
 
 [[package]]
+name = "text-unidecode"
+version = "1.3"
+summary = "The most basic Text::Unidecode port"
+files = [
+    {file = "text-unidecode-1.3.tar.gz", hash = "sha256:bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93"},
+    {file = "text_unidecode-1.3-py2.py3-none-any.whl", hash = "sha256:1311f10e8b895935241623731c2ba64f4c455287888b18189350b67134a822e8"},
+]
+
+[[package]]
 name = "typeguard"
 version = "4.1.5"
 requires_python = ">=3.8"
@@ -1170,6 +1205,58 @@ summary = "HTTP library with thread-safe connection pooling, file post, and more
 files = [
     {file = "urllib3-2.2.1-py3-none-any.whl", hash = "sha256:450b20ec296a467077128bff42b73080516e71b56ff59a60a02bef2232c4fa9d"},
     {file = "urllib3-2.2.1.tar.gz", hash = "sha256:d0570876c61ab9e520d776c38acbbb5b05a776d3f9ff98a5c8fd5162a444cf19"},
+]
+
+[[package]]
+name = "uuid-utils"
+version = "0.6.1"
+requires_python = ">=3.7"
+summary = "Drop-in replacement for Python UUID in Rust"
+files = [
+    {file = "uuid_utils-0.6.1-cp311-cp311-macosx_10_7_x86_64.whl", hash = "sha256:3a2c9491b5c4bba2251dbb99f38dba59954e3e7927c66d1aca9014dd6f2f7231"},
+    {file = "uuid_utils-0.6.1-cp311-cp311-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:db952fabb1ba0044c5b080bcb0cad83cb49f2bdc93ed180972460af8416e0765"},
+    {file = "uuid_utils-0.6.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:15d6e59f7b838e060a4aa5787fc7ee2594e1d05407dc24f5c5fc13f7fba0f153"},
+    {file = "uuid_utils-0.6.1-cp311-cp311-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:0a1a67c8e2f4afe81f6a2eee35b5065a6e8a954ed79c2c739cd508e9fa4113c1"},
+    {file = "uuid_utils-0.6.1-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:806b744a4ec145d3eb314ab755a09fd1b1cb4070f996011d08c2378453f629d0"},
+    {file = "uuid_utils-0.6.1-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:3b0f978fb4450065a30dbe0c46bd3a2d68c0541f7a1d25556316fabc03bee293"},
+    {file = "uuid_utils-0.6.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8a222da8cc035ddbf47e3a61812b49dc66acb83a0361be1fc1090830b9605291"},
+    {file = "uuid_utils-0.6.1-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:aa2993e4ed05257d272444b0b2c9f792be520e181ab9813a017b9cc671d6df92"},
+    {file = "uuid_utils-0.6.1-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:51cd6b925882d08a2147adee9bfa07f328bc394f4fd7852581f187ab2ab38c81"},
+    {file = "uuid_utils-0.6.1-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:a9e8806e2b6cbfc35a4596e1266e98364c66fe13e4aa2d4eec88c4be202b9d85"},
+    {file = "uuid_utils-0.6.1-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:9bcf6bd9e96ba39495e082556fb385a7bd783a393a02a5e1282d9f37f62b6516"},
+    {file = "uuid_utils-0.6.1-cp311-none-win32.whl", hash = "sha256:f89456345154d2599ccaea097917a641575126341a1b894e3ec0a341db80b252"},
+    {file = "uuid_utils-0.6.1-cp311-none-win_amd64.whl", hash = "sha256:8d15f51c810defb7a456edceae712ab202590f3ae5af0a6f0d8dee0289cf1bf6"},
+    {file = "uuid_utils-0.6.1-cp312-cp312-macosx_10_7_x86_64.whl", hash = "sha256:2fb3f2ada52cc1c048d5ba17b58f676367135077add1476419b03594d12e1bea"},
+    {file = "uuid_utils-0.6.1-cp312-cp312-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:db74b440b17d7f8b7eacc9085bc4842d835a9d00be4c6de8fac92d9baec66394"},
+    {file = "uuid_utils-0.6.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:09de303c3e556c00cdd41028fc52a51fff4c43cea0842c7d9522daf5df39c85c"},
+    {file = "uuid_utils-0.6.1-cp312-cp312-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:e2a0788c036bb3e5f3ef4878fc2eb9337e641f84d97629ade2d2490a94ca7baf"},
+    {file = "uuid_utils-0.6.1-cp312-cp312-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:7d48b386a98ac553ebffbee8b4a1ad657a6ccb20999adf026402fc6367a00b60"},
+    {file = "uuid_utils-0.6.1-cp312-cp312-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:3455de9e7171bc781b7cea3132c43e92669baaf8254be07832c23a057537571c"},
+    {file = "uuid_utils-0.6.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:db6feb2dca0dd15bb9cbc789345e493ef611d0f0befb3dc8b3c579899dfdb5cb"},
+    {file = "uuid_utils-0.6.1-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:1cd747509eed588b5ae725cf51730f7a5a6364f16d6226682d5ccecc36ac668f"},
+    {file = "uuid_utils-0.6.1-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:d6d56f1342692877e6195a80f4abc7c15d7b7f830b49c407adc6d7e8650a101c"},
+    {file = "uuid_utils-0.6.1-cp312-cp312-musllinux_1_2_i686.whl", hash = "sha256:43b2e6bd4f7198f084c7071abfe04f2f2b9ea14427ffb7b28f17ff67138b2c1b"},
+    {file = "uuid_utils-0.6.1-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:08aef4e2012959649be6a61ec8c5e19d9cd7d2eb362ff77c1a8ae7a83e5e7cb6"},
+    {file = "uuid_utils-0.6.1-cp312-none-win_amd64.whl", hash = "sha256:7a8ece4438b04018b053d97d4095c6a523ec7e6f4774a4d09e76c15161444691"},
+    {file = "uuid_utils-0.6.1-pp38-pypy38_pp73-macosx_10_7_x86_64.whl", hash = "sha256:c4b975e4db70353c726f1eceb21342a48fb6bb1d092f7ca4ddf6dd247c618463"},
+    {file = "uuid_utils-0.6.1-pp38-pypy38_pp73-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:f46a463fd2cc90064d911d71e6f12ab014aff7ff5658f2b26b7bbe64884f7734"},
+    {file = "uuid_utils-0.6.1-pp38-pypy38_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a93ac0cdd45060ebd3e27bd7209bd6e7d0aaa9895bc13dda9e17e67dbdb8d1fd"},
+    {file = "uuid_utils-0.6.1-pp38-pypy38_pp73-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:cde866cb10d9fa23e8017705c9face45cb299bfdc7933f2bf4f6ec80fa09e2fd"},
+    {file = "uuid_utils-0.6.1-pp38-pypy38_pp73-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:fd3fe021fae8d2bda4c334288a818486fd7ebd567cce6abece9a55e335d95770"},
+    {file = "uuid_utils-0.6.1-pp38-pypy38_pp73-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:e270541449515af7eb29c8c7cdc71b6bb8b5ab9af060e10172637e5e978cd6d3"},
+    {file = "uuid_utils-0.6.1-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cb492c64708aaeb92c3a55e01371235e5f56ea58282f6acc11302d7bb351b067"},
+    {file = "uuid_utils-0.6.1-pp38-pypy38_pp73-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:efe38551c980cbc20fff18cfa940feeac3e7c81f661aa2e9c26af1ffc477bd90"},
+    {file = "uuid_utils-0.6.1-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:94bd7c36f269d79d7c12df11fbda93e3d7e629a2fb41a49252a52d2ddc9f93e8"},
+    {file = "uuid_utils-0.6.1-pp39-pypy39_pp73-macosx_10_7_x86_64.whl", hash = "sha256:8d4c8cf303751a3cb960a94a72f2498b24c09641c571957e4c18bcf89ba10c55"},
+    {file = "uuid_utils-0.6.1-pp39-pypy39_pp73-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:b1a0fb9f01d08cd9d73a92c1701166fee1efcf02f286e62c84f71b34629450af"},
+    {file = "uuid_utils-0.6.1-pp39-pypy39_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b38ce277c5a667e0409ada7ee2c4e676828aa76312e245a335c8541b19e0e12b"},
+    {file = "uuid_utils-0.6.1-pp39-pypy39_pp73-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:261adae1180a022c5affad783ea84e35cd95877a66c92a88619bf9f11fb56cc1"},
+    {file = "uuid_utils-0.6.1-pp39-pypy39_pp73-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:1568afbd912b1c47c6c9d6d795bf1ff36967d7581c2308dd1a55cacb64ef9cd2"},
+    {file = "uuid_utils-0.6.1-pp39-pypy39_pp73-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:dfe2c3fe17df1ba9ba16a7118a2300ae6295d27d2fdb8d5241c34c15af056b05"},
+    {file = "uuid_utils-0.6.1-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:beeae22dbaabd9521936bc0f443e20a0947f188e61b6b85a5b4db236a67b1406"},
+    {file = "uuid_utils-0.6.1-pp39-pypy39_pp73-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:a59c608589f7fa4f61278d65a69bc59809dae7f245e4e7a636c36b65f137acf8"},
+    {file = "uuid_utils-0.6.1-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:15390e7c3bebd459f426bb45e7a30e0a08413f50952346c62902be535f7121e9"},
+    {file = "uuid_utils-0.6.1.tar.gz", hash = "sha256:7e828735e8b84186e37ba0942f8873c29fb3d175eaeb5bb0b5ce7e10464e7858"},
 ]
 
 [[package]]

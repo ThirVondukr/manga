@@ -12,4 +12,7 @@ engine = create_async_engine(
     pool_use_lifo=True,
     echo=_settings.echo,
 )
-async_session_factory = async_sessionmaker(bind=engine)
+async_session_factory = async_sessionmaker(
+    bind=engine,
+    expire_on_commit=False,
+)

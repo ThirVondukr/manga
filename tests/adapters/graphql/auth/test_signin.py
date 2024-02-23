@@ -4,7 +4,7 @@ import pytest
 
 from app.db.models import User
 from app.settings import AuthSettings
-from tests.graphql.client import GraphQLClient
+from tests.adapters.graphql.client import GraphQLClient
 
 pytestmark = pytest.mark.anyio
 

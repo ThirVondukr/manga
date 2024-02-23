@@ -8,7 +8,7 @@ _TType = TypeVar("_TType")
 
 class DTOMixinProtocol(Protocol[_TModel_contra, _TType]):
     @classmethod
-    def from_orm_list(
+    def from_dto_list(
         cls,
         models: Iterable[_TModel_contra],
     ) -> list[_TType]: ...

@@ -29,6 +29,8 @@ dependencies = [
     "cryptography>=42.0.2",
     "passlib>=1.7.4",
     "argon2-cffi>=23.1.0",
+    "uuid-utils>=0.6.1",
+    "python-slugify>=8.0.4",
 ]
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
@@ -47,6 +49,7 @@ dev = [
     "mypy>=1.8.0",
     "radon>=6.0.1",
     "ruff>=0.2.0",
+    "factory-boy>=3.3.0",
 ]
 graphql = [
     "libcst>=1.1.0",
@@ -91,7 +94,7 @@ filterwarnings = [
 
 [tool.coverage.run]
 source = ["src"]
-omit = ["src/app/alembic/*"]
+omit = ["src/app/db/migrations/*"]
 command_line = "-m pytest -v --reuse-db"
 concurrency = ["greenlet"]
 branch = true
@@ -184,12 +187,13 @@ ignore = [
     "TCH002",
     "TCH003",
     "EXE",
+    "ERA001", # Enable later
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101"]
 "src/app/alembic/*" = ["INP001"]
-"src/app/alembic/versions/*" = ["D400", "D415"]
+"src/app/db/migrations/versions/*" = ["D400", "D415", "INP001"]
 "src/app/db/models/*" = ["A003"]
 "src/app/*/schema.py" = ["A003"]
 
@@ -204,7 +208,7 @@ max-complexity = 6
 extend-immutable-calls = []
 
 [tool.ruff.lint.flake8-builtins]
-builtins-ignorelist = ["input", "filter"]
+builtins-ignorelist = ["input", "filter", "id"]
 
 [tool.ruff.lint.pep8-naming]
 classmethod-decorators = ["classmethod"]

@@ -8,6 +8,9 @@ type AuthenticationResult {
   accessToken: String!
 }
 
+"""Date with time (isoformat)"""
+scalar DateTime
+
 type EntityAlreadyExistsError implements Error {
   message: String!
 }
@@ -20,12 +23,66 @@ type InvalidCredentialsError implements Error {
   message: String!
 }
 
+type Manga {
+  id: ID!
+  title: String!
+  titleSlug: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+union MangaCreateError = ValidationErrors
+
+input MangaCreateInput {
+  title: String!
+}
+
+type MangaCreatePayload {
+  manga: Manga
+  error: MangaCreateError
+}
+
+input MangaFilter {
+  searchTerm: String = null
+  tags: MangaTagFilter = null
+}
+
+type MangaMutations {
+  create(input: MangaCreateInput!): MangaCreatePayload!
+}
+
+type MangaPagePaginationResult {
+  items: [Manga!]!
+  pageInfo: PagePaginationInfo!
+}
+
+input MangaTagFilter {
+  include: [String!] = null
+  exclude: [String!] = null
+}
+
 type Mutation {
   auth: AuthMutations!
+  manga: MangaMutations!
+}
+
+type PagePaginationInfo {
+  currentPage: Int!
+  pageSize: Int!
+  totalItems: Int!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  totalPages: Int!
+}
+
+input PagePaginationInput {
+  page: Int! = 1
+  pageSize: Int! = 100
 }
 
 type Query {
-  helloWorld: String!
+  manga(id: ID!): Manga
+  mangas(pagination: PagePaginationInput = null, filter: MangaFilter = null): MangaPagePaginationResult!
 }
 
 union SignInErrors = InvalidCredentialsError | ValidationErrors

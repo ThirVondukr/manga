@@ -6,7 +6,7 @@ from starlette.responses import Response
 from starlette.websockets import WebSocket
 from strawberry.types import Info as StrawberryInfo
 
-from .dataloaders import Dataloaders
+from lib.loaders import Dataloaders
 
 T = TypeVar("T")
 

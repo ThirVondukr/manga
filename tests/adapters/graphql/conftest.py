@@ -1,7 +1,7 @@
 import httpx
 import pytest
 
-from tests.graphql.client import GraphQLClient
+from tests.adapters.graphql.client import GraphQLClient
 
 
 @pytest.fixture

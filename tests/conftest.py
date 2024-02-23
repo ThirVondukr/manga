@@ -49,7 +49,9 @@ async def fastapi_app() -> AsyncIterator[FastAPI]:
 @pytest.fixture
 async def http_client(fastapi_app: FastAPI) -> AsyncIterator[httpx.AsyncClient]:
     async with httpx.AsyncClient(
-        app=fastapi_app,
+        transport=httpx.ASGITransport(
+            app=fastapi_app,  # type: ignore[arg-type]
+        ),
         base_url="http://test",
     ) as client:
         yield client
