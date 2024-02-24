@@ -6,6 +6,7 @@ import pytest
 
 from app.db.models import Manga
 from tests.adapters.graphql.client import GraphQLClient
+from tests.utils import casefold
 
 pytestmark = [pytest.mark.usefixtures("session")]
 
@@ -22,6 +23,7 @@ query SearchManga($filter: MangaFilter! = {}, $pagination: PagePaginationInput! 
         }
         items {
             id
+            title
         }
     }
 }
@@ -43,7 +45,13 @@ async def test_search(
     total_items = len(mangas)
     page_size = 9
 
-    mangas = sorted(mangas, key=lambda m: m.created_at, reverse=True)
+    mangas = sorted(
+        mangas,
+        key=lambda m: (
+            casefold(m.title),
+            m.id,
+        ),
+    )
     total_pages = math.ceil(total_items / page_size)
 
     for page in range(1, total_pages + 1):
@@ -67,7 +75,7 @@ async def test_search(
                     "totalPages": total_pages,
                 },
                 "items": [
-                    {"id": str(manga.id)}
+                    {"id": str(manga.id), "title": manga.title}
                     for manga in mangas[
                         (page - 1) * page_size : page * page_size
                     ]
@@ -83,7 +91,7 @@ async def test_tags_search(
     manga_with_tags = next(m for m in mangas if m.tags)
     random_tag = random.choice(manga_with_tags.tags)
     expected = [m for m in mangas if random_tag in m.tags]
-    expected.sort(key=lambda m: m.created_at, reverse=True)
+    expected.sort(key=lambda m: (casefold(m.title), m.id))
     response = await graphql_client.query(
         query=QUERY,
         variables={
@@ -103,6 +111,9 @@ async def test_tags_search(
                 "totalItems": len(expected),
                 "totalPages": 1,
             },
-            "items": [{"id": str(manga.id)} for manga in expected],
+            "items": [
+                {"id": str(manga.id), "title": manga.title}
+                for manga in expected
+            ],
         },
     )

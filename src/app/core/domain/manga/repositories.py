@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import Select, func, select
+from sqlalchemy import Select, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
@@ -29,6 +29,7 @@ class MangaRepository:
         filter: MangaFilter,
         pagination: PagePaginationParamsDTO,
     ) -> PagePaginationResultDTO[Manga]:
+        await self._session.execute(text("set enable_seqscan = off;"))
         stmt = self._filter_stmt(filter=filter)
         return await page_paginate(
             session=self._session,
@@ -38,22 +39,12 @@ class MangaRepository:
 
     def _filter_stmt(self, filter: MangaFilter) -> Select[tuple[Manga]]:
         stmt = self._base_stmt.group_by(Manga.id).order_by(
-            Manga.created_at.desc(),
-            Manga.id.desc(),
+            Manga.title,
+            Manga.id,
         )
         if filter.search_term:
-            search_term = func.plainto_tsquery(filter.search_term)
-            stmt = (
-                stmt.join(Manga.alt_titles, isouter=True)
-                .group_by(AltTitle.search_ts_vector)
-                .where(AltTitle.search_ts_vector.op("@@")(search_term))
-                .order_by(None)
-                .order_by(
-                    func.ts_rank_cd(
-                        AltTitle.search_ts_vector,
-                        search_term,
-                    ).desc(),
-                )
+            stmt = stmt.join(Manga.alt_titles, isouter=True).where(
+                AltTitle.title.op("&@~")(filter.search_term),
             )
         if filter.tags.include:
             include_alias = aliased(MangaTag, name="tags_include")

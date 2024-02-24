@@ -8,7 +8,7 @@ from strawberry import Private
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.dto import DTOMixin
 from app.adapters.graphql.types import LanguageGQL
-from app.core.domain.manga.loaders import MangaTagLoader
+from app.core.domain.manga.loaders import MangaAltTitleLoader, MangaTagLoader
 from app.db.models import Manga
 from app.db.models._manga import AltTitle, MangaTag
 
@@ -74,21 +74,12 @@ class MangaGQL(DTOMixin[Manga]):
         )
         return MangaTagGQL.from_dto_list(tags)
 
-    # @strawberry.field
-    # async def infos(self, info: Info) -> Sequence[AltTitleGQL]:
-    #     preferred_languages = preferred_languages or []
-    #     preferred_languages = [Language[lang.value] for lang in preferred_languages]
-    #     infos = await info.context.loaders.manga_info_by_manga_id.load(self.id)
-    #     if preferred_languages:
-    #         preferred_infos = [
-    #             info for info in infos if info.language in preferred_languages
-    #         ]
-    #         preferred_infos.sort(
-    #             key=lambda i: preferred_languages.index(i.language),
-    #         )
-    #         infos = preferred_infos or infos
-    #
-    #     return AltTitleGQL.from_orm_list(infos)
+    @strawberry.field
+    async def alt_titles(self, info: Info) -> Sequence[AltTitleGQL]:
+        alt_titles = await info.context.loaders.map(MangaAltTitleLoader).load(
+            self._instance.id,
+        )
+        return AltTitleGQL.from_dto_list(alt_titles)
 
     #
     # @strawberry.field

@@ -1,3 +1,9 @@
+type AltTitle {
+  id: ID!
+  language: LanguageEnum!
+  title: String!
+}
+
 type AuthMutations {
   signUp(input: SignUpInput!): SignUpPayload!
   signIn(input: SignInInput!): SignInPayload!
@@ -23,6 +29,11 @@ type InvalidCredentialsError implements Error {
   message: String!
 }
 
+enum LanguageEnum {
+  eng
+  ukr
+}
+
 type Manga {
   id: ID!
   title: String!
@@ -30,6 +41,7 @@ type Manga {
   createdAt: DateTime!
   updatedAt: DateTime!
   tags: [MangaTag!]!
+  altTitles: [AltTitle!]!
 }
 
 union MangaCreateError = ValidationErrors

@@ -98,7 +98,7 @@ omit = [
     "src/app/db/migrations/*",
     "src/app/adapters/cli/seed.py",
 ]
-command_line = "-m pytest -v --reuse-db"
+command_line = "-m pytest -vvv --reuse-db"
 concurrency = ["greenlet"]
 branch = true
 

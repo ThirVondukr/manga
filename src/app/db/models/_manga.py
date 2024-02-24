@@ -4,15 +4,12 @@ from uuid import UUID
 
 from sqlalchemy import (
     Column,
-    Computed,
     ForeignKey,
     Index,
     String,
     Table,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import REGCONFIG, TSVECTOR
-from sqlalchemy.engine.default import DefaultExecutionContext
 from sqlalchemy.orm import (
     Mapped,
     MappedAsDataclass,
@@ -25,7 +22,6 @@ from app.db._base import (
     HasPrivate,
     HasTimestamps,
     PkUUID,
-    RegConfigLanguage,
     str_title,
 )
 from lib.types import Language
@@ -139,12 +135,6 @@ class MangaPage(PkUUID, MappedAsDataclass, Base, kw_only=True):
     image_path: Mapped[str] = mapped_column(String(250))
 
 
-def _regconfig_default(ctx: DefaultExecutionContext) -> str:
-    return RegConfigLanguage[
-        ctx.current_parameters["language"].value  # type: ignore[index]
-    ].value
-
-
 class AltTitle(
     PkUUID,
     HasTimestamps,
@@ -155,9 +145,9 @@ class AltTitle(
     __tablename__ = "manga_alt_title"
     __table_args__ = (
         Index(
-            "ix_manga_info_search_ts_vector",
-            "search_ts_vector",
-            postgresql_using="gin",
+            "ix_manga_info_title_pgroonga",
+            "title",
+            postgresql_using="pgroonga",
         ),
     )
 
@@ -171,17 +161,4 @@ class AltTitle(
         default=None,
     )
     language: Mapped[Language]
-    language_regconfig: Mapped[str] = mapped_column(
-        REGCONFIG,
-        insert_default=_regconfig_default,
-        init=False,
-    )
     title: Mapped[str] = mapped_column(String(250))
-    search_ts_vector: Mapped[str] = mapped_column(
-        TSVECTOR,
-        Computed(
-            "to_tsvector(language_regconfig, coalesce(title, '')",
-            persisted=True,
-        ),
-        init=False,
-    )

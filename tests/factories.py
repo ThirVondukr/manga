@@ -9,6 +9,7 @@ import factory  # type: ignore[import-untyped]
 from faker import Faker
 
 from app.db.models import AltTitle, Manga, MangaBranch, MangaChapter, MangaTag
+from lib.types import Language
 
 T = TypeVar("T")
 
@@ -41,6 +42,7 @@ class MangaFactory(GenericFactory[Manga]):
 
 
 class MangaAltTitleFactory(GenericFactory[AltTitle]):
+    language = factory.Faker("enum", enum_cls=Language)
     title = factory.Faker("sentence", nb_words=4)
 
 

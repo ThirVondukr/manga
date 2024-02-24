@@ -13,3 +13,5 @@ coverage.xml
 .pdm-python
 /.k8s/app/values.dev.yaml
 /tiltfile
+
+.local
