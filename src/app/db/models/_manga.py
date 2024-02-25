@@ -145,7 +145,7 @@ class AltTitle(
     __tablename__ = "manga_alt_title"
     __table_args__ = (
         Index(
-            "ix_manga_info_title_pgroonga",
+            "ix_manga_alt_title_pgroonga",
             "title",
             postgresql_using="pgroonga",
         ),

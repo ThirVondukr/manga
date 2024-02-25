@@ -1,3 +1,4 @@
+from ._groups import Group
 from ._manga import (
     AltTitle,
     Manga,
@@ -9,6 +10,7 @@ from ._manga import (
 from ._user import User
 
 __all__ = [
+    "Group",
     "Manga",
     "MangaBranch",
     "MangaChapter",

@@ -1,18 +1,18 @@
 """
-initial
+Initial
 
-Revision ID: cddc6a963387
+Revision ID: 1a2aacea6298
 Revises:
-Create Date: 2024-02-24 00:26:08.731773
+Create Date: 2024-02-25 23:59:02.552012
 
 """
 
-import sqlalchemy as sa
 from alembic import op
-from sqlalchemy.dialects import postgresql
+import sqlalchemy as sa
+
 
 # revision identifiers, used by Alembic.
-revision = "cddc6a963387"
+revision = "1a2aacea6298"
 down_revision: str | None = None
 branch_labels: str | None = None
 depends_on: str | None = None
@@ -67,6 +67,30 @@ def upgrade() -> None:
         sa.UniqueConstraint("username", name=op.f("uq_user_username")),
     )
     op.create_table(
+        "group",
+        sa.Column("name", sa.String(length=250), nullable=False),
+        sa.Column("created_by_id", sa.Uuid(), nullable=False),
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.ForeignKeyConstraint(
+            ["created_by_id"],
+            ["user.id"],
+            name=op.f("fk_group_created_by_id_user"),
+        ),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_group")),
+    )
+    op.create_table(
         "manga__manga_tag__secondary",
         sa.Column("manga_id", sa.Uuid(), nullable=False),
         sa.Column("tag_id", sa.Uuid(), nullable=False),
@@ -83,18 +107,54 @@ def upgrade() -> None:
             ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
-            "manga_id",
-            "tag_id",
-            name=op.f("pk_manga__manga_tag__secondary"),
+            "manga_id", "tag_id", name=op.f("pk_manga__manga_tag__secondary")
         ),
+    )
+    op.create_table(
+        "manga_alt_title",
+        sa.Column("manga_id", sa.Uuid(), nullable=False),
+        sa.Column(
+            "language", sa.Enum("eng", "ukr", name="language"), nullable=False
+        ),
+        sa.Column("title", sa.String(length=250), nullable=False),
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.ForeignKeyConstraint(
+            ["manga_id"],
+            ["manga.id"],
+            name=op.f("fk_manga_alt_title_manga_id_manga"),
+        ),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_manga_alt_title")),
+    )
+    op.create_index(
+        op.f("ix_manga_alt_title_manga_id"),
+        "manga_alt_title",
+        ["manga_id"],
+        unique=False,
+    )
+    op.create_index(
+        "ix_manga_alt_title_pgroonga",
+        "manga_alt_title",
+        ["title"],
+        unique=False,
+        postgresql_using="pgroonga",
     )
     op.create_table(
         "manga_branch",
         sa.Column("manga_id", sa.Uuid(), nullable=False),
         sa.Column(
-            "language",
-            sa.Enum("eng", "ukr", name="language"),
-            nullable=False,
+            "language", sa.Enum("eng", "ukr", name="language"), nullable=False
         ),
         sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column(
@@ -115,59 +175,6 @@ def upgrade() -> None:
             name=op.f("fk_manga_branch_manga_id_manga"),
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_manga_branch")),
-    )
-    op.create_table(
-        "manga_info",
-        sa.Column("manga_id", sa.Uuid(), nullable=False),
-        sa.Column(
-            "language",
-            sa.Enum("eng", "ukr", name="language"),
-            nullable=False,
-        ),
-        sa.Column("language_regconfig", postgresql.REGCONFIG(), nullable=False),
-        sa.Column("title", sa.String(length=250), nullable=False),
-        sa.Column("description", sa.String(length=1000), nullable=False),
-        sa.Column(
-            "search_ts_vector",
-            postgresql.TSVECTOR(),
-            sa.Computed(
-                "setweight(to_tsvector(language_regconfig, coalesce(title, '')), 'A') || setweight(to_tsvector(language_regconfig, coalesce(description, '')), 'D')",
-                persisted=True,
-            ),
-            nullable=False,
-        ),
-        sa.Column("id", sa.Uuid(), nullable=False),
-        sa.Column(
-            "created_at",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
-            nullable=False,
-        ),
-        sa.Column(
-            "updated_at",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
-            nullable=False,
-        ),
-        sa.ForeignKeyConstraint(
-            ["manga_id"],
-            ["manga.id"],
-            name=op.f("fk_manga_info_manga_id_manga"),
-        ),
-        sa.PrimaryKeyConstraint("id", name=op.f("pk_manga_info")),
-    )
-    op.create_index(
-        op.f("ix_manga_info_manga_id"),
-        "manga_info",
-        ["manga_id"],
-        unique=False,
-    )
-    op.create_index(
-        "ix_manga_info_search_ts_vector",
-        "manga_info",
-        ["search_ts_vector"],
-        unique=False,
-        postgresql_using="gin",
     )
     op.create_table(
         "manga_chapter",
@@ -215,9 +222,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_manga_page")),
         sa.UniqueConstraint(
-            "chapter_id",
-            "number",
-            name=op.f("uq_manga_page_chapter_id"),
+            "chapter_id", "number", name=op.f("uq_manga_page_chapter_id")
         ),
     )
     op.create_index(
@@ -232,19 +237,21 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_manga_page_chapter_id"), table_name="manga_page")
     op.drop_table("manga_page")
     op.drop_index(
-        op.f("ix_manga_chapter_branch_id"),
-        table_name="manga_chapter",
+        op.f("ix_manga_chapter_branch_id"), table_name="manga_chapter"
     )
     op.drop_table("manga_chapter")
-    op.drop_index(
-        "ix_manga_info_search_ts_vector",
-        table_name="manga_info",
-        postgresql_using="gin",
-    )
-    op.drop_index(op.f("ix_manga_info_manga_id"), table_name="manga_info")
-    op.drop_table("manga_info")
     op.drop_table("manga_branch")
+    op.drop_index(
+        "ix_manga_alt_title_pgroonga",
+        table_name="manga_alt_title",
+        postgresql_using="pgroonga",
+    )
+    op.drop_index(
+        op.f("ix_manga_alt_title_manga_id"), table_name="manga_alt_title"
+    )
+    op.drop_table("manga_alt_title")
     op.drop_table("manga__manga_tag__secondary")
+    op.drop_table("group")
     op.drop_table("user")
     op.drop_table("manga_tag")
     op.drop_table("manga")
