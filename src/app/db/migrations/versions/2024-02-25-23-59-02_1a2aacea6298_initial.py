@@ -7,9 +7,8 @@ Create Date: 2024-02-25 23:59:02.552012
 
 """
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "1a2aacea6298"
@@ -19,6 +18,7 @@ depends_on: str | None = None
 
 
 def upgrade() -> None:
+    op.execute("create extension if not exists pgroonga;")
     op.create_table(
         "manga",
         sa.Column("title", sa.String(length=250), nullable=False),
@@ -107,14 +107,18 @@ def upgrade() -> None:
             ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint(
-            "manga_id", "tag_id", name=op.f("pk_manga__manga_tag__secondary")
+            "manga_id",
+            "tag_id",
+            name=op.f("pk_manga__manga_tag__secondary"),
         ),
     )
     op.create_table(
         "manga_alt_title",
         sa.Column("manga_id", sa.Uuid(), nullable=False),
         sa.Column(
-            "language", sa.Enum("eng", "ukr", name="language"), nullable=False
+            "language",
+            sa.Enum("eng", "ukr", name="language"),
+            nullable=False,
         ),
         sa.Column("title", sa.String(length=250), nullable=False),
         sa.Column("id", sa.Uuid(), nullable=False),
@@ -154,7 +158,9 @@ def upgrade() -> None:
         "manga_branch",
         sa.Column("manga_id", sa.Uuid(), nullable=False),
         sa.Column(
-            "language", sa.Enum("eng", "ukr", name="language"), nullable=False
+            "language",
+            sa.Enum("eng", "ukr", name="language"),
+            nullable=False,
         ),
         sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column(
@@ -222,7 +228,9 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_manga_page")),
         sa.UniqueConstraint(
-            "chapter_id", "number", name=op.f("uq_manga_page_chapter_id")
+            "chapter_id",
+            "number",
+            name=op.f("uq_manga_page_chapter_id"),
         ),
     )
     op.create_index(
@@ -237,7 +245,8 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_manga_page_chapter_id"), table_name="manga_page")
     op.drop_table("manga_page")
     op.drop_index(
-        op.f("ix_manga_chapter_branch_id"), table_name="manga_chapter"
+        op.f("ix_manga_chapter_branch_id"),
+        table_name="manga_chapter",
     )
     op.drop_table("manga_chapter")
     op.drop_table("manga_branch")
@@ -247,7 +256,8 @@ def downgrade() -> None:
         postgresql_using="pgroonga",
     )
     op.drop_index(
-        op.f("ix_manga_alt_title_manga_id"), table_name="manga_alt_title"
+        op.f("ix_manga_alt_title_manga_id"),
+        table_name="manga_alt_title",
     )
     op.drop_table("manga_alt_title")
     op.drop_table("manga__manga_tag__secondary")

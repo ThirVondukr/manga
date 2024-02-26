@@ -1,4 +1,6 @@
-from app.core.domain.auth.dto import SignInDTO, UserAuthResultDTO
+from result import Err
+
+from app.core.domain.auth.dto import SignInDTO, TokenClaims, UserAuthResultDTO
 from app.core.domain.auth.services import AuthService, TokenService
 
 
@@ -21,3 +23,25 @@ class SignInCommand:
             access_token=self._token_service.create_access_token(user=user),
             refresh_token=self._token_service.create_refresh_token(user=user),
         )
+
+
+class AuthenticateAccessTokenCommand:
+    def __init__(self, token_service: TokenService) -> None:
+        self._token_service = token_service
+
+    async def execute(self, token: str | None) -> TokenClaims | None:
+        if not token or not token.startswith("Bearer "):
+            return None
+
+        token = token.removeprefix("Bearer ")
+
+        claims = self._token_service.decode(token=token)
+        if isinstance(claims, Err):  # pragma: no cover
+            return None
+
+        if (  # pragma: no cover
+            claims.ok_value.token_type != "access"  # noqa: S105
+        ):
+            return None
+
+        return claims.ok_value

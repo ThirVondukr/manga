@@ -1,4 +1,5 @@
 import jwt
+from jwt import PyJWTError
 from passlib.context import CryptContext
 from result import Err, Ok, Result
 
@@ -8,6 +9,7 @@ from app.core.domain.auth.dto import (
     TokenWrapper,
     UserRegisterDTO,
 )
+from app.core.domain.auth.errors import TokenDecodeError
 from app.core.domain.users.errors import UserAlreadyExistsError
 from app.core.domain.users.filters import UserFilter
 from app.core.domain.users.repositories import UserRepository
@@ -41,13 +43,16 @@ class TokenService:
         )
         return self._encode(claims=access)
 
-    def decode(self, token: str) -> TokenClaims:
-        claims = jwt.decode(
-            jwt=token,
-            key=self._settings.public_key,
-            algorithms=[self._settings.algorithm],
-        )
-        return TokenClaims.model_validate(claims)
+    def decode(self, token: str) -> Result[TokenClaims, TokenDecodeError]:
+        try:
+            claims = jwt.decode(
+                jwt=token,
+                key=self._settings.public_key,
+                algorithms=[self._settings.algorithm],
+            )
+        except PyJWTError as error:  # pragma: no cover
+            return Err(TokenDecodeError(error=error))
+        return Ok(TokenClaims.model_validate(claims))
 
     def _encode(self, claims: TokenClaims) -> TokenWrapper:
         return TokenWrapper(

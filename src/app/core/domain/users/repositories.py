@@ -29,6 +29,8 @@ class UserRepository:
         filter: UserFilter,
     ) -> Sequence[ColumnElement[Any]]:
         conditions = []
+        if filter.id is not None:
+            conditions.append(User.id == filter.id)
         if filter.email is not None:
             conditions.append(User.email == filter.email)
         if filter.username is not None:

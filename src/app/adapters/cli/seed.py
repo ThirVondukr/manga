@@ -6,6 +6,7 @@ from tests.factories import MangaAltTitleFactory, MangaFactory, MangaTagFactory
 
 from app.db import async_session_factory
 from app.db.models import AltTitle, Manga, MangaTag
+from lib.types import Language
 
 
 async def main() -> None:
@@ -25,6 +26,9 @@ async def main() -> None:
                 )
                 manga.alt_titles = MangaAltTitleFactory.build_batch(
                     size=random.randint(1, 3),  # noqa: S311
+                )
+                manga.alt_titles.append(
+                    AltTitle(title=manga.title, language=Language.eng),
                 )
 
             session.add_all(mangas)

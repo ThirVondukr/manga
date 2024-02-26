@@ -10,3 +10,13 @@ async def graphql_client(http_client: httpx.AsyncClient) -> GraphQLClient:
         client=http_client,
         endpoint="/graphql/",
     )
+
+
+@pytest.fixture
+async def authenticated_graphql_client(
+    authenticated_http_client: httpx.AsyncClient,
+) -> GraphQLClient:
+    return GraphQLClient(
+        client=authenticated_http_client,
+        endpoint="/graphql/",
+    )

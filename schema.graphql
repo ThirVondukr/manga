@@ -1,3 +1,5 @@
+directive @isAuthenticated on FIELD_DEFINITION
+
 type AltTitle {
   id: ID!
   language: LanguageEnum!
@@ -23,6 +25,26 @@ type EntityAlreadyExistsError implements Error {
 
 interface Error {
   message: String!
+}
+
+type Group {
+  id: ID!
+  name: String!
+}
+
+union GroupCreateError = ValidationErrors | EntityAlreadyExistsError
+
+input GroupCreateInput {
+  name: String!
+}
+
+type GroupCreatePayload {
+  group: Group
+  error: GroupCreateError
+}
+
+type GroupMutations {
+  create(input: GroupCreateInput!): GroupCreatePayload! @isAuthenticated
 }
 
 type InvalidCredentialsError implements Error {
@@ -83,6 +105,7 @@ input MangaTagFilter {
 type Mutation {
   auth: AuthMutations!
   manga: MangaMutations!
+  groups: GroupMutations!
 }
 
 type PagePaginationInfo {

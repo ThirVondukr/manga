@@ -15,6 +15,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import tests.plugins
 from app.core.di import create_container
+from app.core.domain.auth.dto import TokenWrapper
+from app.db.models import User
 from lib.time import utc_now
 from tests.types import Resolver
 
@@ -49,14 +51,38 @@ async def fastapi_app() -> AsyncIterator[FastAPI]:
 
 
 @pytest.fixture
-async def http_client(fastapi_app: FastAPI) -> AsyncIterator[httpx.AsyncClient]:
-    async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(
-            app=fastapi_app,  # type: ignore[arg-type]
-        ),
+async def http_transport(
+    fastapi_app: FastAPI,
+) -> AsyncIterator[httpx.AsyncBaseTransport]:
+    async with httpx.ASGITransport(
+        app=fastapi_app,  # type: ignore[arg-type]
+    ) as transport:
+        yield transport
+
+
+@pytest.fixture
+async def http_client(
+    http_transport: httpx.AsyncBaseTransport,
+) -> httpx.AsyncClient:
+    return httpx.AsyncClient(
+        transport=http_transport,
         base_url="http://test",
-    ) as client:
-        yield client
+    )
+
+
+@pytest.fixture
+async def authenticated_http_client(
+    http_transport: httpx.AsyncBaseTransport,
+    user: User,  # noqa: ARG001
+    user_token: TokenWrapper,
+) -> httpx.AsyncClient:
+    return httpx.AsyncClient(
+        transport=http_transport,
+        base_url="http://test",
+        headers={
+            "authorization": f"Bearer {user_token.token}",
+        },
+    )
 
 
 @pytest.fixture(scope="session")
