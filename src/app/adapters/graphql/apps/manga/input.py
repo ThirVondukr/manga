@@ -2,6 +2,7 @@ import dataclasses
 
 import strawberry
 
+from app.adapters.graphql.types import MangaStatusGQL
 from app.core.domain.manga.dto import MangaCreateDTO
 from app.core.domain.manga.filters import MangaFilter, TagFilter
 
@@ -34,8 +35,10 @@ class MangaFilterGQL:
 @strawberry.federation.input(name="MangaCreateInput")
 class MangaCreateInput:
     title: str
+    status: MangaStatusGQL
 
     def to_dto(self) -> MangaCreateDTO:
         return MangaCreateDTO(
             title=self.title,
+            status=self.status,
         )

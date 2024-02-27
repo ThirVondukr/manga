@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.models import Manga
 from tests.adapters.graphql.client import GraphQLClient
 from tests.factories import MangaTagFactory
+from tests.utils import casefold
 
 _QUERY = """query ($id: ID!) {
   manga(id: $id) {
@@ -31,7 +32,7 @@ async def test_ok(
     graphql_client: GraphQLClient,
 ) -> None:
     manga.tags = MangaTagFactory.build_batch(size=collection_size)
-    manga.tags.sort(key=lambda tag: tag.name_slug)
+    manga.tags.sort(key=lambda tag: casefold(tag.name_slug))
     session.add(manga)
     await session.flush()
 

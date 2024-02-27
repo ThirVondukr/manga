@@ -49,7 +49,7 @@ async def test_ok(
                 {
                     "__typename": "AltTitle",
                     "id": str(alt_title.id),
-                    "language": alt_title.language.name,
+                    "language": alt_title.language.name.upper(),
                     "title": alt_title.title,
                 }
                 for alt_title in manga.alt_titles

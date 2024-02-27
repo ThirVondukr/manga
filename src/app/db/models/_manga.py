@@ -24,7 +24,7 @@ from app.db._base import (
     PkUUID,
     str_title,
 )
-from lib.types import Language
+from lib.types import Language, MangaStatus
 
 manga_manga_tag_secondary_table = Table(
     "manga__manga_tag__secondary",
@@ -67,6 +67,7 @@ class Manga(
 
     title: Mapped[str_title] = mapped_column(unique=True)
     title_slug: Mapped[str_title] = mapped_column(unique=True)
+    status: Mapped[MangaStatus]
 
     branches: Mapped[list[MangaBranch]] = relationship(
         back_populates="manga",

@@ -52,8 +52,8 @@ type InvalidCredentialsError implements Error {
 }
 
 enum LanguageEnum {
-  eng
-  ukr
+  ENG
+  UKR
 }
 
 type Manga {
@@ -70,6 +70,7 @@ union MangaCreateError = ValidationErrors
 
 input MangaCreateInput {
   title: String!
+  status: MangaStatus!
 }
 
 type MangaCreatePayload {
@@ -89,6 +90,13 @@ type MangaMutations {
 type MangaPagePaginationResult {
   items: [Manga!]!
   pageInfo: PagePaginationInfo!
+}
+
+enum MangaStatus {
+  ONGOING
+  COMPLETED
+  CANCELLED
+  ON_HOLD
 }
 
 type MangaTag {

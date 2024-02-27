@@ -16,6 +16,7 @@ class MangaService:
     async def create(self, dto: MangaCreateDTO) -> Manga:
         model = Manga(
             title=dto.title,
+            status=dto.status,
             title_slug=slugify(dto.title),
         )
         self._db_context.add(model)

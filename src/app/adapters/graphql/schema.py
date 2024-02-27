@@ -1,7 +1,10 @@
 import strawberry
 from aioinject.ext.strawberry import AioInjectExtension
 from strawberry import Schema
+from strawberry.enum import EnumDefinition, EnumValue
 from strawberry.extensions import ParserCache, ValidationCache
+from strawberry.schema.config import StrawberryConfig
+from strawberry.schema.name_converter import NameConverter
 from strawberry.tools import merge_types
 
 from app.adapters.graphql.apps.auth.mutation import AuthMutationsGQL
@@ -32,6 +35,15 @@ class Mutation:
         return GroupMutationsGQL()
 
 
+class CustomNameConverter(NameConverter):
+    def from_enum_value(
+        self,
+        enum: EnumDefinition,  # noqa: ARG002
+        enum_value: EnumValue,
+    ) -> str:
+        return enum_value.name.upper()
+
+
 schema = Schema(
     query=Query,
     mutation=Mutation,
@@ -40,4 +52,5 @@ schema = Schema(
         ValidationCache(maxsize=128),
         AioInjectExtension(container=create_container()),
     ],
+    config=StrawberryConfig(name_converter=CustomNameConverter()),
 )

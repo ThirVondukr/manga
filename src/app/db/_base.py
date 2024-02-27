@@ -15,7 +15,9 @@ from sqlalchemy.sql import expression
 from uuid_utils.compat import uuid7
 
 from app.core.domain.const import GENERIC_NAME_LENGTH
+from app.db._types import IntEnumType
 from lib.time import utc_now
+from lib.types import MangaStatus
 
 meta = MetaData(
     naming_convention={
@@ -71,5 +73,6 @@ class Base(DeclarativeBase):
         type_annotation_map={
             datetime: DateTime(timezone=True),
             # enum.Enum: Enum(native_enum=False),
+            MangaStatus: IntEnumType(MangaStatus),
         },
     )
