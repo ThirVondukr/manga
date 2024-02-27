@@ -16,7 +16,7 @@ class MangaBranchGQL(DTOMixin[MangaBranch]):
     @classmethod
     def from_dto(cls, model: MangaBranch) -> Self:
         return cls(
-            id=strawberry.ID(str(model)),
+            id=strawberry.ID(str(model.id)),
             name=model.name,
             language=model.language,
         )

@@ -18,7 +18,7 @@ class IntEnumType(TypeDecorator[TEnum]):
         value: TEnum | None,
         dialect: Dialect,  # noqa: ARG002
     ) -> int | None:
-        if value is None:
+        if value is None:  # pragma: no cover
             return None
         return value.value
 
@@ -27,6 +27,6 @@ class IntEnumType(TypeDecorator[TEnum]):
         value: int | None,
         dialect: Dialect,  # noqa: ARG002
     ) -> TEnum | None:
-        if value is None:
+        if value is None:  # pragma: no cover
             return value
         return self.enum(value)

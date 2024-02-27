@@ -8,6 +8,7 @@ from strawberry.schema.name_converter import NameConverter
 from strawberry.tools import merge_types
 
 from app.adapters.graphql.apps.auth.mutation import AuthMutationsGQL
+from app.adapters.graphql.apps.branches.mutations import MangaBranchMutationGQL
 from app.adapters.graphql.apps.groups.mutation import GroupMutationsGQL
 from app.adapters.graphql.apps.manga.mutation import MangaMutationsGQL
 from app.adapters.graphql.apps.manga.query import MangaQuery
@@ -33,6 +34,10 @@ class Mutation:
     @strawberry.field
     async def groups(self) -> GroupMutationsGQL:
         return GroupMutationsGQL()
+
+    @strawberry.field
+    async def branches(self) -> MangaBranchMutationGQL:
+        return MangaBranchMutationGQL()
 
 
 class CustomNameConverter(NameConverter):

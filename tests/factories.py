@@ -42,6 +42,11 @@ class MangaFactory(GenericFactory[Manga]):
     created_at = factory.Faker("date_time", tzinfo=UTC)
 
 
+class MangaBranchFactory(GenericFactory[MangaBranch]):
+    name = factory.Faker("sentence")
+    language = factory.Faker("enum", enum_cls=Language)
+
+
 class MangaAltTitleFactory(GenericFactory[AltTitle]):
     language = factory.Faker("enum", enum_cls=Language)
     title = factory.Faker("sentence", nb_words=4)

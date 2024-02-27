@@ -115,12 +115,15 @@ class MangaBranch(PkUUID, HasTimestamps, MappedAsDataclass, Base, kw_only=True):
     __tablename__ = "manga_branch"
 
     name: Mapped[str_title]
-    manga_id: Mapped[UUID] = mapped_column(ForeignKey("manga.id"))
+    manga_id: Mapped[UUID] = mapped_column(ForeignKey("manga.id"), init=False)
     manga: Mapped[Manga] = relationship(back_populates="branches")
 
     language: Mapped[Language]
 
-    chapters: Mapped[MangaChapter] = relationship(back_populates="branch")
+    chapters: Mapped[list[MangaChapter]] = relationship(
+        back_populates="branch",
+        default_factory=list,
+    )
 
 
 class MangaPage(PkUUID, MappedAsDataclass, Base, kw_only=True):

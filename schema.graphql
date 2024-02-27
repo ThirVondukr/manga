@@ -60,10 +60,34 @@ type Manga {
   id: ID!
   title: String!
   titleSlug: String!
+  status: MangaStatus!
   createdAt: DateTime!
   updatedAt: DateTime!
   tags: [MangaTag!]!
   altTitles: [AltTitle!]!
+}
+
+type MangaBranch {
+  id: ID!
+  name: String!
+  language: LanguageEnum!
+}
+
+union MangaBranchCreateError = ValidationErrors | RelationshipNotFoundError
+
+input MangaBranchCreateInput {
+  name: String!
+  language: LanguageEnum!
+  mangaId: ID!
+}
+
+type MangaBranchCreatePayload {
+  branch: MangaBranch
+  error: MangaBranchCreateError
+}
+
+type MangaBranchMutationGQL {
+  create(input: MangaBranchCreateInput!): MangaBranchCreatePayload! @isAuthenticated
 }
 
 union MangaCreateError = ValidationErrors
@@ -114,6 +138,7 @@ type Mutation {
   auth: AuthMutations!
   manga: MangaMutations!
   groups: GroupMutations!
+  branches: MangaBranchMutationGQL!
 }
 
 type PagePaginationInfo {
@@ -141,6 +166,11 @@ type Query {
   manga(id: ID!): Manga
   mangas(pagination: PagePaginationInput = null, filter: MangaFilter = null): MangaPagePaginationResult!
   me: PrivateUser! @isAuthenticated
+}
+
+type RelationshipNotFoundError implements Error {
+  message: String!
+  id: ID!
 }
 
 union SignInErrors = InvalidCredentialsError | ValidationErrors
