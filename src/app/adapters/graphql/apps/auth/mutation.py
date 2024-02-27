@@ -15,7 +15,7 @@ from app.adapters.graphql.apps.auth._results import (
     SignInPayloadGQL,
     SignUpPayloadGQL,
 )
-from app.adapters.graphql.apps.users.types import UserGQL
+from app.adapters.graphql.apps.users.types import PrivateUserGQL
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.errors import (
     EntityAlreadyExistsErrorGQL,
@@ -61,7 +61,7 @@ class AuthMutationsGQL:
         )
         return SignUpPayloadGQL(
             result=AuthenticationResultGQL(
-                user=UserGQL.from_dto(result.ok_value.user),
+                user=PrivateUserGQL.from_dto(result.ok_value.user),
                 access_token=result.ok_value.access_token.token,
             ),
             error=None,
@@ -97,7 +97,7 @@ class AuthMutationsGQL:
 
         return SignInPayloadGQL(
             result=AuthenticationResultGQL(
-                user=UserGQL.from_dto(result.user),
+                user=PrivateUserGQL.from_dto(result.user),
                 access_token=result.access_token.token,
             ),
             error=None,

@@ -8,11 +8,12 @@ from app.adapters.graphql.apps.auth.mutation import AuthMutationsGQL
 from app.adapters.graphql.apps.groups.mutation import GroupMutationsGQL
 from app.adapters.graphql.apps.manga.mutation import MangaMutationsGQL
 from app.adapters.graphql.apps.manga.query import MangaQuery
+from app.adapters.graphql.apps.users.query import UserQuery
 from app.core.di import create_container
 
 Query = merge_types(
     name="Query",
-    types=(MangaQuery,),
+    types=(MangaQuery, UserQuery),
 )
 
 

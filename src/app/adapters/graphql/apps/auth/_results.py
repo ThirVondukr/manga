@@ -2,7 +2,7 @@ from typing import Annotated
 
 import strawberry
 
-from app.adapters.graphql.apps.users.types import UserGQL
+from app.adapters.graphql.apps.users.types import PrivateUserGQL
 from app.adapters.graphql.errors import (
     EntityAlreadyExistsErrorGQL,
     InvalidCredentialsErrorGQL,
@@ -22,7 +22,7 @@ SignInErrorsGQL = Annotated[
 
 @strawberry.type(name="AuthenticationResult")
 class AuthenticationResultGQL:
-    user: UserGQL
+    user: PrivateUserGQL
     access_token: str
 
 

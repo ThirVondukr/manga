@@ -12,7 +12,7 @@ type AuthMutations {
 }
 
 type AuthenticationResult {
-  user: UserGQL!
+  user: PrivateUser!
   accessToken: String!
 }
 
@@ -122,9 +122,17 @@ input PagePaginationInput {
   pageSize: Int! = 100
 }
 
+type PrivateUser implements User {
+  id: ID!
+  username: String!
+  joinedAt: DateTime!
+  email: String!
+}
+
 type Query {
   manga(id: ID!): Manga
   mangas(pagination: PagePaginationInput = null, filter: MangaFilter = null): MangaPagePaginationResult!
+  me: PrivateUser! @isAuthenticated
 }
 
 union SignInErrors = InvalidCredentialsError | ValidationErrors
@@ -152,9 +160,10 @@ type SignUpPayload {
   error: SignUpErrors
 }
 
-type UserGQL {
+interface User {
   id: ID!
   username: String!
+  joinedAt: DateTime!
 }
 
 type ValidationError implements Error {
