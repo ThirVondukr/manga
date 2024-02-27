@@ -13,6 +13,7 @@ query Query($id: ID!) {
         id
         title
         titleSlug
+        status
         createdAt
         updatedAt
     }
@@ -55,6 +56,7 @@ async def test_manga(
             "id": str(manga.id),
             "title": manga.title,
             "titleSlug": manga.title_slug,
+            "status": manga.status.name.upper(),
             "createdAt": manga.created_at.isoformat(),
             "updatedAt": manga.updated_at.isoformat(),
         },

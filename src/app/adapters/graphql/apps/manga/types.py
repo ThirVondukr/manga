@@ -7,7 +7,7 @@ from strawberry import Private
 
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.dto import DTOMixin
-from app.adapters.graphql.types import LanguageGQL
+from app.adapters.graphql.types import LanguageGQL, MangaStatusGQL
 from app.core.domain.manga.loaders import MangaAltTitleLoader, MangaTagLoader
 from app.db.models import Manga
 from app.db.models._manga import AltTitle, MangaTag
@@ -50,6 +50,7 @@ class MangaGQL(DTOMixin[Manga]):
     id: strawberry.ID
     title: str
     title_slug: str
+    status: MangaStatusGQL
     created_at: datetime
     updated_at: datetime
 
@@ -60,6 +61,7 @@ class MangaGQL(DTOMixin[Manga]):
             id=strawberry.ID(str(model.id)),
             title=model.title,
             title_slug=model.title_slug,
+            status=model.status,
             created_at=model.created_at,
             updated_at=model.updated_at,
         )
