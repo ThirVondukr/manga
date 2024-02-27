@@ -1,6 +1,0 @@
-schema: schema.graphql
-extensions:
-  endpoints:
-    Local GraphQL Endpoint:
-      url: http://localhost:8000/graphql/
-      introspect: false
