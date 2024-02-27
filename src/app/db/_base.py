@@ -14,6 +14,7 @@ from sqlalchemy.orm import (
 from sqlalchemy.sql import expression
 from uuid_utils.compat import uuid7
 
+from app.core.domain.const import GENERIC_NAME_LENGTH
 from lib.time import utc_now
 
 meta = MetaData(
@@ -36,7 +37,7 @@ class PkUUID(MappedAsDataclass):
     )
 
 
-str_title = Annotated[str, mapped_column(String(250))]
+str_title = Annotated[str, mapped_column(String(GENERIC_NAME_LENGTH))]
 
 
 class HasPrivate(MappedAsDataclass):

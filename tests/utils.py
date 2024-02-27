@@ -1,2 +1,2 @@
 def casefold(string: str) -> str:
-    return string.replace(" ", "")
+    return string.replace(" ", "").casefold()
