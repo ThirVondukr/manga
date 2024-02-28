@@ -5,6 +5,7 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Manga, MangaTag
+from lib.types import MangaStatus
 from tests.factories import MangaFactory
 
 
@@ -28,3 +29,8 @@ async def mangas(
     session.add_all(mangas)
     await session.flush()
     return mangas
+
+
+@pytest.fixture
+def manga_status() -> MangaStatus:
+    return random.choice(list(MangaStatus.__members__.values()))

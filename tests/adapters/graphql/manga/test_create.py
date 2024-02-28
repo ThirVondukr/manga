@@ -1,12 +1,14 @@
-import random
+import uuid
+from typing import Any
+from unittest.mock import patch
 
 import pytest
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.domain.manga.commands import MangaCreateCommand
 from app.db.models import Manga
 from lib.types import MangaStatus
 from tests.adapters.graphql.client import GraphQLClient
+from tests.adapters.graphql.utils import assert_not_authenticated
 
 pytestmark = [pytest.mark.usefixtures("session")]
 
@@ -41,19 +43,32 @@ def _tpl(manga: object, error: object) -> object:
 
 
 @pytest.fixture
-def manga_status() -> MangaStatus:
-    return random.choice(list(MangaStatus.__members__.values()))
+def input(manga_status: MangaStatus) -> dict[str, Any]:
+    return {"title": str(uuid.uuid4()), "status": manga_status.name.upper()}
 
 
-async def test_validation(
+async def test_requires_auth(
     graphql_client: GraphQLClient,
-    manga_status: MangaStatus,
+    input: object,
 ) -> None:
-    title = "a" * 251
     response = await graphql_client.query(
         query=QUERY,
         variables={
-            "input": {"title": title, "status": manga_status.name.upper()},
+            "input": input,
+        },
+    )
+    assert_not_authenticated(response)
+
+
+async def test_validation(
+    authenticated_graphql_client: GraphQLClient,
+    input: dict[str, Any],
+) -> None:
+    input["title"] = "a" * 251
+    response = await authenticated_graphql_client.query(
+        query=QUERY,
+        variables={
+            "input": input,
         },
     )
     assert response == _tpl(
@@ -63,25 +78,23 @@ async def test_validation(
 
 
 async def test_create(
-    session: AsyncSession,
-    graphql_client: GraphQLClient,
-    manga_status: MangaStatus,
+    authenticated_graphql_client: GraphQLClient,
+    manga: Manga,
+    input: object,
 ) -> None:
-    title = "Test Manga Title"
-    response = await graphql_client.query(
-        query=QUERY,
-        variables={
-            "input": {"title": title, "status": manga_status.name.upper()},
-        },
-    )
+    with patch.object(MangaCreateCommand, "execute", return_value=manga):
+        response = await authenticated_graphql_client.query(
+            query=QUERY,
+            variables={
+                "input": input,
+            },
+        )
 
-    manga = await session.scalar(select(Manga))
-    assert manga
     assert response == _tpl(
         manga={
             "id": str(manga.id),
-            "title": title,
-            "titleSlug": "test-manga-title",
+            "title": manga.title,
+            "titleSlug": manga.title_slug,
         },
         error=None,
     )

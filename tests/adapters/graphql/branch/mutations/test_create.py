@@ -1,12 +1,14 @@
 import uuid
 from typing import Any
+from unittest.mock import patch
 
 import pytest
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from result import Err, Ok
 
+from app.core.domain.branches.commands import MangaBranchCreateCommand
 from app.core.domain.const import GENERIC_NAME_LENGTH
-from app.db.models import Manga, MangaBranch
+from app.core.errors import RelationshipNotFoundError
+from app.db.models import MangaBranch
 from lib.types import Language
 from tests.adapters.graphql.client import GraphQLClient
 from tests.adapters.graphql.utils import assert_not_authenticated
@@ -78,44 +80,59 @@ async def test_validation_err(
     assert response == _tpl(error={"__typename": "ValidationErrors"})
 
 
-async def test_manga_not_found(
+@pytest.mark.parametrize(
+    ("result", "expected"),
+    [
+        (
+            Err(
+                RelationshipNotFoundError(
+                    entity_name="Manga",
+                    entity_id="not-found-id",
+                ),
+            ),
+            {
+                "__typename": "RelationshipNotFoundError",
+                "entityId": "not-found-id",
+            },
+        ),
+    ],
+)
+async def test_err(
     authenticated_graphql_client: GraphQLClient,
     input: dict[str, Any],
+    result: Err[RelationshipNotFoundError],
+    expected: object,
 ) -> None:
-    response = await authenticated_graphql_client.query(
-        QUERY,
-        variables={"input": input},
-    )
-    assert response == _tpl(
-        error={
-            "__typename": "RelationshipNotFoundError",
-            "entityId": input["mangaId"],
-        },
-    )
+    with patch.object(MangaBranchCreateCommand, "execute", return_value=result):
+        response = await authenticated_graphql_client.query(
+            QUERY,
+            variables={"input": input},
+        )
+        assert response == _tpl(
+            error=expected,
+        )
 
 
 async def test_ok(
     authenticated_graphql_client: GraphQLClient,
     input: dict[str, Any],
-    manga: Manga,
-    session: AsyncSession,
+    manga_branch: MangaBranch,
 ) -> None:
-    input["mangaId"] = str(manga.id)
-    response = await authenticated_graphql_client.query(
-        QUERY,
-        variables={"input": input},
-    )
-
-    branch = (await session.scalars(select(MangaBranch))).one()
-    assert branch.manga is manga
-    assert branch.name == input["name"]
-    assert branch.language.name.upper() == input["language"]
+    with patch.object(
+        MangaBranchCreateCommand,
+        "execute",
+        return_value=Ok(manga_branch),
+    ):
+        response = await authenticated_graphql_client.query(
+            QUERY,
+            variables={"input": input},
+        )
 
     assert response == _tpl(
         branch={
             "__typename": "MangaBranch",
-            "id": str(branch.id),
-            "name": branch.name,
-            "language": branch.language.name.upper(),
+            "id": str(manga_branch.id),
+            "name": manga_branch.name,
+            "language": manga_branch.language.name.upper(),
         },
     )
