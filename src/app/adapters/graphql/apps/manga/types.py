@@ -1,3 +1,4 @@
+import random
 from collections.abc import Sequence
 from datetime import datetime
 from typing import Self
@@ -82,6 +83,21 @@ class MangaGQL(DTOMixin[Manga]):
             self._instance.id,
         )
         return AltTitleGQL.from_dto_list(alt_titles)
+
+    @strawberry.field(description="Manga rating, from 0 to 10")  # type: ignore[misc]
+    async def rating(self) -> float:
+        random.seed(self.id)
+        return random.uniform(0, 10)  # noqa: S311
+
+    @strawberry.field
+    async def bookmark_count(self) -> int:
+        random.seed(self.id)
+        return random.randint(0, 100_000)  # noqa: S311
+
+    @strawberry.field
+    async def comment_count(self) -> int:
+        random.seed(self.id)
+        return random.randint(0, 1000)  # noqa: S311
 
     #
     # @strawberry.field
