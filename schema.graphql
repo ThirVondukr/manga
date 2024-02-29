@@ -65,6 +65,11 @@ type Manga {
   updatedAt: DateTime!
   tags: [MangaTag!]!
   altTitles: [AltTitle!]!
+
+  """Manga rating, from 0 to 10"""
+  rating: Float!
+  bookmarkCount: Int!
+  commentCount: Int!
 }
 
 type MangaBranch {
@@ -108,7 +113,7 @@ input MangaFilter {
 }
 
 type MangaMutations {
-  create(input: MangaCreateInput!): MangaCreatePayload!
+  create(input: MangaCreateInput!): MangaCreatePayload! @isAuthenticated
 }
 
 type MangaPagePaginationResult {
@@ -166,11 +171,12 @@ type Query {
   manga(id: ID!): Manga
   mangas(pagination: PagePaginationInput = null, filter: MangaFilter = null): MangaPagePaginationResult!
   me: PrivateUser! @isAuthenticated
+  tags: [MangaTag!]!
 }
 
 type RelationshipNotFoundError implements Error {
   message: String!
-  id: ID!
+  entityId: ID!
 }
 
 union SignInErrors = InvalidCredentialsError | ValidationErrors
