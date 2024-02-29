@@ -52,11 +52,10 @@ class SQLAListLoader(LoaderProtocol[K, Sequence[V]], Protocol):
 
 
 class MangaAltTitleLoader(SQLAListLoader[UUID, AltTitle]):
-    column = Manga.id
-    stmt = (
-        select(Manga.id, AltTitle)
-        .join(AltTitle.manga)
-        .order_by(AltTitle.language, AltTitle.id)
+    column = AltTitle.manga_id
+    stmt = select(AltTitle.manga_id, AltTitle).order_by(
+        AltTitle.language,
+        AltTitle.id,
     )
 
 
