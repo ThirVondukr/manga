@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import (
@@ -24,7 +26,11 @@ from app.db._base import (
     PkUUID,
     str_title,
 )
+from lib.time import utc_now
 from lib.types import Language, MangaStatus
+
+if TYPE_CHECKING:
+    from app.db.models import User
 
 manga_manga_tag_secondary_table = Table(
     "manga__manga_tag__secondary",
@@ -53,6 +59,24 @@ class MangaTag(PkUUID, MappedAsDataclass, Base, kw_only=True):
         default_factory=list,
         repr=False,
     )
+
+
+class MangaBookmark(MappedAsDataclass, Base, kw_only=True):
+    __tablename__ = "manga_bookmark"
+
+    manga_id: Mapped[UUID] = mapped_column(
+        ForeignKey("manga.id"),
+        primary_key=True,
+        init=False,
+    )
+    manga: Mapped[Manga] = relationship()
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("user.id"),
+        primary_key=True,
+        init=False,
+    )
+    user: Mapped[User] = relationship()
+    created_at: Mapped[datetime] = mapped_column(default_factory=utc_now)
 
 
 class Manga(

@@ -8,8 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import QueryableAttribute
 from sqlalchemy.sql.elements import SQLCoreOperations
 
-from app.db.models import AltTitle, Manga, MangaTag
-from app.db.models._manga import manga_manga_tag_secondary_table
+from app.db.models import (
+    AltTitle,
+    Manga,
+    MangaTag,
+    manga_manga_tag_secondary_table,
+)
 from lib.loaders import LoaderProtocol
 
 K = TypeVar("K")

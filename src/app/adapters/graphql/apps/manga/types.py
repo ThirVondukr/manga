@@ -10,8 +10,7 @@ from app.adapters.graphql.context import Info
 from app.adapters.graphql.dto import DTOMixin
 from app.adapters.graphql.types import LanguageGQL, MangaStatusGQL
 from app.core.domain.manga.loaders import MangaAltTitleLoader, MangaTagLoader
-from app.db.models import Manga
-from app.db.models._manga import AltTitle, MangaTag
+from app.db.models import AltTitle, Manga, MangaTag
 
 
 @strawberry.federation.type(name="MangaTag")
@@ -85,16 +84,16 @@ class MangaGQL(DTOMixin[Manga]):
         return AltTitleGQL.from_dto_list(alt_titles)
 
     @strawberry.field(description="Manga rating, from 0 to 10")  # type: ignore[misc]
-    async def rating(self) -> float:
+    async def rating(self) -> float:  # pragma: no cover
         random.seed(self.id)
         return random.uniform(0, 10)  # noqa: S311
 
     @strawberry.field
-    async def bookmark_count(self) -> int:
+    async def bookmark_count(self) -> int:  # pragma: no cover
         random.seed(self.id)
         return random.randint(0, 100_000)  # noqa: S311
 
     @strawberry.field
-    async def comment_count(self) -> int:
+    async def comment_count(self) -> int:  # pragma: no cover
         random.seed(self.id)
         return random.randint(0, 1000)  # noqa: S311

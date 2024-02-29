@@ -10,10 +10,20 @@ from pydantic_settings import BaseSettings
 from app.settings import AuthSettings, DatabaseSettings, SentrySettings
 from lib.settings import get_settings
 
-from ._modules import auth, branches, database, groups, manga, tags, users
+from ._modules import (
+    auth,
+    bookmarks,
+    branches,
+    database,
+    groups,
+    manga,
+    tags,
+    users,
+)
 
 modules: Iterable[Iterable[Provider[Any]]] = [
     auth.providers,
+    bookmarks.providers,
     branches.providers,
     database.providers,
     groups.providers,
