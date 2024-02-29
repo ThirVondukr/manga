@@ -98,20 +98,3 @@ class MangaGQL(DTOMixin[Manga]):
     async def comment_count(self) -> int:
         random.seed(self.id)
         return random.randint(0, 1000)  # noqa: S311
-
-    #
-    # @strawberry.field
-    # async def chapters(
-    #     self,
-    #     page: int = 1,
-    #     page_size: int = 100,
-    # ) -> PagePaginationResult[MangaChapterGQL]:
-    #     stmt = MangaChapterService.manga_chapters_query(self._instance.id)
-    #     async with async_session_factory() as session:
-    #         return await page_paginate(
-    #             query=stmt,
-    #             page=page,
-    #             page_size=page_size,
-    #             session=session,
-    #             type_=MangaChapterGQL,
-    #         )

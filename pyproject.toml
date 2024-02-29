@@ -189,8 +189,6 @@ ignore = [
     "TCH001",
     "TCH002",
     "TCH003",
-    "EXE",
-    "ERA001", # Enable later
 ]
 
 [tool.ruff.lint.per-file-ignores]
