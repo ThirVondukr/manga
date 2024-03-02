@@ -2,10 +2,11 @@ from uuid import UUID
 
 from result import Err, Ok, Result
 
+from app.core.domain.bookmarks.dto import BookmarkMangaResultDTO
 from app.core.domain.bookmarks.services import BookmarkService
 from app.core.domain.manga.repositories import MangaRepository
 from app.core.errors import NotFoundError
-from app.db.models import MangaBookmark, User
+from app.db.models import User
 
 
 class BookmarkMangaCommand:
@@ -21,8 +22,9 @@ class BookmarkMangaCommand:
         self,
         user: User,
         manga_id: UUID,
-    ) -> Result[MangaBookmark, NotFoundError]:
+    ) -> Result[BookmarkMangaResultDTO, NotFoundError]:
         if not (manga := await self._manga_repository.get(id=manga_id)):
             return Err(NotFoundError(entity_id=str(manga_id)))
 
-        return Ok(await self._bookmark_service.bookmark(manga=manga, user=user))
+        bookmark = await self._bookmark_service.bookmark(manga=manga, user=user)
+        return Ok(BookmarkMangaResultDTO(bookmark=bookmark, manga=manga))

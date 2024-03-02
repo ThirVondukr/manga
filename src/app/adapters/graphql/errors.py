@@ -27,6 +27,12 @@ class RelationshipNotFoundErrorGQL(ErrorGQL):
         )
 
 
+@strawberry.type(name="NotFoundError")
+class NotFoundErrorGQL(ErrorGQL):
+    entity_id: strawberry.ID
+    message: str = "Entity not found"
+
+
 @strawberry.type(name="InvalidCredentialsError")
 class InvalidCredentialsErrorGQL(ErrorGQL):
     message: str = "Invalid credentials"

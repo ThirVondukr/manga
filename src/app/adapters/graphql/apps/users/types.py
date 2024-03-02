@@ -18,7 +18,7 @@ class UserGQL:
 class PublicUserGQL(DTOMixin[User], UserGQL):
 
     @classmethod
-    def from_dto(cls, model: User) -> Self:
+    def from_dto(cls, model: User) -> Self:  # pragma: no cover
         return cls(
             id=strawberry.ID(str(model.id)),
             username=model.username,

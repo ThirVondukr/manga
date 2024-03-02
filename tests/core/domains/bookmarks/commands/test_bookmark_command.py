@@ -31,7 +31,7 @@ async def test_already_exists(
     bookmark1 = (await command.execute(manga_id=manga.id, user=user)).unwrap()
     bookmark2 = (await command.execute(manga_id=manga.id, user=user)).unwrap()
 
-    assert bookmark1 is bookmark2
+    assert bookmark1.bookmark is bookmark2.bookmark
 
 
 async def test_ok(
@@ -40,9 +40,11 @@ async def test_ok(
     manga: Manga,
     bookmark_repository: BookmarkRepository,
 ) -> None:
-    result = await command.execute(manga_id=manga.id, user=user)
-    bookmark = result.unwrap()
+    result = (await command.execute(manga_id=manga.id, user=user)).unwrap()
 
-    assert await bookmark_repository.get(manga=manga, user=user) == bookmark
-    assert bookmark.manga == manga
-    assert bookmark.user == user
+    assert (
+        await bookmark_repository.get(manga=manga, user=user) == result.bookmark
+    )
+    assert result.bookmark.manga == manga
+    assert result.bookmark.user == user
+    assert result.manga is manga
