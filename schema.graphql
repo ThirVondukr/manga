@@ -70,6 +70,12 @@ type Manga {
   rating: Float!
   bookmarkCount: Int!
   commentCount: Int!
+  bookmark: MangaBookmark @isAuthenticated
+}
+
+type MangaBookmark {
+  id: ID!
+  createdAt: DateTime!
 }
 
 union MangaBookmarkError = NotFoundError

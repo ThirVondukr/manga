@@ -1,5 +1,6 @@
 from aioinject import Scoped
 
+from app.core.domain.bookmarks.loaders import MangaBookmarkLoader
 from app.core.domain.manga.commands import MangaCreateCommand
 from app.core.domain.manga.loaders import (
     MangaAltTitleLoader,
@@ -19,4 +20,5 @@ providers: Providers = [
     Scoped(MangaCreateCommand),
     Scoped(MangaTagLoader),
     Scoped(MangaAltTitleLoader),
+    Scoped(MangaBookmarkLoader),
 ]

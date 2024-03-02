@@ -8,9 +8,14 @@ from strawberry import Private
 
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.dto import DTOMixin
+from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.types import LanguageGQL, MangaStatusGQL
+from app.core.domain.bookmarks.loaders import (
+    MangaBookmarkLoader,
+    MangaBookmarkLoaderKey,
+)
 from app.core.domain.manga.loaders import MangaAltTitleLoader, MangaTagLoader
-from app.db.models import AltTitle, Manga, MangaTag
+from app.db.models import AltTitle, Manga, MangaBookmark, MangaTag
 
 
 @strawberry.federation.type(name="MangaTag")
@@ -40,6 +45,19 @@ class AltTitleGQL(DTOMixin[AltTitle]):
             id=strawberry.ID(str(model.id)),
             language=LanguageGQL(model.language.value),
             title=model.title,
+        )
+
+
+@strawberry.type(name="MangaBookmark")
+class MangaBookmarkGQL(DTOMixin[MangaBookmark]):
+    id: strawberry.ID
+    created_at: datetime
+
+    @classmethod
+    def from_dto(cls, model: MangaBookmark) -> Self:
+        return cls(
+            id=strawberry.ID(f"{model.manga_id}:{model.user_id}"),
+            created_at=model.created_at,
         )
 
 
@@ -97,3 +115,13 @@ class MangaGQL(DTOMixin[Manga]):
     async def comment_count(self) -> int:  # pragma: no cover
         random.seed(self.id)
         return random.randint(0, 1000)  # noqa: S311
+
+    @strawberry.field(extensions=[AuthExtension])  # type: ignore[misc]
+    async def bookmark(self, info: Info) -> MangaBookmarkGQL | None:
+        bookmark = await info.context.loaders.map(MangaBookmarkLoader).load(
+            MangaBookmarkLoaderKey(
+                manga_id=self._instance.id,
+                user_id=info.context.access_token.sub,
+            ),
+        )
+        return MangaBookmarkGQL.from_dto_optional(bookmark)

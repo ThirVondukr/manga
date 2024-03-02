@@ -1,12 +1,7 @@
-import collections
-from collections.abc import Sequence
-from typing import Protocol, TypeVar, final
+from typing import final
 from uuid import UUID
 
-from sqlalchemy import Select, select
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import QueryableAttribute
-from sqlalchemy.sql.elements import SQLCoreOperations
+from sqlalchemy import select
 
 from app.db.models import (
     AltTitle,
@@ -14,45 +9,7 @@ from app.db.models import (
     MangaTag,
     manga_manga_tag_secondary_table,
 )
-from lib.loaders import LoaderProtocol
-
-K = TypeVar("K")
-V = TypeVar("V")
-
-
-class SQLALoader(LoaderProtocol[K, V | None], Protocol):
-    column: QueryableAttribute[K]
-    stmt: Select[tuple[V]]
-
-    _session: AsyncSession
-
-    def __init__(self, session: AsyncSession) -> None:
-        self._session = session
-
-    async def execute(self, keys: Sequence[K]) -> Sequence[V | None]:
-        stmt = self.stmt.where(self.__class__.column.in_(keys))
-        models = {
-            getattr(model, self.__class__.column.key): model
-            for model in await self._session.scalars(stmt)
-        }
-        return [models.get(key) for key in keys]
-
-
-class SQLAListLoader(LoaderProtocol[K, Sequence[V]], Protocol):
-    column: SQLCoreOperations[K]
-    stmt: Select[tuple[K, V]]
-
-    _session: AsyncSession
-
-    def __init__(self, session: AsyncSession) -> None:
-        self._session = session
-
-    async def execute(self, keys: Sequence[K]) -> Sequence[Sequence[V]]:
-        stmt = self.stmt.where(self.__class__.column.in_(keys))
-        models = collections.defaultdict(list)
-        for key, model in await self._session.execute(stmt):
-            models[key].append(model)
-        return [models[key] for key in keys]
+from lib.loaders import SQLAListLoader, SQLALoader
 
 
 class MangaAltTitleLoader(SQLAListLoader[UUID, AltTitle]):

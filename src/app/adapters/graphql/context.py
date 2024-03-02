@@ -25,6 +25,12 @@ class Context:
 
     maybe_access_token: TokenClaims | None
 
+    @property
+    def access_token(self) -> TokenClaims:
+        if not self.maybe_access_token:  # pragma: no cover
+            raise ValueError
+        return self.maybe_access_token
+
     @cached_property
     def user(self) -> Awaitable[User]:
         return UserGetter(
