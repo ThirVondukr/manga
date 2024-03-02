@@ -22,4 +22,4 @@ async def manga_bookmark(
     manga: Manga,
     user: User,
 ) -> MangaBookmark:
-    return await bookmark_service.bookmark(manga=manga, user=user)
+    return await bookmark_service.add_bookmark(manga=manga, user=user)

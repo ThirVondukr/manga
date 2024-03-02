@@ -15,7 +15,7 @@ from app.adapters.graphql.context import Info
 from app.adapters.graphql.errors import NotFoundErrorGQL
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.validation import validate_callable
-from app.core.domain.bookmarks.commands import BookmarkMangaCommand
+from app.core.domain.bookmarks.commands import MangaBookmarkAddCommand
 from app.core.domain.manga.commands import MangaCreateCommand
 from app.core.errors import NotFoundError
 from lib.validators import validate_uuid
@@ -47,7 +47,7 @@ class MangaMutationsGQL:
         self,
         id: strawberry.ID,
         info: Info,
-        command: Annotated[BookmarkMangaCommand, Inject],
+        command: Annotated[MangaBookmarkAddCommand, Inject],
     ) -> MangaAddBookmarkPayloadGQL:
         manga_id = validate_uuid(id)
         not_found_error = MangaAddBookmarkPayloadGQL(

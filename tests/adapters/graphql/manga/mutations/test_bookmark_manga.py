@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from result import Err, Ok
 
-from app.core.domain.bookmarks.commands import BookmarkMangaCommand
+from app.core.domain.bookmarks.commands import MangaBookmarkAddCommand
 from app.core.domain.bookmarks.dto import BookmarkMangaResultDTO
 from app.core.errors import NotFoundError
 from app.db.models import Manga, MangaBookmark
@@ -61,8 +61,8 @@ async def test_not_found(
     manga_id: str,
 ) -> None:
     with patch.object(
-        BookmarkMangaCommand,
-        BookmarkMangaCommand.execute.__name__,
+        MangaBookmarkAddCommand,
+        MangaBookmarkAddCommand.execute.__name__,
         return_value=Err(NotFoundError(entity_id=manga_id)),
     ):
         response = await authenticated_graphql_client.query(
@@ -80,8 +80,8 @@ async def test_ok(
     manga_bookmark: MangaBookmark,
 ) -> None:
     with patch.object(
-        BookmarkMangaCommand,
-        BookmarkMangaCommand.execute.__name__,
+        MangaBookmarkAddCommand,
+        MangaBookmarkAddCommand.execute.__name__,
         return_value=Ok(
             BookmarkMangaResultDTO(manga=manga, bookmark=manga_bookmark),
         ),

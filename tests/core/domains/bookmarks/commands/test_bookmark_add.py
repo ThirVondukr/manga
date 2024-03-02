@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from app.core.domain.bookmarks.commands import BookmarkMangaCommand
+from app.core.domain.bookmarks.commands import MangaBookmarkAddCommand
 from app.core.domain.bookmarks.repositories import BookmarkRepository
 from app.core.errors import NotFoundError
 from app.db.models import Manga, User
@@ -10,12 +10,12 @@ from tests.types import Resolver
 
 
 @pytest.fixture
-async def command(resolver: Resolver) -> BookmarkMangaCommand:
-    return await resolver(BookmarkMangaCommand)
+async def command(resolver: Resolver) -> MangaBookmarkAddCommand:
+    return await resolver(MangaBookmarkAddCommand)
 
 
 async def test_manga_not_found(
-    command: BookmarkMangaCommand,
+    command: MangaBookmarkAddCommand,
     user: User,
 ) -> None:
     manga_id = uuid.uuid4()
@@ -24,7 +24,7 @@ async def test_manga_not_found(
 
 
 async def test_already_exists(
-    command: BookmarkMangaCommand,
+    command: MangaBookmarkAddCommand,
     user: User,
     manga: Manga,
 ) -> None:
@@ -35,7 +35,7 @@ async def test_already_exists(
 
 
 async def test_ok(
-    command: BookmarkMangaCommand,
+    command: MangaBookmarkAddCommand,
     user: User,
     manga: Manga,
     bookmark_repository: BookmarkRepository,
