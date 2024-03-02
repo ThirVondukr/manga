@@ -72,11 +72,11 @@ type Manga {
   commentCount: Int!
 }
 
-union MangaAddBookmarkError = NotFoundError
+union MangaBookmarkError = NotFoundError
 
-type MangaAddBookmarkPayload {
+type MangaBookmarkPayload {
   manga: Manga
-  error: MangaAddBookmarkError
+  error: MangaBookmarkError
 }
 
 type MangaBranch {
@@ -121,7 +121,8 @@ input MangaFilter {
 
 type MangaMutations {
   create(input: MangaCreateInput!): MangaCreatePayload! @isAuthenticated
-  addBookmark(id: ID!): MangaAddBookmarkPayload! @isAuthenticated
+  addBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
+  removeBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
 }
 
 type MangaPagePaginationResult {
@@ -154,7 +155,8 @@ type Mutation {
   branches: MangaBranchMutationGQL!
 }
 
-type NotFoundError {
+type NotFoundError implements Error {
+  message: String!
   entityId: ID!
 }
 

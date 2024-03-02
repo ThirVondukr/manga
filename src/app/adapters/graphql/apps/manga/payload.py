@@ -18,13 +18,13 @@ class MangaCreatePayloadGQL:
     error: MangaCreateErrorGQL | None
 
 
-MangaAddBookmarkErrorGQL = Annotated[
+MangaBookmarkErrorGQL = Annotated[
     NotFoundErrorGQL,
-    strawberry.union("MangaAddBookmarkError"),
+    strawberry.union("MangaBookmarkError"),
 ]
 
 
-@strawberry.type(name="MangaAddBookmarkPayload")
-class MangaAddBookmarkPayloadGQL:
+@strawberry.type(name="MangaBookmarkPayload")
+class MangaBookmarkPayloadGQL:
     manga: MangaGQL | None = None
-    error: MangaAddBookmarkErrorGQL | None
+    error: MangaBookmarkErrorGQL | None

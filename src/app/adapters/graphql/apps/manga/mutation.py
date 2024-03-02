@@ -7,7 +7,7 @@ from result import Err
 
 from app.adapters.graphql.apps.manga.input import MangaCreateInput
 from app.adapters.graphql.apps.manga.payload import (
-    MangaAddBookmarkPayloadGQL,
+    MangaBookmarkPayloadGQL,
     MangaCreatePayloadGQL,
 )
 from app.adapters.graphql.apps.manga.types import MangaGQL
@@ -15,7 +15,10 @@ from app.adapters.graphql.context import Info
 from app.adapters.graphql.errors import NotFoundErrorGQL
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.validation import validate_callable
-from app.core.domain.bookmarks.commands import MangaBookmarkAddCommand
+from app.core.domain.bookmarks.commands import (
+    MangaBookmarkAddCommand,
+    MangaBookmarkRemoveCommand,
+)
 from app.core.domain.manga.commands import MangaCreateCommand
 from app.core.errors import NotFoundError
 from lib.validators import validate_uuid
@@ -48,9 +51,9 @@ class MangaMutationsGQL:
         id: strawberry.ID,
         info: Info,
         command: Annotated[MangaBookmarkAddCommand, Inject],
-    ) -> MangaAddBookmarkPayloadGQL:
+    ) -> MangaBookmarkPayloadGQL:
         manga_id = validate_uuid(id)
-        not_found_error = MangaAddBookmarkPayloadGQL(
+        not_found_error = MangaBookmarkPayloadGQL(
             error=NotFoundErrorGQL(entity_id=id),
         )
         if isinstance(manga_id, Err):
@@ -65,7 +68,35 @@ class MangaMutationsGQL:
                 case NotFoundError():  #  pragma: no branch
                     return not_found_error
 
-        return MangaAddBookmarkPayloadGQL(
+        return MangaBookmarkPayloadGQL(
             manga=MangaGQL.from_dto(result.ok_value.manga),
+            error=None,
+        )
+
+    @strawberry.mutation(extensions=[AuthExtension])  # type: ignore[misc]
+    @inject
+    async def remove_bookmark(
+        self,
+        id: strawberry.ID,
+        info: Info,
+        command: Annotated[MangaBookmarkRemoveCommand, Inject],
+    ) -> MangaBookmarkPayloadGQL:
+        manga_id = validate_uuid(id)
+        not_found_error = MangaBookmarkPayloadGQL(
+            error=NotFoundErrorGQL(entity_id=id),
+        )
+        if isinstance(manga_id, Err):
+            return not_found_error
+        result = await command.execute(
+            user=await info.context.user,
+            manga_id=manga_id.ok_value,
+        )
+        if isinstance(result, Err):
+            match result.err_value:
+                case NotFoundError():  #  pragma: no branch
+                    return not_found_error
+
+        return MangaBookmarkPayloadGQL(
+            manga=MangaGQL.from_dto(result.ok_value),
             error=None,
         )
