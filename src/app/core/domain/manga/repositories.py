@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import Select, func, select, text
+from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
@@ -29,7 +29,6 @@ class MangaRepository:
         filter: MangaFilter,
         pagination: PagePaginationParamsDTO,
     ) -> PagePaginationResultDTO[Manga]:
-        await self._session.execute(text("set enable_seqscan = off;"))
         stmt = self._filter_stmt(filter=filter)
         return await page_paginate(
             session=self._session,

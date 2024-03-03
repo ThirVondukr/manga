@@ -1,5 +1,6 @@
 import enum
 from datetime import timedelta
+from types import SimpleNamespace
 from typing import Literal
 from urllib.parse import quote_plus
 
@@ -49,3 +50,17 @@ class AuthSettings(BaseSettings):
     refresh_token_cookie: str = "refresh-token"
 
     hashing_schemes: list[str] = ["argon2"]
+
+
+class S3Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="s3_")
+
+    endpoint_url: str
+    access_key: str
+    secret_key: str
+
+    bucket: str = "manga"
+
+
+class Buckets(SimpleNamespace):
+    chapter_images = "chapters"

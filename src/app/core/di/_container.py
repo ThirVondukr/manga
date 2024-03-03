@@ -7,7 +7,12 @@ import aioinject
 from aioinject import Object, Provider
 from pydantic_settings import BaseSettings
 
-from app.settings import AuthSettings, DatabaseSettings, SentrySettings
+from app.settings import (
+    AuthSettings,
+    DatabaseSettings,
+    S3Settings,
+    SentrySettings,
+)
 from lib.settings import get_settings
 
 from ._modules import (
@@ -17,6 +22,8 @@ from ._modules import (
     database,
     groups,
     manga,
+    manga_chapters,
+    s3,
     tags,
     users,
 )
@@ -28,6 +35,8 @@ modules: Iterable[Iterable[Provider[Any]]] = [
     database.providers,
     groups.providers,
     manga.providers,
+    manga_chapters.providers,
+    s3.providers,
     tags.providers,
     users.providers,
 ]
@@ -36,6 +45,7 @@ settings_classes: Iterable[type[BaseSettings]] = [
     AuthSettings,
     DatabaseSettings,
     SentrySettings,
+    S3Settings,
 ]
 
 

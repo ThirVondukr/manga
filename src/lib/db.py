@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import Protocol, TypeVar, runtime_checkable
 
 from sqlalchemy.orm import DeclarativeBase
@@ -15,6 +15,8 @@ class DBContext(Protocol):
     without having to reach out for AsyncSession directly.
     """
 
-    def add(self, model: T) -> None: ...
+    def add(self, instance: T) -> None: ...
+
+    def add_all(self, instances: Iterable[T]) -> None: ...
 
     async def flush(self, objects: Sequence[T] | None = ...) -> None: ...

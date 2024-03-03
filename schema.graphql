@@ -108,6 +108,14 @@ type MangaBranchMutationGQL {
   create(input: MangaBranchCreateInput!): MangaBranchCreatePayload! @isAuthenticated
 }
 
+type MangaChapter {
+  id: ID!
+  title: String!
+  volume: Int
+  number: String!
+  pages: [MangaPage!]!
+}
+
 union MangaCreateError = ValidationErrors
 
 input MangaCreateInput {
@@ -129,6 +137,12 @@ type MangaMutations {
   create(input: MangaCreateInput!): MangaCreatePayload! @isAuthenticated
   addBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
   removeBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
+}
+
+type MangaPage {
+  id: ID!
+  number: Int!
+  image: String!
 }
 
 type MangaPagePaginationResult {
@@ -188,6 +202,7 @@ type PrivateUser implements User {
 }
 
 type Query {
+  chapter(id: ID!): MangaChapter
   manga(id: ID!): Manga
   mangas(pagination: PagePaginationInput = null, filter: MangaFilter = null): MangaPagePaginationResult!
   me: PrivateUser! @isAuthenticated

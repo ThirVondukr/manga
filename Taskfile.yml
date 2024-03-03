@@ -3,7 +3,7 @@ version: "3"
 vars:
   RUNNER:
     sh: 'echo {{ .RUNNER | default "" }}'
-  SOURCES: src tests main.py
+  SOURCES: src tests main.py .scripts
   SOURCES_ROOT: src
 
 tasks:
@@ -23,7 +23,7 @@ tasks:
     desc: Lint python source files
     deps: [.pdm]
     cmds:
-      - "{{.RUNNER}} ruff {{.SOURCES}}"
+      - "{{.RUNNER}} ruff check {{.SOURCES}}"
       - "{{.RUNNER}} black --check --diff {{.SOURCES}}"
 
   format:
@@ -31,7 +31,7 @@ tasks:
     aliases: ["fmt"]
     deps: [.pdm]
     cmds:
-      - "{{.RUNNER}} ruff --fix {{.SOURCES}}"
+      - "{{.RUNNER}} ruff check --fix {{.SOURCES}}"
       - "{{.RUNNER}} black {{ .SOURCES }}"
 
   deptry:

@@ -120,10 +120,16 @@ class MangaChapter(
     branch_id: Mapped[UUID] = mapped_column(
         ForeignKey("manga_branch.id"),
         index=True,
+        init=False,
     )
     branch: Mapped[MangaBranch] = relationship(back_populates="chapters")
 
-    created_by_id: Mapped[UUID]
+    created_by_id: Mapped[UUID] = mapped_column(
+        ForeignKey("user.id"),
+        init=False,
+    )
+    created_by: Mapped[User] = relationship()
+
     title: Mapped[str] = mapped_column(String(250))
 
     volume: Mapped[int | None]
@@ -157,6 +163,7 @@ class MangaPage(PkUUID, MappedAsDataclass, Base, kw_only=True):
     chapter_id: Mapped[UUID] = mapped_column(
         ForeignKey("manga_chapter.id"),
         index=True,
+        init=False,
     )
     chapter: Mapped[MangaChapter] = relationship(back_populates="pages")
 
