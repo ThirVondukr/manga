@@ -41,6 +41,10 @@ jobs:
           DATABASE_USERNAME: " "
           DATABASE_PASSWORD: " "
 
+          S3_ENDPOINT_URL: " "
+          S3_ACCESS_KEY: " "
+          S3_SECRET_KEY: " "
+
           AUTH_PUBLIC_KEY: |
             -----BEGIN PUBLIC KEY-----
             MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDD+kP/va1niViA4a1N+cIUBTa9
