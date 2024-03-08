@@ -12,7 +12,7 @@ default:
 stages:
   - lint
   - build
-#  - deploy
+  - deploy
 
 .dependencies-cache: &dependencies-cache
   - key:
