@@ -7,6 +7,7 @@ import pytest
 from app.core.domain.chapters.commands import ChapterCreateCommand
 from app.core.domain.chapters.dto import ChapterCreateDTO
 from app.db.models import Manga, MangaBranch, User
+from app.settings import Buckets
 from lib.files import File
 from tests.types import Resolver
 from tests.utils import TestImageStorage
@@ -51,6 +52,11 @@ async def test_ok(
         assert chapter_page.image_path in s3_mock.files
 
     assert s3_mock.files == [
-        PurePath(str(manga.id), str(chapter.id), p.filename).as_posix()
+        PurePath(
+            Buckets.chapter_images,
+            str(manga.id),
+            str(chapter.id),
+            p.filename,
+        ).as_posix()
         for p in dto.pages
     ]

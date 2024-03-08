@@ -91,6 +91,7 @@ test:
     DATABASE_USERNAME: ""
     DATABASE_PASSWORD: ""
 
+    S3_PUBLIC_URL: "http://s3.example"
     S3_ENDPOINT_URL: ""
     S3_ACCESS_KEY: ""
     S3_SECRET_KEY: ""
