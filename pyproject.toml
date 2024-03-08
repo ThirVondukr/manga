@@ -134,6 +134,7 @@ DEP002 = [
     "argon2-cffi",
     "asyncpg",
     "cryptography", # PyJWT
+    "hypercorn",
     "orjson",
     "python-multipart",
     "result",

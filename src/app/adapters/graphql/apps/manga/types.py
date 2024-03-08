@@ -122,7 +122,8 @@ class MangaGQL(DTOMixin[Manga]):
         query: Annotated[MangaChaptersQuery, Inject],
     ) -> PagePaginationResultGQL[MangaChapterGQL]:
         result = await query.execute(
-            manga_id=self._instance.id, pagination=pagination.to_dto()
+            manga_id=self._instance.id,
+            pagination=pagination.to_dto(),
         )
         return map_page_pagination(pagination=result, model_cls=MangaChapterGQL)
 

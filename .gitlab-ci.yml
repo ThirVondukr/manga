@@ -85,11 +85,40 @@ test:
   variables:
     POSTGRES_PASSWORD: password
     POSTGRES_HOST_AUTH_METHOD: trust
-    DATABASE_TEST_URL: postgresql+asyncpg://postgres:password@postgres/postgres
+    DATABASE_TEST_URL: "postgresql+asyncpg://postgres:password@postgres/postgres"
     DATABASE_NAME: ""
     DATABASE_HOST: ""
     DATABASE_USERNAME: ""
     DATABASE_PASSWORD: ""
+
+    S3_ENDPOINT_URL: ""
+    S3_ACCESS_KEY: ""
+    S3_SECRET_KEY: ""
+
+    AUTH_PUBLIC_KEY: |
+      -----BEGIN PUBLIC KEY-----
+      MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDD+kP/va1niViA4a1N+cIUBTa9
+      UXdTDQ0c+b3h/Et6Ix9LjGM9lBnG79LoGtDeKa/2jV88dOn7sJaWU7FCU7AF+fHk
+      9bv7waqsr3BzY2FbvuQUqmp+5yplnKRGNQisBmOl15DYsb37QQvuNU+neiB60lu0
+      efih1032Z0EViiCxWwIDAQAB
+      -----END PUBLIC KEY-----
+    AUTH_PRIVATE_KEY: |
+      -----BEGIN PRIVATE KEY-----
+      MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAMP6Q/+9rWeJWIDh
+      rU35whQFNr1Rd1MNDRz5veH8S3ojH0uMYz2UGcbv0uga0N4pr/aNXzx06fuwlpZT
+      sUJTsAX58eT1u/vBqqyvcHNjYVu+5BSqan7nKmWcpEY1CKwGY6XXkNixvftBC+41
+      T6d6IHrSW7R5+KHXTfZnQRWKILFbAgMBAAECgYA4PsZvSofO9EszShHMFEdQKaLp
+      OM1PR6qgy0hk6FzdI+FidFszHCM9xiy4sqGJcVtwHmjb2A4jTy4Y3NI93/jfbVkJ
+      s/vAwWdpNpLdfU5EH056Bkyr4LeXHgyodVHXe5Vzp/tc3bDj9VJ3GZWTh/s79kgi
+      5RAcWyrEBrOXGJrC8QJBAPAHs3ukcD4+tP/lrfYOb2ZKMjIQwmalmC0y1yFRDlrg
+      HiY/bOaOrSZN4bYFwawuNC6v/TZdZsC8XiuVPt1VTvkCQQDRBD46zAKd5FSXWupx
+      /uLaDlvdggjdg1I5bRJV2Luib7yzHUgCzPXZ3nMeqJIel4IcN7mIydrNvLzB4ETc
+      7FPzAkEA6ty+NFc8NMuq01FrnH2XZyFmaDKZ5VJWyrMaaVEkmKr/FTGuXxJwPjCq
+      kC6lyNIU4TH2s8FEj4ZBJqgMMQoOEQJAJAn7QOAUQ20vOLmwWt979eUr6dGV/bu6
+      3bP0yWCJWcSyYJ/X3sPAUESOzOZ761JsWLkzAGbtlzPHyBYHSaBmCQJAVZqnKsBB
+      rF75x7Mdv+KC2Q3bTDINQ9w50i3olzkme8TFXFV2Zdim115bXXRYVOmXz5YF7sLO
+      Bke+IZK0VZQtig==
+      -----END PRIVATE KEY-----
 
   services:
     - postgres:14
