@@ -1,0 +1,27 @@
+api:
+  replicaCount: 3
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /graphql/
+      nginx.ingress.kubernetes.io/proxy-body-size: "200m"
+    host: "graphql-manga.dpy.su"
+    path: /
+    pathType: Prefix
+    tls: []
+  tmpfs:
+    enabled: true
+    sizeLimit: 2Gi
+
+
+commonEnvFrom:
+  - secretRef:
+      name: "manga-database"
+    prefix: "DATABASE_"
+  - secretRef:
+      name: "manga-s3"
+    prefix: "S3_"
+  - secretRef:
+      name: "manga-auth"
+    prefix: "AUTH_"
