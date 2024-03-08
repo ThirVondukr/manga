@@ -18,11 +18,18 @@ from app.core.domain.manga.loaders import MangaAltTitleLoader, MangaTagLoader
 from app.db.models import AltTitle, Manga, MangaBookmark, MangaTag
 
 
-@strawberry.federation.type(name="MangaTag")
+@strawberry.type(name="MangaTagCategory")
+class MangaTagCategoryGQL:
+    id: strawberry.ID
+    name: str
+
+
+@strawberry.type(name="MangaTag")
 class MangaTagGQL(DTOMixin[MangaTag]):
     id: strawberry.ID
     name: str
     slug: str
+    category: MangaTagCategoryGQL
 
     @classmethod
     def from_dto(cls, model: MangaTag) -> Self:
@@ -30,6 +37,10 @@ class MangaTagGQL(DTOMixin[MangaTag]):
             id=strawberry.ID(str(model.id)),
             name=model.name,
             slug=model.name_slug,
+            category=MangaTagCategoryGQL(
+                id=strawberry.ID(model.category.name),
+                name=model.category.name.capitalize(),
+            ),
         )
 
 
