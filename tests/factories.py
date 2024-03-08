@@ -8,7 +8,14 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 import factory  # type: ignore[import-untyped]
 from faker import Faker
 
-from app.db.models import AltTitle, Manga, MangaBranch, MangaChapter, MangaTag
+from app.core.domain.types import TagCategory
+from app.db.models import (
+    AltTitle,
+    Manga,
+    MangaBranch,
+    MangaChapter,
+    MangaTag,
+)
 from lib.types import Language, MangaStatus
 
 T = TypeVar("T")
@@ -55,6 +62,7 @@ class MangaAltTitleFactory(GenericFactory[AltTitle]):
 class MangaTagFactory(GenericFactory[MangaTag]):
     name = factory.Faker("text", max_nb_chars=32)
     name_slug = factory.Faker("text", max_nb_chars=32)
+    category = factory.Faker("enum", enum_cls=TagCategory)
 
 
 class ChapterFactory:

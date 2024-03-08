@@ -22,6 +22,7 @@ from sqlalchemy.orm import (
     relationship,
 )
 
+from app.core.domain.types import TagCategory
 from app.db import Base
 from app.db._base import (
     HasPrivate,
@@ -62,6 +63,7 @@ class MangaTag(PkUUID, MappedAsDataclass, Base, kw_only=True):
         default_factory=list,
         repr=False,
     )
+    category: Mapped[TagCategory]
 
 
 class MangaBookmark(MappedAsDataclass, Base, kw_only=True):
