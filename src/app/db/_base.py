@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 from typing import Annotated
 
-from sqlalchemy import DateTime, MetaData, String, func
+from sqlalchemy import DateTime, Enum, MetaData, String, func
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -72,7 +72,7 @@ class Base(DeclarativeBase):
     registry = registry(
         type_annotation_map={
             datetime: DateTime(timezone=True),
-            # enum.Enum: Enum(native_enum=False),
+            enum.Enum: Enum(native_enum=False),
             MangaStatus: IntEnumType(MangaStatus),
         },
     )

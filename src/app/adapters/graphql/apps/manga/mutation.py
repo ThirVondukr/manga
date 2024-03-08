@@ -12,7 +12,10 @@ from app.adapters.graphql.apps.manga.payload import (
 )
 from app.adapters.graphql.apps.manga.types import MangaGQL
 from app.adapters.graphql.context import Info
-from app.adapters.graphql.errors import NotFoundErrorGQL
+from app.adapters.graphql.errors import (
+    EntityAlreadyExistsErrorGQL,
+    NotFoundErrorGQL,
+)
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.validation import validate_callable
 from app.core.domain.bookmarks.commands import (
@@ -20,7 +23,7 @@ from app.core.domain.bookmarks.commands import (
     MangaBookmarkRemoveCommand,
 )
 from app.core.domain.manga.commands import MangaCreateCommand
-from app.core.errors import NotFoundError
+from app.core.errors import EntityAlreadyExistsError, NotFoundError
 from lib.validators import validate_uuid
 
 
@@ -42,7 +45,17 @@ class MangaMutationsGQL:
             dto=dto.ok_value,
             user=await info.context.user,
         )
-        return MangaCreatePayloadGQL(manga=MangaGQL.from_dto(manga), error=None)
+        if isinstance(manga, Err):
+            match manga.err_value:
+                case EntityAlreadyExistsError():  # pragma: no branch
+                    return MangaCreatePayloadGQL(
+                        error=EntityAlreadyExistsErrorGQL(),
+                    )
+
+        return MangaCreatePayloadGQL(
+            manga=MangaGQL.from_dto(manga.ok_value),
+            error=None,
+        )
 
     @strawberry.mutation(extensions=[AuthExtension])  # type: ignore[misc]
     @inject

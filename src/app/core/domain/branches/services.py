@@ -1,5 +1,5 @@
 from app.core.domain.branches.dto import MangaBranchCreateDTO
-from app.db.models import Manga, MangaBranch
+from app.db.models import Group, Manga, MangaBranch
 from lib.db import DBContext
 
 
@@ -11,11 +11,13 @@ class MangaBranchService:
         self,
         dto: MangaBranchCreateDTO,
         manga: Manga,
+        group: Group,
     ) -> MangaBranch:
         branch = MangaBranch(
             name=dto.name,
             language=dto.language,
             manga=manga,
+            group=group,
         )
         self._db_context.add(branch)
         await self._db_context.flush()

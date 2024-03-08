@@ -3,7 +3,7 @@ version: "3"
 vars:
   RUNNER:
     sh: 'echo {{ .RUNNER | default "" }}'
-  SOURCES: src tests main.py .scripts
+  SOURCES: src tests main.py
   SOURCES_ROOT: src
 
 tasks:

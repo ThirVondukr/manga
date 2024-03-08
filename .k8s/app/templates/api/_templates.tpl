@@ -18,7 +18,7 @@ app.kubernetes.io/component: api
 {{- end -}}
 
 {{- define "api.port" -}}
-{{ .Values.api.port | quote }}
+{{ .Values.api.port }}
 {{- end -}}
 
 {{- define "api.portName" -}}

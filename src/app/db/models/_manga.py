@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import (
+    ARRAY,
     Column,
     ForeignKey,
     Index,
+    Integer,
     String,
     Table,
     UniqueConstraint,
@@ -30,7 +33,7 @@ from lib.time import utc_now
 from lib.types import Language, MangaStatus
 
 if TYPE_CHECKING:
-    from app.db.models import User
+    from app.db.models import Group, User
 
 manga_manga_tag_secondary_table = Table(
     "manga__manga_tag__secondary",
@@ -133,7 +136,7 @@ class MangaChapter(
     title: Mapped[str] = mapped_column(String(250))
 
     volume: Mapped[int | None]
-    number: Mapped[str] = mapped_column(String(40))
+    number: Mapped[Sequence[int]] = mapped_column(ARRAY(Integer))
 
     pages: Mapped[list[MangaPage]] = relationship(
         order_by="MangaPage.number",
@@ -147,6 +150,8 @@ class MangaBranch(PkUUID, HasTimestamps, MappedAsDataclass, Base, kw_only=True):
     name: Mapped[str_title]
     manga_id: Mapped[UUID] = mapped_column(ForeignKey("manga.id"), init=False)
     manga: Mapped[Manga] = relationship(back_populates="branches")
+    group_id: Mapped[UUID] = mapped_column(ForeignKey("group.id"), init=False)
+    group: Mapped[Group] = relationship()
 
     language: Mapped[Language]
 

@@ -43,7 +43,7 @@ spec:
             - {{ . | quote }}
             {{ end }}
             - "--port"
-            - {{ include "api.port" . }}
+            - {{ include "api.port" . | quote}}
           envFrom:
             {{- .Values.commonEnvFrom | toYaml | nindent 12 }}
           ports:

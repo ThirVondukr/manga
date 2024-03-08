@@ -57,6 +57,7 @@ def input(language: Language) -> dict[str, Any]:
         "name": str(uuid.uuid4()),
         "language": language.name.upper(),
         "mangaId": str(uuid.uuid4()),
+        "groupId": str(uuid.uuid4()),
     }
 
 
@@ -93,6 +94,18 @@ async def test_validation_err(
             {
                 "__typename": "RelationshipNotFoundError",
                 "entityId": "not-found-id",
+            },
+        ),
+        (
+            Err(
+                RelationshipNotFoundError(
+                    entity_name="Group",
+                    entity_id="group-id",
+                ),
+            ),
+            {
+                "__typename": "RelationshipNotFoundError",
+                "entityId": "group-id",
             },
         ),
     ],

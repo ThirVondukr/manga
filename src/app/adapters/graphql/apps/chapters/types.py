@@ -51,7 +51,7 @@ class MangaChapterGQL(DTOMixin[MangaChapter]):
             id=strawberry.ID(str(model.id)),
             title=model.title,
             volume=model.volume,
-            number=model.number,
+            number=".".join(str(n) for n in model.number),
         )
 
     @strawberry.field

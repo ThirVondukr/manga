@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import Select, func, select
+from sqlalchemy import Select, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
@@ -11,7 +11,7 @@ from lib.pagination.pagination import (
 )
 from lib.pagination.sqla import page_paginate
 
-from .filters import MangaFilter
+from .filters import MangaFilter, MangaFindFilter
 
 
 class MangaRepository:
@@ -24,23 +24,44 @@ class MangaRepository:
         stmt = self._base_stmt.where(Manga.id == id)
         return (await self._session.scalars(stmt)).one_or_none()
 
+    async def find(
+        self,
+        filter: MangaFindFilter,
+    ) -> Manga | None:
+        stmt = select(Manga).limit(2)
+
+        where_clauses = []
+        if filter.title is not None:  # pragma: no branch
+            where_clauses.append(Manga.title == filter.title)
+        if filter.title_slug is not None:  # pragma: no branch
+            where_clauses.append(Manga.title_slug == filter.title_slug)
+        stmt = stmt.where(or_(*where_clauses))
+
+        return (await self._session.scalars(stmt)).one_or_none()
+
     async def paginate(
         self,
         filter: MangaFilter,
         pagination: PagePaginationParamsDTO,
     ) -> PagePaginationResultDTO[Manga]:
-        stmt = self._filter_stmt(filter=filter)
+        stmt = self._filter_stmt(stmt=self._base_stmt, filter=filter)
         return await page_paginate(
             session=self._session,
             stmt=stmt,
             pagination=pagination,
         )
 
-    def _filter_stmt(self, filter: MangaFilter) -> Select[tuple[Manga]]:
-        stmt = self._base_stmt.group_by(Manga.id).order_by(
+    @classmethod
+    def _filter_stmt(
+        cls,
+        stmt: Select[tuple[Manga]],
+        filter: MangaFilter,
+    ) -> Select[tuple[Manga]]:
+        stmt = stmt.group_by(Manga.id).order_by(
             Manga.title,
             Manga.id,
         )
+
         if filter.search_term:
             stmt = stmt.join(Manga.alt_titles, isouter=True).where(
                 AltTitle.title.op("&@~")(filter.search_term),

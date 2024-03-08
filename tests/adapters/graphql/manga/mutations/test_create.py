@@ -3,8 +3,10 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
+from result import Err, Ok
 
 from app.core.domain.manga.commands import MangaCreateCommand
+from app.core.errors import EntityAlreadyExistsError
 from app.db.models import Manga
 from lib.types import MangaStatus
 from tests.adapters.graphql.client import GraphQLClient
@@ -29,7 +31,7 @@ QUERY = """mutation Mutation($input: MangaCreateInput!) {
 """
 
 
-def _tpl(manga: object, error: object) -> object:
+def _tpl(manga: object = None, error: object = None) -> object:
     return {
         "data": {
             "manga": {
@@ -77,12 +79,39 @@ async def test_validation(
     )
 
 
+@pytest.mark.parametrize(
+    ("typename", "err"),
+    [
+        ("EntityAlreadyExistsError", EntityAlreadyExistsError()),
+    ],
+)
+async def test_err(
+    authenticated_graphql_client: GraphQLClient,
+    input: object,
+    typename: str,
+    err: object,
+) -> None:
+    with patch.object(MangaCreateCommand, "execute", return_value=Err(err)):
+        response = await authenticated_graphql_client.query(
+            query=QUERY,
+            variables={
+                "input": input,
+            },
+        )
+
+    assert response == _tpl(
+        error={
+            "__typename": typename,
+        },
+    )
+
+
 async def test_create(
     authenticated_graphql_client: GraphQLClient,
     manga: Manga,
     input: object,
 ) -> None:
-    with patch.object(MangaCreateCommand, "execute", return_value=manga):
+    with patch.object(MangaCreateCommand, "execute", return_value=Ok(manga)):
         response = await authenticated_graphql_client.query(
             query=QUERY,
             variables={

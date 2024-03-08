@@ -13,5 +13,5 @@ class NotFoundError:
 
 @dataclasses.dataclass
 class RelationshipNotFoundError:
-    entity_name: str
     entity_id: str
+    entity_name: str | None = None

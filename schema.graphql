@@ -16,6 +16,24 @@ type AuthenticationResult {
   accessToken: String!
 }
 
+union ChapterCreateError = ValidationErrors
+
+input ChapterCreateInput {
+  title: String!
+  volume: Int
+  number: [Int!]!
+  branchId: ID!
+}
+
+type ChapterCreatePayload {
+  chapter: MangaChapter
+  error: ChapterCreateError
+}
+
+type ChapterMutationGQL {
+  create(pages: [Upload!]!, input: ChapterCreateInput!): ChapterCreatePayload! @isAuthenticated
+}
+
 """Date with time (isoformat)"""
 scalar DateTime
 
@@ -97,6 +115,7 @@ input MangaBranchCreateInput {
   name: String!
   language: LanguageEnum!
   mangaId: ID!
+  groupId: ID!
 }
 
 type MangaBranchCreatePayload {
@@ -116,7 +135,7 @@ type MangaChapter {
   pages: [MangaPage!]!
 }
 
-union MangaCreateError = ValidationErrors
+union MangaCreateError = ValidationErrors | EntityAlreadyExistsError
 
 input MangaCreateInput {
   title: String!
@@ -173,6 +192,7 @@ type Mutation {
   manga: MangaMutations!
   groups: GroupMutations!
   branches: MangaBranchMutationGQL!
+  chapters: ChapterMutationGQL!
 }
 
 type NotFoundError implements Error {
@@ -238,6 +258,8 @@ type SignUpPayload {
   result: AuthenticationResult
   error: SignUpErrors
 }
+
+scalar Upload
 
 interface User {
   id: ID!

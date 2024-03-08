@@ -7,6 +7,8 @@ from urllib.parse import quote_plus
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+_MEGABYTES = 1024 * 1024
+
 
 class SentryEnvironment(enum.StrEnum):
     development = enum.auto()
@@ -60,6 +62,10 @@ class S3Settings(BaseSettings):
     secret_key: str
 
     bucket: str = "manga"
+
+
+class AppSettings(BaseSettings):
+    max_upload_size_bytes: int = 200 * _MEGABYTES
 
 
 class Buckets(SimpleNamespace):

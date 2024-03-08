@@ -3,11 +3,14 @@ from typing import Annotated
 import strawberry
 
 from app.adapters.graphql.apps.manga.types import MangaGQL
-from app.adapters.graphql.errors import NotFoundErrorGQL
+from app.adapters.graphql.errors import (
+    EntityAlreadyExistsErrorGQL,
+    NotFoundErrorGQL,
+)
 from app.adapters.graphql.validation import ValidationErrorsGQL
 
 MangaCreateErrorGQL = Annotated[
-    ValidationErrorsGQL,
+    ValidationErrorsGQL | EntityAlreadyExistsErrorGQL,
     strawberry.union("MangaCreateError"),
 ]
 

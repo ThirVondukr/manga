@@ -10,4 +10,5 @@ from lib.types import Language
 class MangaBranchCreateDTO(BaseDTO):
     name: str = Field(max_length=GENERIC_NAME_LENGTH)
     manga_id: UUID
+    group_id: UUID
     language: Language

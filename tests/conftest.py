@@ -1,5 +1,5 @@
 import pkgutil
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Iterator
 from datetime import datetime
 from typing import cast
 
@@ -16,9 +16,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import tests.plugins
 from app.core.di import create_container
 from app.core.domain.auth.dto import TokenWrapper
+from app.core.storage import ImageStorage
 from app.db.models import User
 from lib.time import utc_now
 from tests.types import Resolver
+from tests.utils import TestImageStorage
 
 dotenv.load_dotenv(".env")
 
@@ -114,3 +116,10 @@ def now() -> datetime:
 @pytest.fixture(params=[0, 1, 10])
 def collection_size(request: SubRequest) -> int:
     return cast(int, request.param)
+
+
+@pytest.fixture(autouse=True)
+def s3_mock(container: aioinject.Container) -> Iterator[TestImageStorage]:
+    storage = TestImageStorage()
+    with container.override(Object(storage, type_=ImageStorage)):
+        yield storage

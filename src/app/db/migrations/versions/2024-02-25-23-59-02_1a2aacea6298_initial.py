@@ -117,7 +117,7 @@ def upgrade() -> None:
         sa.Column("manga_id", sa.Uuid(), nullable=False),
         sa.Column(
             "language",
-            sa.Enum("eng", "ukr", name="language"),
+            sa.Enum("eng", "ukr", name="language", native_enum=False),
             nullable=False,
         ),
         sa.Column("title", sa.String(length=250), nullable=False),
@@ -159,7 +159,7 @@ def upgrade() -> None:
         sa.Column("manga_id", sa.Uuid(), nullable=False),
         sa.Column(
             "language",
-            sa.Enum("eng", "ukr", name="language"),
+            sa.Enum("eng", "ukr", name="language", native_enum=False),
             nullable=False,
         ),
         sa.Column("id", sa.Uuid(), nullable=False),

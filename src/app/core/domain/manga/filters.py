@@ -11,3 +11,9 @@ class TagFilter:
 class MangaFilter:
     search_term: str | None = None
     tags: TagFilter = dataclasses.field(default_factory=TagFilter)
+
+
+@dataclasses.dataclass
+class MangaFindFilter:
+    title: str | None = None
+    title_slug: str | None = None

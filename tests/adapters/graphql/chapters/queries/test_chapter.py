@@ -52,7 +52,7 @@ async def test_ok(
                 "id": str(manga_chapter.id),
                 "title": manga_chapter.title,
                 "volume": manga_chapter.volume,
-                "number": manga_chapter.number,
+                "number": ".".join(str(n) for n in manga_chapter.number),
             },
         },
     }
