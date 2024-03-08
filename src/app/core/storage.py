@@ -65,7 +65,7 @@ class S3ImageStorage(ImageStorage):
         return file.path.as_posix()
 
     async def url(self, path: str) -> str:
-        return f"{self._settings.endpoint_url.removesuffix('/')}/{self._settings.bucket}/{path.removesuffix('/')}"
+        return f"{self._settings.public_url.removesuffix('/')}/{self._settings.bucket}/{path.removesuffix('/')}"
 
     @contextlib.asynccontextmanager
     async def upload_context(

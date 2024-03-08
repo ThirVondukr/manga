@@ -23,4 +23,5 @@ RUN pip install --no-cache-dir -r requirements.txt --user --no-dependencies
 
 COPY ./src ./src
 COPY alembic.ini ./
-ENTRYPOINT ["uvicorn", "app.adapters.api.app:create_app", "--factory", "--loop", "uvloop", "--host", "0.0.0.0"]
+
+ENTRYPOINT ["hypercorn", "app.adapters.api.app:_app", "-k", "uvloop", "-b", "0.0.0.0:8000"]

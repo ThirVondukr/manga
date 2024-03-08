@@ -10,6 +10,7 @@ spec:
   selector:
     matchLabels:
       {{- include "api.selectorLabels" . | nindent 6 }}
+  revisionHistoryLimit: 3
   template:
     metadata:
       annotations:
@@ -42,8 +43,8 @@ spec:
             {{ range .Values.api.args }}
             - {{ . | quote }}
             {{ end }}
-            - "--port"
-            - {{ include "api.port" . | quote}}
+{{/*            - "--port"*/}}
+{{/*            - {{ include "api.port" . | quote}}*/}}
           envFrom:
             {{- .Values.commonEnvFrom | toYaml | nindent 12 }}
           ports:

@@ -35,3 +35,6 @@ def create_app() -> FastAPI:
     app.mount("/graphql", create_graphql_app())
 
     return app
+
+
+_app = create_app()

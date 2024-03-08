@@ -3,6 +3,7 @@ from pathlib import PurePath
 from app.core.domain.chapters.dto import ChapterCreateDTO
 from app.core.storage import FileUpload, ImageStorage
 from app.db.models import MangaBranch, MangaChapter, MangaPage, User
+from app.settings import Buckets
 from lib.db import DBContext
 
 
@@ -32,7 +33,7 @@ class ChapterService:
         files_to_upload = [
             FileUpload(
                 path=PurePath(
-                    f"{branch.manga_id}/{chapter.id}/{number}{file.filename.suffix}",
+                    f"{Buckets.chapter_images}/{branch.manga_id}/{chapter.id}/{number}{file.filename.suffix}",
                 ),
                 buffer=file.buffer,
             )

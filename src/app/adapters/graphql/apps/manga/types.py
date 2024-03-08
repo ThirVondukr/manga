@@ -1,19 +1,28 @@
 import random
 from collections.abc import Sequence
 from datetime import datetime
-from typing import Self
+from typing import Annotated, Self
 
 import strawberry
+from aioinject import Inject
+from aioinject.ext.strawberry import inject
 from strawberry import Private
 
+from app.adapters.graphql.apps.chapters.types import MangaChapterGQL
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.dto import DTOMixin
 from app.adapters.graphql.extensions import AuthExtension
+from app.adapters.graphql.pagination import (
+    PagePaginationInputGQL,
+    PagePaginationResultGQL,
+    map_page_pagination,
+)
 from app.adapters.graphql.types import LanguageGQL, MangaStatusGQL
 from app.core.domain.bookmarks.loaders import (
     MangaBookmarkLoader,
     MangaBookmarkLoaderKey,
 )
+from app.core.domain.chapters.queries import MangaChaptersQuery
 from app.core.domain.manga.loaders import MangaAltTitleLoader, MangaTagLoader
 from app.db.models import AltTitle, Manga, MangaBookmark, MangaTag
 
@@ -104,6 +113,18 @@ class MangaGQL(DTOMixin[Manga]):
             self._instance.id,
         )
         return MangaTagGQL.from_dto_list(tags)
+
+    @strawberry.field
+    @inject
+    async def chapters(
+        self,
+        pagination: PagePaginationInputGQL,
+        query: Annotated[MangaChaptersQuery, Inject],
+    ) -> PagePaginationResultGQL[MangaChapterGQL]:
+        result = await query.execute(
+            manga_id=self._instance.id, pagination=pagination.to_dto()
+        )
+        return map_page_pagination(pagination=result, model_cls=MangaChapterGQL)
 
     @strawberry.field
     async def alt_titles(self, info: Info) -> Sequence[AltTitleGQL]:

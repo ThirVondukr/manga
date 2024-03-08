@@ -57,6 +57,7 @@ class AuthSettings(BaseSettings):
 class S3Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="s3_")
 
+    public_url: str
     endpoint_url: str
     access_key: str
     secret_key: str
