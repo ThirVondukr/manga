@@ -28,4 +28,4 @@ commonEnvFrom:
 
 
 imagePullSecrets:
-  - name: "gitlab-dpy"s
+  - name: "gitlab-dpy"
