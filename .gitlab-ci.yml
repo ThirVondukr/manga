@@ -146,7 +146,7 @@ build-image:
   image: $IMAGE_HELM
   stage: deploy
   variables:
-    APP_NAME: "fastapi-cookiecutter"
+    APP_NAME: "manga"
     NAMESPACE: "dev"
   script:
     - >
@@ -155,7 +155,18 @@ build-image:
       --namespace $NAMESPACE
       --set image.repository=$CI_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHORT_SHA
       -f ./.k8s/app/values.yaml
-      -f ./.k8s/app/values.production.yaml
-  when: never
+      -f ./.k8s/app/values.$VALUES_FILE.yaml
+  when: manual
+  tags:
+    - deployment
+    - k8s
+    - home
   only:
     - main
+
+
+deploy-production:
+  extends: .deploy
+  variables:
+    NAMESPACE: "manga"
+    VALUES_FILE: "production"
