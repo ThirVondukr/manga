@@ -71,5 +71,4 @@ cronjobs:
 #      entrypoint: ["python", "-m", "package.module"]
 
 commonEnvFrom: []
-imagePullSecrets:
-  - name: "gitlab-dpy"
+imagePullSecrets: []

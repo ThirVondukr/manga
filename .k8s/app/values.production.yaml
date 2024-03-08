@@ -25,3 +25,7 @@ commonEnvFrom:
   - secretRef:
       name: "manga-auth"
     prefix: "AUTH_"
+
+
+imagePullSecrets:
+  - name: "gitlab-dpy"s
