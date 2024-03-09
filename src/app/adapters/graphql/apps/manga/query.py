@@ -5,7 +5,7 @@ from aioinject import Inject
 from aioinject.ext.strawberry import inject
 from result import Err
 
-from app.adapters.graphql.apps.manga.input import MangaFilterGQL
+from app.adapters.graphql.apps.manga.input import MangaFilterGQL, MangaSortGQL
 from app.adapters.graphql.apps.manga.types import MangaGQL
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.pagination import (
@@ -49,14 +49,17 @@ class MangaQuery:
         *,
         pagination: PagePaginationInputGQL | None = None,
         filter: MangaFilterGQL | None = None,
+        sort: MangaSortGQL | None = None,
         query: Annotated[MangaSearchQuery, Inject],
     ) -> PagePaginationResultGQL[MangaGQL]:
         pagination = pagination or PagePaginationInputGQL()
         filter = filter or MangaFilterGQL()
+        sort = sort or MangaSortGQL()
 
         result = await query.execute(
             pagination=pagination.to_dto(),
             filter=filter.to_dto(),
+            sort=sort.to_dto(),
         )
         return map_page_pagination(
             pagination=result,

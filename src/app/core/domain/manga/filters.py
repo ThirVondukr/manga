@@ -1,6 +1,23 @@
 import dataclasses
+import enum
+from typing import Generic, TypeVar
 
+from lib.sort import SortDirection
 from lib.types import MangaStatus
+
+_T = TypeVar("_T")
+
+
+class MangaSortField(enum.Enum):
+    title = enum.auto()
+    created_at = enum.auto()
+    chapter_upload = enum.auto()
+
+
+@dataclasses.dataclass
+class Sort(Generic[_T]):
+    field: MangaSortField
+    direction: SortDirection
 
 
 @dataclasses.dataclass

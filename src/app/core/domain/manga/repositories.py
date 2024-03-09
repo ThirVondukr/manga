@@ -1,17 +1,19 @@
+from typing import Any, assert_never
 from uuid import UUID
 
-from sqlalchemy import Select, func, or_, select
+from sqlalchemy import Select, SQLColumnExpression, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
-from app.db.models import AltTitle, Manga, MangaTag
+from app.db.models import AltTitle, Manga, MangaBranch, MangaChapter, MangaTag
 from lib.pagination.pagination import (
     PagePaginationParamsDTO,
     PagePaginationResultDTO,
 )
 from lib.pagination.sqla import page_paginate
+from lib.sort import SortDirection
 
-from .filters import MangaFilter, MangaFindFilter
+from .filters import MangaFilter, MangaFindFilter, MangaSortField, Sort
 
 
 class MangaRepository:
@@ -41,10 +43,15 @@ class MangaRepository:
 
     async def paginate(
         self,
-        filter: MangaFilter,
+        *,
+        filter: MangaFilter | None = None,
+        sort: Sort[MangaSortField],
         pagination: PagePaginationParamsDTO,
     ) -> PagePaginationResultDTO[Manga]:
-        stmt = self._filter_stmt(stmt=self._base_stmt, filter=filter)
+        stmt = self._base_stmt
+        if filter:
+            stmt = self._filter_stmt(stmt=stmt, filter=filter)
+        stmt = self._sort_stmt(stmt, sort=sort)
         return await page_paginate(
             session=self._session,
             stmt=stmt,
@@ -52,15 +59,48 @@ class MangaRepository:
         )
 
     @classmethod
+    def _sort_stmt(
+        cls,
+        stmt: Select[tuple[Manga]],
+        sort: Sort[MangaSortField],
+    ) -> Select[tuple[Manga]]:
+        field: SQLColumnExpression[Any]
+        match sort.field:
+            case MangaSortField.title:
+                field = Manga.title
+            case MangaSortField.created_at:
+                field = Manga.created_at
+            case MangaSortField.chapter_upload:
+                latest_chapters_cte = (
+                    select(MangaBranch.manga_id, MangaChapter.created_at)
+                    .distinct(MangaBranch.manga_id)
+                    .join(MangaChapter.branch)
+                    .order_by(
+                        MangaBranch.manga_id,
+                        MangaChapter.created_at.desc(),
+                    )
+                ).cte()
+                field = latest_chapters_cte.c.created_at
+                stmt = stmt.join(
+                    latest_chapters_cte,
+                    onclause=latest_chapters_cte.c.manga_id == Manga.id,
+                    isouter=True,
+                ).group_by(latest_chapters_cte.c.created_at)
+            case _:  # pragma: no cover
+                assert_never(sort)
+        field = field if sort.direction is SortDirection.asc else field.desc()
+        id_field = (
+            Manga.id if sort.direction is SortDirection.asc else Manga.id.desc()
+        )
+        return stmt.order_by(field.nulls_last(), id_field)
+
+    @classmethod
     def _filter_stmt(
         cls,
         stmt: Select[tuple[Manga]],
         filter: MangaFilter,
     ) -> Select[tuple[Manga]]:
-        stmt = stmt.group_by(Manga.id).order_by(
-            Manga.title,
-            Manga.id,
-        )
+        stmt = stmt.group_by(Manga.id)
         if filter.status is not None:
             stmt = stmt.where(Manga.status == filter.status)
 

@@ -101,11 +101,13 @@ class Manga(
     branches: Mapped[list[MangaBranch]] = relationship(
         back_populates="manga",
         default_factory=list,
+        repr=False,
     )
     tags: Mapped[list[MangaTag]] = relationship(
         secondary=manga_manga_tag_secondary_table,
         back_populates="manga",
         default_factory=list,
+        repr=False,
     )
     alt_titles: Mapped[list[AltTitle]] = relationship(
         back_populates="manga",
@@ -160,6 +162,7 @@ class MangaBranch(PkUUID, HasTimestamps, MappedAsDataclass, Base, kw_only=True):
     chapters: Mapped[list[MangaChapter]] = relationship(
         back_populates="branch",
         default_factory=list,
+        repr=False,
     )
 
 

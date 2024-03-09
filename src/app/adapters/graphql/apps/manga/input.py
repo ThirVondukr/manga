@@ -2,9 +2,14 @@ import dataclasses
 
 import strawberry
 
-from app.adapters.graphql.types import MangaStatusGQL
+from app.adapters.graphql.types import MangaStatusGQL, SortDirectionGQL
 from app.core.domain.manga.dto import MangaCreateDTO
-from app.core.domain.manga.filters import MangaFilter, TagFilter
+from app.core.domain.manga.filters import (
+    MangaFilter,
+    MangaSortField,
+    Sort,
+    TagFilter,
+)
 
 
 @strawberry.input(name="MangaTagFilter")
@@ -31,6 +36,22 @@ class MangaFilterGQL:
             status=self.status,
             search_term=self.search_term,
             tags=self.tags.to_dto() if self.tags else TagFilter(),
+        )
+
+
+MangaSortFieldGQL = strawberry.enum(MangaSortField, name="MangaSortField")
+
+
+@strawberry.input(name="MangaSort")
+@dataclasses.dataclass(unsafe_hash=True)
+class MangaSortGQL:
+    field: MangaSortFieldGQL = MangaSortFieldGQL.title
+    direction: SortDirectionGQL = SortDirectionGQL.asc
+
+    def to_dto(self) -> Sort[MangaSortField]:
+        return Sort(
+            field=self.field,
+            direction=self.direction,
         )
 
 
