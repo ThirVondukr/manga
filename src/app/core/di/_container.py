@@ -8,6 +8,7 @@ from aioinject import Object, Provider
 from pydantic_settings import BaseSettings
 
 from app.settings import (
+    AppSettings,
     AuthSettings,
     DatabaseSettings,
     S3Settings,
@@ -50,6 +51,7 @@ settings_classes: Iterable[type[BaseSettings]] = [
     DatabaseSettings,
     SentrySettings,
     S3Settings,
+    AppSettings,
 ]
 
 

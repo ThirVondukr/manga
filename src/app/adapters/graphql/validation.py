@@ -25,6 +25,11 @@ class ValidationErrorsGQL(ErrorGQL):
     errors: list[ValidationError] = strawberry.field(default_factory=list)
 
 
+@strawberry.type(name="FileUploadError")
+class FileUploadErrorGQL(ErrorGQL):
+    message: str = "Invalid file"
+
+
 def _to_graphql_error(
     exception: pydantic.ValidationError,
 ) -> ValidationErrorsGQL:
