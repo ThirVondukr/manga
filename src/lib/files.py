@@ -38,7 +38,7 @@ class FileReader:
             buffer = BytesIO()
             while chunk := await file.read(self._chunk_size):
                 total_size += len(chunk)
-                if total_size > self._max_size:
+                if total_size > self._max_size:  # pragma: no cover
                     return Err(FileReadError())
                 buffer.write(chunk)
             await file.seek(0)

@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.domain.chapters.commands import ChapterCreateCommand
 from app.core.domain.chapters.dto import ChapterCreateDTO
-from app.core.errors import PermissionDeniedError
+from app.core.errors import PermissionDeniedError, RelationshipNotFoundError
 from app.db.models import Group, Manga, MangaBranch, User
 from app.settings import Buckets
 from lib.files import File
@@ -35,6 +35,16 @@ def dto(manga_branch: MangaBranch) -> ChapterCreateDTO:
         number=[1],
         pages=[file],
     )
+
+
+async def test_branch_not_found(
+    command: ChapterCreateCommand,
+    user: User,
+    dto: ChapterCreateDTO,
+) -> None:
+    dto.branch_id = uuid.uuid4()
+    err = (await command.execute(dto, user)).unwrap_err()
+    assert err == RelationshipNotFoundError(entity_id=str(dto.branch_id))
 
 
 async def test_permission_denied(  # noqa: PLR0913

@@ -118,9 +118,11 @@ class MangaGQL(DTOMixin[Manga]):
     @inject
     async def chapters(
         self,
-        pagination: PagePaginationInputGQL,
+        *,
+        pagination: PagePaginationInputGQL | None = None,
         query: Annotated[MangaChaptersQuery, Inject],
     ) -> PagePaginationResultGQL[MangaChapterGQL]:
+        pagination = pagination or PagePaginationInputGQL()
         result = await query.execute(
             manga_id=self._instance.id,
             pagination=pagination.to_dto(),

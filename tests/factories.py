@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import dataclasses
+import random
 import uuid
 from collections import defaultdict
+from collections.abc import Sequence
 from datetime import UTC
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
@@ -15,6 +18,7 @@ from app.db.models import (
     MangaBranch,
     MangaChapter,
     MangaTag,
+    User,
 )
 from lib.types import Language, MangaStatus
 
@@ -65,31 +69,41 @@ class MangaTagFactory(GenericFactory[MangaTag]):
     category = factory.Faker("enum", enum_cls=TagCategory)
 
 
+@dataclasses.dataclass
+class _ChapterState:
+    volume: int = 1
+    number: Sequence[int] = (1, 1)
+
+
 class ChapterFactory:
     def __init__(self, fake: Faker) -> None:
         self.fake = fake
-        self.chapter_numbers: dict[uuid.UUID, tuple[int, int]] = defaultdict(
-            lambda: (1, 0),
+        self.chapter_numbers: dict[uuid.UUID, _ChapterState] = defaultdict(
+            _ChapterState,
         )
 
     def __call__(
         self,
         branch: MangaBranch,
-        **kwargs: Any,  # noqa: ANN401
+        created_by: User,
     ) -> MangaChapter:
-        if not (number := kwargs.pop("number", None)):
-            major, minor = self.chapter_numbers[branch.id]
-            number = f"{major}.{minor}" if minor else str(major)
-            minor += 1
-            if minor > 3:  # noqa: PLR2004
-                major += 1
-                minor = 0
-            self.chapter_numbers[branch.id] = (major, minor)
+        state = self.chapter_numbers[branch.id]
+        major, minor = state.number
+        minor += 1
+        if minor > 3:  # noqa: PLR2004
+            major += 1
+            minor = 0
+
+        state.number = (major, minor)
+        if random.random() > 0.9:  # noqa: PLR2004
+            state.volume += 1
 
         return MangaChapter(
             title=self.fake.sentence(),
             created_at=self.fake.date_time(),
-            number=number,
+            volume=state.volume,
+            number=state.number,
             branch=branch,
-            **kwargs,
+            created_by=created_by,
+            pages=[],
         )

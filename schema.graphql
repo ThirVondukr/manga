@@ -16,7 +16,7 @@ type AuthenticationResult {
   accessToken: String!
 }
 
-union ChapterCreateError = ValidationErrors
+union ChapterCreateError = ValidationErrors | FileUploadError | RelationshipNotFoundError | PermissionDeniedError
 
 input ChapterCreateInput {
   title: String!
@@ -42,6 +42,10 @@ type EntityAlreadyExistsError implements Error {
 }
 
 interface Error {
+  message: String!
+}
+
+type FileUploadError implements Error {
   message: String!
 }
 
@@ -82,7 +86,7 @@ type Manga {
   createdAt: DateTime!
   updatedAt: DateTime!
   tags: [MangaTag!]!
-  chapters(pagination: PagePaginationInput!): MangaChapterPagePaginationResult!
+  chapters(pagination: PagePaginationInput = null): MangaChapterPagePaginationResult!
   altTitles: [AltTitle!]!
 
   """Manga rating, from 0 to 10"""
@@ -224,6 +228,10 @@ type PagePaginationInfo {
 input PagePaginationInput {
   page: Int! = 1
   pageSize: Int! = 100
+}
+
+type PermissionDeniedError implements Error {
+  message: String!
 }
 
 type PrivateUser implements User {

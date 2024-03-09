@@ -10,6 +10,7 @@ import pytest
 from _pytest.fixtures import SubRequest
 from aioinject import Object
 from asgi_lifespan import LifespanManager
+from faker import Faker
 from fastapi import FastAPI
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -123,3 +124,8 @@ def s3_mock(container: aioinject.Container) -> Iterator[TestImageStorage]:
     storage = TestImageStorage()
     with container.override(Object(storage, type_=ImageStorage)):
         yield storage
+
+
+@pytest.fixture
+def fake() -> Faker:
+    return Faker()
