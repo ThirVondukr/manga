@@ -119,7 +119,7 @@ async def test_filter_by_status(
 
     for status, manga in mangas.items():
         result = await manga_repository.paginate(
-            filter=MangaFilter(status=status),
+            filter=MangaFilter(statuses=[status]),
             pagination=PagePaginationParamsDTO(page=1, page_size=100),
             sort=_DEFAULT_SORT,
         )

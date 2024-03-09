@@ -90,8 +90,8 @@ class MangaRepository:
         filter: MangaFilter,
     ) -> Select[tuple[Manga]]:
         stmt = stmt.group_by(Manga.id)
-        if filter.status is not None:
-            stmt = stmt.where(Manga.status == filter.status)
+        if filter.statuses:
+            stmt = stmt.where(Manga.status.in_(filter.statuses))
 
         if filter.search_term:
             stmt = stmt.join(Manga.alt_titles, isouter=True).where(

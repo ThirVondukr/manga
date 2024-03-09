@@ -1,5 +1,6 @@
 import dataclasses
 import enum
+from collections.abc import Sequence
 from typing import Generic, TypeVar
 
 from lib.sort import SortDirection
@@ -29,7 +30,7 @@ class TagFilter:
 @dataclasses.dataclass
 class MangaFilter:
     search_term: str | None = None
-    status: MangaStatus | None = None
+    statuses: Sequence[MangaStatus] | None = None
     tags: TagFilter = dataclasses.field(default_factory=TagFilter)
 
 

@@ -158,7 +158,7 @@ type MangaCreatePayload {
 }
 
 input MangaFilter {
-  status: MangaStatus = null
+  statuses: [MangaStatus!] = null
   searchTerm: String = null
   tags: MangaTagFilter = null
 }
@@ -256,7 +256,7 @@ type PrivateUser implements User {
 type Query {
   chapter(id: ID!): MangaChapter
   manga(id: ID!): Manga
-  mangas(pagination: PagePaginationInput = null, filter: MangaFilter = null, sort: MangaSort! = {field: TITLE, direction: ASC}): MangaPagePaginationResult!
+  mangas(pagination: PagePaginationInput = null, filter: MangaFilter = null, sort: MangaSort = null): MangaPagePaginationResult!
   me: PrivateUser! @isAuthenticated
   tags: [MangaTag!]!
 }
