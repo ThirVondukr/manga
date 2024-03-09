@@ -61,6 +61,8 @@ class MangaRepository:
             Manga.title,
             Manga.id,
         )
+        if filter.status is not None:
+            stmt = stmt.where(Manga.status == filter.status)
 
         if filter.search_term:
             stmt = stmt.join(Manga.alt_titles, isouter=True).where(

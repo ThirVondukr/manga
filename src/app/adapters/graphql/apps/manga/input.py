@@ -22,11 +22,13 @@ class MangaTagFilterGQL:
 @strawberry.input(name="MangaFilter")
 @dataclasses.dataclass(frozen=True)
 class MangaFilterGQL:
+    status: MangaStatusGQL | None = None
     search_term: str | None = None
     tags: MangaTagFilterGQL | None = None
 
     def to_dto(self) -> MangaFilter:
         return MangaFilter(
+            status=self.status,
             search_term=self.search_term,
             tags=self.tags.to_dto() if self.tags else TagFilter(),
         )

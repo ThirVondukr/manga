@@ -8,6 +8,7 @@ TEnum = TypeVar("TEnum", bound=IntEnum)
 
 class IntEnumType(TypeDecorator[TEnum]):
     impl = Integer
+    cache_ok = True
 
     def __init__(self, enum: type[TEnum]) -> None:
         super().__init__()

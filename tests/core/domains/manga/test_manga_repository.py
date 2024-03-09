@@ -7,7 +7,8 @@ from app.core.domain.manga.repositories import MangaRepository
 from app.db.models import AltTitle, Manga, MangaTag
 from lib.db import DBContext
 from lib.pagination.pagination import PagePaginationParamsDTO
-from lib.types import Language
+from lib.types import Language, MangaStatus
+from tests.factories import MangaFactory
 
 
 async def test_get_ok(manga_repository: MangaRepository, manga: Manga) -> None:
@@ -81,5 +82,21 @@ async def test_tags(
         result = await manga_repository.paginate(
             filter=MangaFilter(tags=TagFilter(exclude=[tag.name_slug])),
             pagination=pagination,
+        )
+        assert result.items == [manga]
+
+
+async def test_filter_by_status(
+    manga_repository: MangaRepository,
+    db_context: DBContext,
+) -> None:
+    mangas = {status: MangaFactory(status=status) for status in MangaStatus}
+    db_context.add_all(mangas.values())
+    await db_context.flush()
+
+    for status, manga in mangas.items():
+        result = await manga_repository.paginate(
+            filter=MangaFilter(status=status),
+            pagination=PagePaginationParamsDTO(page=1, page_size=100),
         )
         assert result.items == [manga]

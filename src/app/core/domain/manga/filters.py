@@ -1,5 +1,7 @@
 import dataclasses
 
+from lib.types import MangaStatus
+
 
 @dataclasses.dataclass
 class TagFilter:
@@ -10,6 +12,7 @@ class TagFilter:
 @dataclasses.dataclass
 class MangaFilter:
     search_term: str | None = None
+    status: MangaStatus | None = None
     tags: TagFilter = dataclasses.field(default_factory=TagFilter)
 
 
