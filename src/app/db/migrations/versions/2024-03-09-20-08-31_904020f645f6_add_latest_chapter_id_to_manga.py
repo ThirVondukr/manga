@@ -37,11 +37,12 @@ def upgrade() -> None:
         update manga
             set latest_chapter_id = (
                 select manga_chapter.id from manga_chapter
-                join public.manga_branch mb on manga_chapter.branch_id = mb.id
-                where mb.id = manga.id
+                join manga_branch mb on manga_chapter.branch_id = mb.id
+                where mb.manga_id = manga.id
                 order by manga_chapter.created_at desc
                 limit 1
             )
+        where 1 = 1;
         """,
     )
 
