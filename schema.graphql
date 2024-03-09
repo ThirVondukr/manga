@@ -82,6 +82,7 @@ type Manga {
   createdAt: DateTime!
   updatedAt: DateTime!
   tags: [MangaTag!]!
+  chapters(pagination: PagePaginationInput!): MangaChapterPagePaginationResult!
   altTitles: [AltTitle!]!
 
   """Manga rating, from 0 to 10"""
@@ -135,6 +136,11 @@ type MangaChapter {
   pages: [MangaPage!]!
 }
 
+type MangaChapterPagePaginationResult {
+  items: [MangaChapter!]!
+  pageInfo: PagePaginationInfo!
+}
+
 union MangaCreateError = ValidationErrors | EntityAlreadyExistsError
 
 input MangaCreateInput {
@@ -180,6 +186,12 @@ type MangaTag {
   id: ID!
   name: String!
   slug: String!
+  category: MangaTagCategory!
+}
+
+type MangaTagCategory {
+  id: ID!
+  name: String!
 }
 
 input MangaTagFilter {
