@@ -24,7 +24,7 @@ class MangaRepository:
         stmt = self._base_stmt.where(Manga.id == id)
         return (await self._session.scalars(stmt)).one_or_none()
 
-    async def find(
+    async def find_one(
         self,
         filter: MangaFindFilter,
     ) -> Manga | None:

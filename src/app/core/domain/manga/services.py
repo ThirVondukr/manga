@@ -29,7 +29,7 @@ class MangaService:
             status=dto.status,
         )
         if (
-            await self._repository.find(
+            await self._repository.find_one(
                 MangaFindFilter(title=dto.title, title_slug=manga.title_slug),
             )
             is not None
