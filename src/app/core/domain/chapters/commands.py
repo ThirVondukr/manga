@@ -1,9 +1,9 @@
-from result import Err, Ok, Result
+from result import Err, Result
 
 from app.core.domain.branches.repositories import BranchRepository
 from app.core.domain.chapters.dto import ChapterCreateDTO
 from app.core.domain.chapters.services import ChapterService
-from app.core.errors import RelationshipNotFoundError
+from app.core.errors import PermissionDeniedError, RelationshipNotFoundError
 from app.db.models import MangaChapter, User
 
 
@@ -20,14 +20,16 @@ class ChapterCreateCommand:
         self,
         dto: ChapterCreateDTO,
         user: User,
-    ) -> Result[MangaChapter, RelationshipNotFoundError]:
+    ) -> Result[
+        MangaChapter,
+        RelationshipNotFoundError | PermissionDeniedError,
+    ]:
         branch = await self._branch_repository.get(id=dto.branch_id)
         if branch is None:
             return Err(RelationshipNotFoundError(entity_id=str(dto.branch_id)))
 
-        chapter = await self._chapter_service.create(
+        return await self._chapter_service.create(
             dto=dto,
             user=user,
             branch=branch,
         )
-        return Ok(chapter)

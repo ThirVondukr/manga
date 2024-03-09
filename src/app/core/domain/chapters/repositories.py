@@ -11,7 +11,7 @@ from lib.pagination.pagination import (
 from lib.pagination.sqla import page_paginate
 
 
-class MangaChapterRepository:
+class ChapterRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 

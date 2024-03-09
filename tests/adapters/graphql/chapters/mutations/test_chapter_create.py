@@ -4,13 +4,17 @@ from collections.abc import MutableMapping, Sequence
 from io import BytesIO
 from pathlib import PurePath
 from typing import Any
+from unittest.mock import patch
 
 import pytest
+from result import Err
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.core.domain.chapters.commands import ChapterCreateCommand
 from app.core.domain.const import GENERIC_NAME_LENGTH
+from app.core.errors import PermissionDeniedError, RelationshipNotFoundError
 from app.db.models import MangaBranch, MangaChapter
 from tests.adapters.graphql.client import GraphQLClient, GraphQLFile
 from tests.utils import TestImageStorage
@@ -116,20 +120,37 @@ async def test_validation_error(
     assert response == _tpl(error={"__typename": "ValidationErrors"})
 
 
-async def test_relationship_not_found(
+@pytest.mark.parametrize(
+    ("error", "typename"),
+    [
+        (
+            RelationshipNotFoundError(entity_id=str(uuid.uuid4())),
+            "RelationshipNotFoundError",
+        ),
+        (PermissionDeniedError(), "PermissionDeniedError"),
+    ],
+)
+async def test_err(
     authenticated_graphql_client: GraphQLClient,
     input: MutableMapping[str, Any],
     upload_pages: Sequence[GraphQLFile],
+    error: object,
+    typename: str,
 ) -> None:
     input["branchId"] = str(uuid.uuid4())
-    response = await authenticated_graphql_client.query(
-        query=QUERY,
-        variables={
-            "input": input,
-        },
-        files={"pages": upload_pages},
-    )
-    assert response == _tpl(error={"__typename": "RelationshipNotFoundError"})
+    with patch.object(
+        ChapterCreateCommand,
+        ChapterCreateCommand.execute.__name__,
+        return_value=Err(error),
+    ):
+        response = await authenticated_graphql_client.query(
+            query=QUERY,
+            variables={
+                "input": input,
+            },
+            files={"pages": upload_pages},
+        )
+    assert response == _tpl(error={"__typename": typename})
 
 
 async def test_ok(

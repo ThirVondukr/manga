@@ -1,10 +1,25 @@
 from pathlib import PurePath
 
+from result import Err, Ok, Result
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.domain.chapters.dto import ChapterCreateDTO
+from app.core.errors import PermissionDeniedError
 from app.core.storage import FileUpload, ImageStorage
-from app.db.models import MangaBranch, MangaChapter, MangaPage, User
+from app.db.models import Group, MangaBranch, MangaChapter, MangaPage, User
 from app.settings import Buckets
 from lib.db import DBContext
+
+
+class ChapterPermissionService:
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def can_create_chapter(self, user: User, branch: MangaBranch) -> bool:
+        stmt = select(Group).where(Group.id == branch.group_id)
+        group = (await self._session.scalars(stmt)).one()
+        return group.created_by_id == user.id
 
 
 class ChapterService:
@@ -12,16 +27,24 @@ class ChapterService:
         self,
         db_context: DBContext,
         image_storage: ImageStorage,
+        permissions: ChapterPermissionService,
     ) -> None:
         self._db_context = db_context
         self._image_storage = image_storage
+        self._permissions = permissions
 
     async def create(
         self,
         dto: ChapterCreateDTO,
         branch: MangaBranch,
         user: User,
-    ) -> MangaChapter:
+    ) -> Result[MangaChapter, PermissionDeniedError]:
+        if not await self._permissions.can_create_chapter(
+            user=user,
+            branch=branch,
+        ):
+            return Err(PermissionDeniedError())
+
         chapter = MangaChapter(
             branch=branch,
             created_by=user,
@@ -46,4 +69,4 @@ class ChapterService:
             ]
             self._db_context.add(chapter)
             await self._db_context.flush()
-            return chapter
+            return Ok(chapter)

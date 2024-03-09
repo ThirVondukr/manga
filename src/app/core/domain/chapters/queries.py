@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from app.core.domain.chapters.repositories import MangaChapterRepository
+from app.core.domain.chapters.repositories import ChapterRepository
 from app.db.models import MangaChapter
 from lib.pagination.pagination import (
     PagePaginationParamsDTO,
@@ -9,7 +9,7 @@ from lib.pagination.pagination import (
 
 
 class MangaChaptersQuery:
-    def __init__(self, repository: MangaChapterRepository) -> None:
+    def __init__(self, repository: ChapterRepository) -> None:
         self._repository = repository
 
     async def execute(

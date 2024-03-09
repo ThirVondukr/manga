@@ -2,7 +2,7 @@ from typing import Self
 
 import strawberry
 
-from app.core.errors import RelationshipNotFoundError
+from app.core.errors import PermissionDeniedError, RelationshipNotFoundError
 
 
 @strawberry.interface(name="Error")
@@ -25,6 +25,15 @@ class RelationshipNotFoundErrorGQL(ErrorGQL):
         return cls(
             entity_id=strawberry.ID(err.entity_id),
         )
+
+
+@strawberry.type(name="PermissionDeniedError")
+class PermissionDeniedErrorGQL(ErrorGQL):
+    message: str = "Permission Denied"
+
+    @classmethod
+    def from_err(cls, err: PermissionDeniedError) -> Self:  # noqa: ARG003
+        return cls()
 
 
 @strawberry.type(name="NotFoundError")

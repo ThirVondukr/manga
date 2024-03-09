@@ -44,3 +44,18 @@ async def user(
     db_context.add(user)
     await db_context.flush()
     return user
+
+
+@pytest.fixture
+async def other_user(
+    user_password: str,
+    auth_service: AuthService,
+) -> User:
+    result = await auth_service.sign_up(
+        dto=UserRegisterDTO(
+            username=str(uuid.uuid4()),
+            email="email-other@example.org",
+            password=SecretStr(user_password),
+        ),
+    )
+    return result.unwrap()

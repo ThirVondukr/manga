@@ -3,10 +3,12 @@ from io import BytesIO
 from pathlib import PurePath
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.domain.chapters.commands import ChapterCreateCommand
 from app.core.domain.chapters.dto import ChapterCreateDTO
-from app.db.models import Manga, MangaBranch, User
+from app.core.errors import PermissionDeniedError
+from app.db.models import Group, Manga, MangaBranch, User
 from app.settings import Buckets
 from lib.files import File
 from tests.types import Resolver
@@ -33,6 +35,22 @@ def dto(manga_branch: MangaBranch) -> ChapterCreateDTO:
         number=[1],
         pages=[file],
     )
+
+
+async def test_permission_denied(  # noqa: PLR0913
+    command: ChapterCreateCommand,
+    user: User,
+    other_user: User,
+    session: AsyncSession,
+    dto: ChapterCreateDTO,
+    group: Group,
+) -> None:
+    group.created_by = other_user
+    session.add(group)
+    await session.flush()
+
+    err = (await command.execute(dto, user)).unwrap_err()
+    assert err == PermissionDeniedError()
 
 
 async def test_ok(

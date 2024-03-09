@@ -15,3 +15,8 @@ class NotFoundError:
 class RelationshipNotFoundError:
     entity_id: str
     entity_name: str | None = None
+
+
+@dataclasses.dataclass
+class PermissionDeniedError:
+    pass
