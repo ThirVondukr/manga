@@ -19,6 +19,7 @@ from lib.pagination.pagination import PagePaginationParamsDTO
 from lib.sort import SortDirection
 from lib.types import Language, MangaStatus
 from tests.factories import ChapterFactory, MangaBranchFactory, MangaFactory
+from tests.utils import casefold_obj
 
 
 async def test_get_ok(manga_repository: MangaRepository, manga: Manga) -> None:
@@ -129,7 +130,7 @@ async def test_filter_by_status(
     ("direction", "sort_field"),
     itertools.product(
         SortDirection,
-        [MangaSortField.title, MangaSortField.created_at],
+        [s for s in MangaSortField if s is not MangaSortField.chapter_upload],
     ),
 )
 async def test_sort(
@@ -140,15 +141,16 @@ async def test_sort(
 ) -> None:
     expected = sorted(
         mangas,
-        key=lambda m: (getattr(m, sort_field.name), m.id),
+        key=lambda m: (casefold_obj(getattr(m, sort_field.name)), m.id),
         reverse=direction is SortDirection.desc,
     )
+    expected.sort(key=lambda m: getattr(m, sort_field.name) is None)
 
     result = await manga_repository.paginate(
         pagination=PagePaginationParamsDTO(page=1, page_size=100),
         sort=Sort(field=sort_field, direction=direction),
     )
-    assert result.items == expected
+    assert [m.id for m in result.items] == [m.id for m in expected]
 
 
 @pytest.mark.parametrize(
@@ -166,35 +168,32 @@ async def test_sort_by_latest_chapter_upload_date(  # noqa: PLR0913
 ) -> None:
     manga_latest_chapter_dates = {}
     for manga in mangas:
+        if random.random() >= 0.5:  # noqa: PLR2004
+            continue
         branch = MangaBranchFactory(group=group, manga=manga)
-        branch.chapters = [
-            chapter_factory(branch=branch, created_by=user)
-            for _ in range(random.randint(0, 5))
-        ]
+        chapter = chapter_factory(branch=branch, created_by=user)
+        branch.chapters = [chapter]
         manga.branches.append(branch)
-        manga_latest_chapter_dates[manga.id] = (
-            max(c.created_at for c in branch.chapters)
-            if branch.chapters
-            else None
-        )
+        manga_latest_chapter_dates[manga.id] = chapter.created_at
+        manga.latest_chapter_id = chapter.id
         db_context.add(manga)
     await db_context.flush()
 
     expected = sorted(
         mangas,
         key=lambda manga: (
-            manga_latest_chapter_dates[manga.id] or datetime.min,
+            manga_latest_chapter_dates.get(manga.id, datetime.min)
+            or datetime.min,
             manga.id,
         ),
         reverse=direction is SortDirection.desc,
     )
     # Push null values to end
-    expected.sort(key=lambda m: manga_latest_chapter_dates[m.id] is None)
+    expected.sort(key=lambda m: manga_latest_chapter_dates.get(m.id) is None)
 
     result = await manga_repository.paginate(
         filter=MangaFilter(),
         pagination=PagePaginationParamsDTO(page=1, page_size=100),
         sort=Sort(field=MangaSortField.chapter_upload, direction=direction),
     )
-    assert len(result.items) == len(mangas)
     assert result.items == expected

@@ -5,7 +5,7 @@ from sqlalchemy import Select, SQLColumnExpression, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 
-from app.db.models import AltTitle, Manga, MangaBranch, MangaChapter, MangaTag
+from app.db.models import AltTitle, Manga, MangaChapter, MangaTag
 from lib.pagination.pagination import (
     PagePaginationParamsDTO,
     PagePaginationResultDTO,
@@ -71,21 +71,10 @@ class MangaRepository:
             case MangaSortField.created_at:
                 field = Manga.created_at
             case MangaSortField.chapter_upload:
-                latest_chapters_cte = (
-                    select(MangaBranch.manga_id, MangaChapter.created_at)
-                    .distinct(MangaBranch.manga_id)
-                    .join(MangaChapter.branch)
-                    .order_by(
-                        MangaBranch.manga_id,
-                        MangaChapter.created_at.desc(),
-                    )
-                ).cte()
-                field = latest_chapters_cte.c.created_at
-                stmt = stmt.join(
-                    latest_chapters_cte,
-                    onclause=latest_chapters_cte.c.manga_id == Manga.id,
-                    isouter=True,
-                ).group_by(latest_chapters_cte.c.created_at)
+                field = MangaChapter.created_at
+                stmt = stmt.join(Manga.latest_chapter, isouter=True).group_by(
+                    MangaChapter.created_at,
+                )
             case _:  # pragma: no cover
                 assert_never(sort)
         field = field if sort.direction is SortDirection.asc else field.desc()

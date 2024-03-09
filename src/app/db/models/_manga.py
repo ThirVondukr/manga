@@ -74,13 +74,13 @@ class MangaBookmark(MappedAsDataclass, Base, kw_only=True):
         primary_key=True,
         init=False,
     )
-    manga: Mapped[Manga] = relationship()
+    manga: Mapped[Manga] = relationship(lazy="raise")
     user_id: Mapped[UUID] = mapped_column(
         ForeignKey("user.id"),
         primary_key=True,
         init=False,
     )
-    user: Mapped[User] = relationship()
+    user: Mapped[User] = relationship(lazy="raise")
     created_at: Mapped[datetime] = mapped_column(default_factory=utc_now)
 
 
@@ -91,27 +91,47 @@ class Manga(
     MappedAsDataclass,
     Base,
     kw_only=True,
+    repr=False,
 ):
+
     __tablename__ = "manga"
 
     title: Mapped[str_title] = mapped_column(unique=True)
     title_slug: Mapped[str_title] = mapped_column(unique=True)
     status: Mapped[MangaStatus]
+    latest_chapter_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey(
+            "manga_chapter.id",
+            ondelete="SET NULL",
+            use_alter=True,
+            initially="DEFERRED",
+        ),
+        default=None,
+    )
+    latest_chapter: Mapped[MangaChapter | None] = relationship(
+        default=None,
+        compare=False,
+        lazy="raise",
+    )
 
     branches: Mapped[list[MangaBranch]] = relationship(
         back_populates="manga",
         default_factory=list,
-        repr=False,
+        compare=False,
+        lazy="raise",
     )
     tags: Mapped[list[MangaTag]] = relationship(
         secondary=manga_manga_tag_secondary_table,
         back_populates="manga",
         default_factory=list,
-        repr=False,
+        compare=False,
+        lazy="raise",
     )
     alt_titles: Mapped[list[AltTitle]] = relationship(
         back_populates="manga",
         default_factory=list,
+        compare=False,
+        lazy="raise",
     )
 
 

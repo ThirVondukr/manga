@@ -10,6 +10,10 @@ def casefold(string: str) -> str:
     return string.replace(" ", "").casefold()
 
 
+def casefold_obj(obj: object) -> object:
+    return casefold(obj) if isinstance(obj, str) else obj
+
+
 @final
 class TestImageStorage(ImageStorage):
     __test__ = False

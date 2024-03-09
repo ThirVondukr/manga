@@ -1,10 +1,11 @@
 from result import Err, Result
+from sqlalchemy.orm import joinedload
 
 from app.core.domain.branches.repositories import BranchRepository
 from app.core.domain.chapters.dto import ChapterCreateDTO
 from app.core.domain.chapters.services import ChapterService
 from app.core.errors import PermissionDeniedError, RelationshipNotFoundError
-from app.db.models import MangaChapter, User
+from app.db.models import MangaBranch, MangaChapter, User
 
 
 class ChapterCreateCommand:
@@ -24,7 +25,10 @@ class ChapterCreateCommand:
         MangaChapter,
         RelationshipNotFoundError | PermissionDeniedError,
     ]:
-        branch = await self._branch_repository.get(id=dto.branch_id)
+        branch = await self._branch_repository.get(
+            id=dto.branch_id,
+            options=(joinedload(MangaBranch.manga),),
+        )
         if branch is None:
             return Err(RelationshipNotFoundError(entity_id=str(dto.branch_id)))
 

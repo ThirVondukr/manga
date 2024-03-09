@@ -7,7 +7,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.domain.chapters.dto import ChapterCreateDTO
 from app.core.errors import PermissionDeniedError
 from app.core.storage import FileUpload, ImageStorage
-from app.db.models import Group, MangaBranch, MangaChapter, MangaPage, User
+from app.db.models import (
+    Group,
+    Manga,
+    MangaBranch,
+    MangaChapter,
+    MangaPage,
+    User,
+)
 from app.settings import Buckets
 from lib.db import DBContext
 
@@ -67,6 +74,11 @@ class ChapterService:
                 MangaPage(image_path=path, number=number, chapter=chapter)
                 for number, path in enumerate(files, start=1)
             ]
+            self._update_manga(manga=branch.manga, chapter=chapter)
             self._db_context.add(chapter)
             await self._db_context.flush()
             return Ok(chapter)
+
+    def _update_manga(self, manga: Manga, chapter: MangaChapter) -> None:
+        manga.latest_chapter_id = chapter.id
+        self._db_context.add(manga)
