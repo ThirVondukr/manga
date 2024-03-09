@@ -15,6 +15,7 @@ from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.types import GraphQLFile
 from app.adapters.graphql.validation import validate_callable
 from app.core.domain.chapters.commands import ChapterCreateCommand
+from app.settings import AppSettings
 from lib.files import FileReader
 
 
@@ -22,14 +23,15 @@ from lib.files import FileReader
 class ChapterMutationGQL:
     @strawberry.mutation(extensions=[AuthExtension])  # type: ignore[misc]
     @inject
-    async def create(
+    async def create(  # noqa: PLR0913
         self,
         info: Info,
         pages: Sequence[GraphQLFile],
         input: ChapterCreateInputGQL,
         command: Annotated[ChapterCreateCommand, Inject],
+        settings: Annotated[AppSettings, Inject],
     ) -> ChapterCreatePayloadGQL:
-        reader = FileReader(max_size=200 * 1024 * 1024)
+        reader = FileReader(max_size=settings.max_upload_size_bytes)
         pages_result = await reader.read(files=pages)
         if isinstance(pages_result, Err):
             raise ValueError  # noqa: TRY004
