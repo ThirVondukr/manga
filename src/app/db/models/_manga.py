@@ -143,6 +143,13 @@ class MangaChapter(
     kw_only=True,
 ):
     __tablename__ = "manga_chapter"
+    __table_args__ = (
+        UniqueConstraint(
+            "branch_id",
+            "number",
+            name="manga_chapter__branch_number_uq",
+        ),
+    )
 
     branch_id: Mapped[UUID] = mapped_column(
         ForeignKey("manga_branch.id"),

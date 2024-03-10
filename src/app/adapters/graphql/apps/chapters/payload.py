@@ -4,6 +4,7 @@ import strawberry
 
 from app.adapters.graphql.apps.chapters.types import MangaChapterGQL
 from app.adapters.graphql.errors import (
+    EntityAlreadyExistsErrorGQL,
     PermissionDeniedErrorGQL,
     RelationshipNotFoundErrorGQL,
 )
@@ -16,7 +17,8 @@ ChapterCreateError = Annotated[
     ValidationErrorsGQL
     | FileUploadErrorGQL
     | RelationshipNotFoundErrorGQL
-    | PermissionDeniedErrorGQL,
+    | PermissionDeniedErrorGQL
+    | EntityAlreadyExistsErrorGQL,
     strawberry.union(name="ChapterCreateError"),
 ]
 

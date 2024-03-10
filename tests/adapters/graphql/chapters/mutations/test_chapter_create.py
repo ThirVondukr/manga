@@ -14,7 +14,11 @@ from sqlalchemy.orm import selectinload
 
 from app.core.domain.chapters.commands import ChapterCreateCommand
 from app.core.domain.const import GENERIC_NAME_LENGTH
-from app.core.errors import PermissionDeniedError, RelationshipNotFoundError
+from app.core.errors import (
+    EntityAlreadyExistsError,
+    PermissionDeniedError,
+    RelationshipNotFoundError,
+)
 from app.db.models import MangaBranch, MangaChapter
 from tests.adapters.graphql.client import GraphQLClient, GraphQLFile
 from tests.utils import TestImageStorage
@@ -128,6 +132,7 @@ async def test_validation_error(
             "RelationshipNotFoundError",
         ),
         (PermissionDeniedError(), "PermissionDeniedError"),
+        (EntityAlreadyExistsError(), "EntityAlreadyExistsError"),
     ],
 )
 async def test_err(

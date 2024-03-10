@@ -4,7 +4,11 @@ from sqlalchemy.orm import joinedload
 from app.core.domain.branches.repositories import BranchRepository
 from app.core.domain.chapters.dto import ChapterCreateDTO
 from app.core.domain.chapters.services import ChapterService
-from app.core.errors import PermissionDeniedError, RelationshipNotFoundError
+from app.core.errors import (
+    EntityAlreadyExistsError,
+    PermissionDeniedError,
+    RelationshipNotFoundError,
+)
 from app.db.models import MangaBranch, MangaChapter, User
 
 
@@ -23,7 +27,9 @@ class ChapterCreateCommand:
         user: User,
     ) -> Result[
         MangaChapter,
-        RelationshipNotFoundError | PermissionDeniedError,
+        RelationshipNotFoundError
+        | PermissionDeniedError
+        | EntityAlreadyExistsError,
     ]:
         branch = await self._branch_repository.get(
             id=dto.branch_id,

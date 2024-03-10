@@ -5,7 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.domain.chapters.dto import ChapterCreateDTO
-from app.core.errors import PermissionDeniedError
+from app.core.domain.chapters.repositories import ChapterRepository
+from app.core.errors import EntityAlreadyExistsError, PermissionDeniedError
 from app.core.storage import FileUpload, ImageStorage
 from app.db.models import (
     Group,
@@ -35,22 +36,30 @@ class ChapterService:
         db_context: DBContext,
         image_storage: ImageStorage,
         permissions: ChapterPermissionService,
+        repository: ChapterRepository,
     ) -> None:
         self._db_context = db_context
         self._image_storage = image_storage
         self._permissions = permissions
+        self._repository = repository
 
     async def create(
         self,
         dto: ChapterCreateDTO,
         branch: MangaBranch,
         user: User,
-    ) -> Result[MangaChapter, PermissionDeniedError]:
+    ) -> Result[MangaChapter, PermissionDeniedError | EntityAlreadyExistsError]:
         if not await self._permissions.can_create_chapter(
             user=user,
             branch=branch,
         ):
             return Err(PermissionDeniedError())
+
+        if await self._repository.find_one(
+            number=dto.number,
+            branch_id=dto.branch_id,
+        ):
+            return Err(EntityAlreadyExistsError())
 
         chapter = MangaChapter(
             branch=branch,

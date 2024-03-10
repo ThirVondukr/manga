@@ -16,7 +16,7 @@ type AuthenticationResult {
   accessToken: String!
 }
 
-union ChapterCreateError = ValidationErrors | FileUploadError | RelationshipNotFoundError | PermissionDeniedError
+union ChapterCreateError = ValidationErrors | FileUploadError | RelationshipNotFoundError | PermissionDeniedError | EntityAlreadyExistsError
 
 input ChapterCreateInput {
   title: String!

@@ -2,7 +2,11 @@ from typing import Self
 
 import strawberry
 
-from app.core.errors import PermissionDeniedError, RelationshipNotFoundError
+from app.core.errors import (
+    EntityAlreadyExistsError,
+    PermissionDeniedError,
+    RelationshipNotFoundError,
+)
 
 
 @strawberry.interface(name="Error")
@@ -13,6 +17,10 @@ class ErrorGQL:
 @strawberry.type(name="EntityAlreadyExistsError")
 class EntityAlreadyExistsErrorGQL(ErrorGQL):
     message: str = "Entity already exists"
+
+    @classmethod
+    def from_err(cls, err: EntityAlreadyExistsError) -> Self:  # noqa: ARG003
+        return cls()
 
 
 @strawberry.type(name="RelationshipNotFoundError")

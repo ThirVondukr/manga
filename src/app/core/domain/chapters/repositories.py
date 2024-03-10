@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from uuid import UUID
 
 from sqlalchemy import select
@@ -14,6 +15,19 @@ from lib.pagination.sqla import page_paginate
 class ChapterRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
+
+    async def find_one(
+        self,
+        number: Sequence[int] | None = None,
+        branch_id: UUID | None = None,
+    ) -> MangaChapter | None:
+        stmt = select(MangaChapter).limit(2)
+        if number:  # pragma: no branch
+            stmt = stmt.where(MangaChapter.number == number)
+        if branch_id:  # pragma: no branch
+            stmt = stmt.where(MangaChapter.branch_id == branch_id)
+
+        return (await self._session.scalars(stmt)).one_or_none()
 
     async def paginate(
         self,

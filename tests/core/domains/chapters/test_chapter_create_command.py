@@ -7,8 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.domain.chapters.commands import ChapterCreateCommand
 from app.core.domain.chapters.dto import ChapterCreateDTO
-from app.core.errors import PermissionDeniedError, RelationshipNotFoundError
-from app.db.models import Group, Manga, MangaBranch, User
+from app.core.errors import (
+    EntityAlreadyExistsError,
+    PermissionDeniedError,
+    RelationshipNotFoundError,
+)
+from app.db.models import Group, Manga, MangaBranch, MangaChapter, User
 from app.settings import Buckets
 from lib.files import File
 from tests.types import Resolver
@@ -61,6 +65,20 @@ async def test_permission_denied(  # noqa: PLR0913
 
     err = (await command.execute(dto, user)).unwrap_err()
     assert err == PermissionDeniedError()
+
+
+async def test_duplicate_chapter_number(
+    command: ChapterCreateCommand,
+    user: User,
+    dto: ChapterCreateDTO,
+) -> None:
+    dto.number = [1]
+
+    chapter = (await command.execute(dto, user)).unwrap()
+    assert isinstance(chapter, MangaChapter)
+
+    err = (await command.execute(dto, user)).unwrap_err()
+    assert err == EntityAlreadyExistsError()
 
 
 async def test_ok(
