@@ -61,7 +61,8 @@ class CustomNameConverter(NameConverter):
 
 def _should_mask_error(error: GraphQLError) -> bool:
     if not isinstance(
-        error.original_error, StrawberryGraphQLError
+        error.original_error,
+        StrawberryGraphQLError,
     ):  # pragma: no cover
         return True
     return error.original_error.extensions != IsAuthenticated.error_extensions
