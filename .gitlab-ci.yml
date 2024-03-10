@@ -179,7 +179,6 @@ build-image:
   stage: deploy
   variables:
     APP_NAME: "manga"
-    NAMESPACE: "dev"
   script:
     - >
       helm upgrade $APP_NAME ./.k8s/app
@@ -202,3 +201,7 @@ deploy-production:
   variables:
     NAMESPACE: "manga"
     VALUES_FILE: "production"
+  environment:
+    name: "production"
+    url: "https://graphql-manga.dpy.su/"
+    deployment_tier: "production"
