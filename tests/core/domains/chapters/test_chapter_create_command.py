@@ -51,7 +51,7 @@ async def test_branch_not_found(
     assert err == RelationshipNotFoundError(entity_id=str(dto.branch_id))
 
 
-async def test_permission_denied(  # noqa: PLR0913
+async def test_permission_denied(
     command: ChapterCreateCommand,
     user: User,
     other_user: User,

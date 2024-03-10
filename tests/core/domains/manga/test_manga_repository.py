@@ -36,30 +36,62 @@ _DEFAULT_SORT: Sort[MangaSortField] = Sort(
 )
 
 
+@pytest.mark.parametrize(
+    ("title", "search_term", "should_include"),
+    [
+        ("Title", "title", True),
+        ("Title", "  Title ", True),
+        ("Title", "something different", False),
+    ],
+)
 async def test_filter_search_term(
     manga: Manga,
     manga_repository: MangaRepository,
     db_context: DBContext,
+    title: str,
+    search_term: str,
+    should_include: bool,
+) -> None:
+    manga.title = title
+    db_context.add(manga)
+    await db_context.flush()
+
+    result = await manga_repository.paginate(
+        filter=MangaFilter(search_term=search_term),
+        pagination=PagePaginationParamsDTO(page=1, page_size=100),
+        sort=_DEFAULT_SORT,
+    )
+    assert result.items == ([manga] if should_include else [])
+
+
+@pytest.mark.parametrize(
+    ("title", "search_term", "should_include"),
+    [
+        ("Title", "title", True),
+        ("Title", "  Title ", True),
+        ("Title", "something different", False),
+    ],
+)
+async def test_filter_search_term_alt_title(
+    manga: Manga,
+    manga_repository: MangaRepository,
+    db_context: DBContext,
+    title: str,
+    search_term: str,
+    should_include: bool,
 ) -> None:
     manga.alt_titles = [
-        AltTitle(title="Search title", language=Language.eng),
+        AltTitle(title=title, language=Language.eng),
     ]
     db_context.add(manga)
     await db_context.flush()
 
     result = await manga_repository.paginate(
-        filter=MangaFilter(search_term="not included"),
+        filter=MangaFilter(search_term=search_term),
         pagination=PagePaginationParamsDTO(page=1, page_size=100),
         sort=_DEFAULT_SORT,
     )
-    assert result.items == []
-
-    result = await manga_repository.paginate(
-        filter=MangaFilter(search_term="Search"),
-        pagination=PagePaginationParamsDTO(page=1, page_size=100),
-        sort=_DEFAULT_SORT,
-    )
-    assert result.items == [manga]
+    assert result.items == ([manga] if should_include else [])
 
 
 async def test_tags(
@@ -157,7 +189,7 @@ async def test_sort(
     "direction",
     SortDirection,
 )
-async def test_sort_by_latest_chapter_upload_date(  # noqa: PLR0913
+async def test_sort_by_latest_chapter_upload_date(
     mangas: Sequence[Manga],
     direction: SortDirection,
     manga_repository: MangaRepository,

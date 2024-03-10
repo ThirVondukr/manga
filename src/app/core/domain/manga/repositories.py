@@ -95,7 +95,10 @@ class MangaRepository:
 
         if filter.search_term:
             stmt = stmt.join(Manga.alt_titles, isouter=True).where(
-                AltTitle.title.op("&@~")(filter.search_term),
+                or_(
+                    AltTitle.title.op("&@~")(filter.search_term),
+                    Manga.title.op("&@~")(filter.search_term),
+                ),
             )
         if filter.tags.include:
             include_alias = aliased(MangaTag, name="tags_include")

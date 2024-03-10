@@ -19,7 +19,7 @@ QUERY = """query ($mangaId: ID!) {
 }"""
 
 
-async def test_ok(  # noqa: PLR0913
+async def test_ok(
     graphql_client: GraphQLClient,
     manga: Manga,
     manga_branch: MangaBranch,
