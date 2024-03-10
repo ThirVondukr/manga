@@ -95,6 +95,13 @@ class Manga(
 ):
 
     __tablename__ = "manga"
+    __table_args__ = (
+        Index(
+            "ix_manga_title_pgroonga",
+            "title",
+            postgresql_using="pgroonga",
+        ),
+    )
 
     title: Mapped[str_title] = mapped_column(unique=True)
     title_slug: Mapped[str_title] = mapped_column(unique=True)
