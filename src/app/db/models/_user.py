@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import String
+from sqlalchemy import String, false
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
 from uuid_utils.compat import uuid7
 
@@ -20,3 +20,7 @@ class User(MappedAsDataclass, Base, kw_only=True):
     email: Mapped[str] = mapped_column(String(length=255), unique=True)
     password_hash: Mapped[str]
     created_at: Mapped[datetime] = mapped_column(default_factory=utc_now)
+    is_superuser: Mapped[bool] = mapped_column(
+        default=False,
+        server_default=false(),
+    )
