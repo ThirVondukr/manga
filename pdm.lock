@@ -5,7 +5,7 @@
 groups = ["default", "dev", "testing", "graphql", "types"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:f2d20f39e2b6cd82976723b1679a2659de5a0e1125cd3c4cbb4a0441635ce9ea"
+content_hash = "sha256:41d45e8a61e7ecfc6c430ffccd424a3af1ff0bb56e9701e1f81cc7cc41c25a83"
 
 [[package]]
 name = "aioboto3"
