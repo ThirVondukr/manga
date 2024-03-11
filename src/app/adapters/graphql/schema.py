@@ -4,7 +4,12 @@ from graphql import GraphQLError
 from strawberry import Schema
 from strawberry.enum import EnumDefinition, EnumValue
 from strawberry.exceptions import StrawberryGraphQLError
-from strawberry.extensions import MaskErrors, ParserCache, ValidationCache
+from strawberry.extensions import (
+    AddValidationRules,
+    MaskErrors,
+    ParserCache,
+    ValidationCache,
+)
 from strawberry.schema.config import StrawberryConfig
 from strawberry.schema.name_converter import NameConverter
 from strawberry.tools import merge_types
@@ -20,6 +25,10 @@ from app.adapters.graphql.apps.tags.query import TagsQueryGQL
 from app.adapters.graphql.apps.users.query import UserQuery
 from app.adapters.graphql.extensions import IsAuthenticated
 from app.core.di import create_container
+from lib.query_complexity import (
+    QueryComplexityExtension,
+    QueryComplexityValidationRule,
+)
 
 Query = merge_types(
     name="Query",
@@ -74,6 +83,8 @@ schema = Schema(
     extensions=[
         ParserCache(maxsize=128),
         ValidationCache(maxsize=128),
+        QueryComplexityExtension(max_complexity=100, default_cost=1),
+        AddValidationRules([QueryComplexityValidationRule]),
         MaskErrors(_should_mask_error),
         AioInjectExtension(container=create_container()),
     ],

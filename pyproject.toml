@@ -211,6 +211,7 @@ ignore = [
 "src/app/db/migrations/versions/*" = ["D400", "D415", "INP001"]
 "src/app/db/models/*" = ["A003"]
 "src/app/*/schema.py" = ["A003"]
+"src/lib/query_complexity.py" = ["ARG002"]
 ".scripts/*" = ["INP001"]
 
 [tool.ruff.lint.flake8-pytest-style]

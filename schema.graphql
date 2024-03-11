@@ -1,3 +1,5 @@
+directive @cost(complexity: Int!, multiplier: Int) on FIELD_DEFINITION
+
 directive @isAuthenticated on FIELD_DEFINITION
 
 type AltTitle {
@@ -255,7 +257,7 @@ type PrivateUser implements User {
 
 type Query {
   chapter(id: ID!): MangaChapter
-  manga(id: ID!): Manga
+  manga(id: ID!): Manga @cost(complexity: 1)
   mangas(pagination: PagePaginationInput = null, filter: MangaFilter = null, sort: MangaSort = null): MangaPagePaginationResult!
   me: PrivateUser! @isAuthenticated
   tags: [MangaTag!]!
