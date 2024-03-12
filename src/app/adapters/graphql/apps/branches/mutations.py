@@ -11,11 +11,10 @@ from app.adapters.graphql.apps.branches.payload import (
 )
 from app.adapters.graphql.apps.branches.types import MangaBranchGQL
 from app.adapters.graphql.context import Info
-from app.adapters.graphql.errors import RelationshipNotFoundErrorGQL
+from app.adapters.graphql.errors import map_error_to_gql
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.validation import validate_callable
 from app.core.domain.branches.commands import MangaBranchCreateCommand
-from app.core.errors import RelationshipNotFoundError
 
 
 @strawberry.type
@@ -38,13 +37,9 @@ class MangaBranchMutationGQL:
         )
 
         if isinstance(result, Err):
-            match result.err_value:
-                case RelationshipNotFoundError():  # pragma: no branch
-                    return MangaBranchCreatePayloadGQL(
-                        error=RelationshipNotFoundErrorGQL.from_err(
-                            result.err_value,
-                        ),
-                    )
+            return MangaBranchCreatePayloadGQL(
+                error=map_error_to_gql(result.err_value),
+            )
 
         return MangaBranchCreatePayloadGQL(
             branch=MangaBranchGQL.from_dto(result.ok_value),

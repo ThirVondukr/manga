@@ -12,9 +12,7 @@ from app.adapters.graphql.apps.chapters.payload import ChapterCreatePayloadGQL
 from app.adapters.graphql.apps.chapters.types import MangaChapterGQL
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.errors import (
-    EntityAlreadyExistsErrorGQL,
-    PermissionDeniedErrorGQL,
-    RelationshipNotFoundErrorGQL,
+    map_error_to_gql,
 )
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.types import GraphQLFile
@@ -23,11 +21,6 @@ from app.adapters.graphql.validation import (
     validate_callable,
 )
 from app.core.domain.chapters.commands import ChapterCreateCommand
-from app.core.errors import (
-    EntityAlreadyExistsError,
-    PermissionDeniedError,
-    RelationshipNotFoundError,
-)
 from app.settings import AppSettings
 from lib.files import FileReader
 
@@ -66,19 +59,9 @@ class ChapterMutationGQL:
         )
 
         if isinstance(result, Err):
-            match result.err_value:
-                case RelationshipNotFoundError() as err:
-                    return ChapterCreatePayloadGQL(
-                        error=RelationshipNotFoundErrorGQL.from_err(err),
-                    )
-                case PermissionDeniedError() as err:
-                    return ChapterCreatePayloadGQL(
-                        error=PermissionDeniedErrorGQL.from_err(err),
-                    )
-                case EntityAlreadyExistsError() as err:
-                    return ChapterCreatePayloadGQL(
-                        error=EntityAlreadyExistsErrorGQL.from_err(err),
-                    )
+            return ChapterCreatePayloadGQL(
+                error=map_error_to_gql(result.err_value),
+            )
 
         return ChapterCreatePayloadGQL(
             chapter=MangaChapterGQL.from_dto(result.ok_value),

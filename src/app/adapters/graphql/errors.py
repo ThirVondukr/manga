@@ -1,9 +1,11 @@
-from typing import Self
+import typing
+from typing import Self, assert_never
 
 import strawberry
 
 from app.core.errors import (
     EntityAlreadyExistsError,
+    NotFoundError,
     PermissionDeniedError,
     RelationshipNotFoundError,
 )
@@ -53,3 +55,51 @@ class NotFoundErrorGQL(ErrorGQL):
 @strawberry.type(name="InvalidCredentialsError")
 class InvalidCredentialsErrorGQL(ErrorGQL):
     message: str = "Invalid credentials"
+
+
+@typing.overload
+def map_error_to_gql(error: NotFoundError) -> NotFoundErrorGQL: ...
+
+
+@typing.overload
+def map_error_to_gql(
+    error: PermissionDeniedError,
+) -> PermissionDeniedErrorGQL: ...
+
+
+@typing.overload
+def map_error_to_gql(
+    error: EntityAlreadyExistsError,
+) -> EntityAlreadyExistsErrorGQL: ...
+
+
+@typing.overload
+def map_error_to_gql(
+    error: RelationshipNotFoundError,
+) -> RelationshipNotFoundErrorGQL: ...
+
+
+def map_error_to_gql(
+    error: (
+        NotFoundError
+        | PermissionDeniedError
+        | EntityAlreadyExistsError
+        | RelationshipNotFoundError
+    ),
+) -> (
+    NotFoundErrorGQL
+    | PermissionDeniedErrorGQL
+    | EntityAlreadyExistsErrorGQL
+    | RelationshipNotFoundErrorGQL
+):
+    match error:
+        case NotFoundError():
+            return NotFoundErrorGQL(entity_id=strawberry.ID(error.entity_id))
+        case PermissionDeniedError():
+            return PermissionDeniedErrorGQL.from_err(error)
+        case EntityAlreadyExistsError():
+            return EntityAlreadyExistsErrorGQL.from_err(error)
+        case RelationshipNotFoundError():
+            return RelationshipNotFoundErrorGQL.from_err(error)
+        case _:
+            assert_never(error)

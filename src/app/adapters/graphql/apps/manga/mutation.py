@@ -16,9 +16,8 @@ from app.adapters.graphql.apps.manga.payload import (
 from app.adapters.graphql.apps.manga.types import MangaGQL
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.errors import (
-    EntityAlreadyExistsErrorGQL,
     NotFoundErrorGQL,
-    PermissionDeniedErrorGQL,
+    map_error_to_gql,
 )
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.validation import validate_callable
@@ -27,11 +26,6 @@ from app.core.domain.bookmarks.commands import (
     MangaBookmarkRemoveCommand,
 )
 from app.core.domain.manga.commands import MangaCreateCommand
-from app.core.errors import (
-    EntityAlreadyExistsError,
-    NotFoundError,
-    PermissionDeniedError,
-)
 from lib.validators import validate_uuid
 
 
@@ -54,15 +48,9 @@ class MangaMutationsGQL:
             user=await info.context.user,
         )
         if isinstance(manga, Err):
-            match manga.err_value:
-                case EntityAlreadyExistsError():  # pragma: no branch
-                    return MangaCreatePayloadGQL(
-                        error=EntityAlreadyExistsErrorGQL(),
-                    )
-                case PermissionDeniedError():  # pragma: no branch
-                    return MangaCreatePayloadGQL(
-                        error=PermissionDeniedErrorGQL(),
-                    )
+            return MangaCreatePayloadGQL(
+                error=map_error_to_gql(manga.err_value),
+            )
 
         return MangaCreatePayloadGQL(
             manga=MangaGQL.from_dto(manga.ok_value),
@@ -78,20 +66,19 @@ class MangaMutationsGQL:
         command: Annotated[MangaBookmarkAddCommand, Inject],
     ) -> MangaBookmarkPayloadGQL:
         manga_id = validate_uuid(id)
-        not_found_error = MangaBookmarkPayloadGQL(
-            error=NotFoundErrorGQL(entity_id=id),
-        )
         if isinstance(manga_id, Err):
-            return not_found_error
+            return MangaBookmarkPayloadGQL(
+                error=NotFoundErrorGQL(entity_id=id),
+            )
 
         result = await command.execute(
             user=await info.context.user,
             manga_id=manga_id.ok_value,
         )
         if isinstance(result, Err):
-            match result.err_value:
-                case NotFoundError():  #  pragma: no branch
-                    return not_found_error
+            return MangaBookmarkPayloadGQL(
+                error=map_error_to_gql(result.err_value),
+            )
 
         return MangaBookmarkPayloadGQL(
             manga=MangaGQL.from_dto(result.ok_value.manga),
@@ -107,19 +94,18 @@ class MangaMutationsGQL:
         command: Annotated[MangaBookmarkRemoveCommand, Inject],
     ) -> MangaBookmarkPayloadGQL:
         manga_id = validate_uuid(id)
-        not_found_error = MangaBookmarkPayloadGQL(
-            error=NotFoundErrorGQL(entity_id=id),
-        )
         if isinstance(manga_id, Err):
-            return not_found_error
+            return MangaBookmarkPayloadGQL(
+                error=NotFoundErrorGQL(entity_id=id),
+            )
         result = await command.execute(
             user=await info.context.user,
             manga_id=manga_id.ok_value,
         )
         if isinstance(result, Err):
-            match result.err_value:
-                case NotFoundError():  #  pragma: no branch
-                    return not_found_error
+            return MangaBookmarkPayloadGQL(
+                error=map_error_to_gql(result.err_value),
+            )
 
         return MangaBookmarkPayloadGQL(
             manga=MangaGQL.from_dto(result.ok_value),

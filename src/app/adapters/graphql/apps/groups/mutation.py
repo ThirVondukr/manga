@@ -9,11 +9,10 @@ from app.adapters.graphql.apps.groups.input import GroupCreateInputGQL
 from app.adapters.graphql.apps.groups.payload import GroupCreatePayloadGQL
 from app.adapters.graphql.apps.groups.types import GroupGQL
 from app.adapters.graphql.context import Info
-from app.adapters.graphql.errors import EntityAlreadyExistsErrorGQL
+from app.adapters.graphql.errors import map_error_to_gql
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.validation import validate_callable
 from app.core.domain.groups.commands import GroupCreateCommand
-from app.core.errors import EntityAlreadyExistsError
 
 
 @strawberry.type(name="GroupMutations")
@@ -36,11 +35,9 @@ class GroupMutationsGQL:
             user=await info.context.user,
         )
         if isinstance(result, Err):
-            match result.err_value:
-                case EntityAlreadyExistsError():  # pragma: no branch
-                    return GroupCreatePayloadGQL(
-                        error=EntityAlreadyExistsErrorGQL(),
-                    )
+            return GroupCreatePayloadGQL(
+                error=map_error_to_gql(result.err_value),
+            )
 
         return GroupCreatePayloadGQL(
             group=GroupGQL.from_dto(result.ok_value),
