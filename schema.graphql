@@ -1,5 +1,3 @@
-directive @cost(complexity: Int!, multiplier: Int) on FIELD_DEFINITION
-
 directive @isAuthenticated on FIELD_DEFINITION
 
 type AltTitle {
@@ -147,7 +145,7 @@ type MangaChapterPagePaginationResult {
   pageInfo: PagePaginationInfo!
 }
 
-union MangaCreateError = ValidationErrors | EntityAlreadyExistsError
+union MangaCreateError = ValidationErrors | EntityAlreadyExistsError | PermissionDeniedError
 
 input MangaCreateInput {
   title: String!
@@ -169,6 +167,7 @@ type MangaMutations {
   create(input: MangaCreateInput!): MangaCreatePayload! @isAuthenticated
   addBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
   removeBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
+  update(input: MangaUpdateInput!): Void
 }
 
 type MangaPage {
@@ -217,6 +216,12 @@ input MangaTagFilter {
   exclude: [String!] = null
 }
 
+input MangaUpdateInput {
+  id: ID!
+  title: String!
+  status: MangaStatus!
+}
+
 type Mutation {
   auth: AuthMutations!
   manga: MangaMutations!
@@ -257,7 +262,7 @@ type PrivateUser implements User {
 
 type Query {
   chapter(id: ID!): MangaChapter
-  manga(id: ID!): Manga @cost(complexity: 1)
+  manga(id: ID!): Manga
   mangas(pagination: PagePaginationInput = null, filter: MangaFilter = null, sort: MangaSort = null): MangaPagePaginationResult!
   me: PrivateUser! @isAuthenticated
   tags: [MangaTag!]!
@@ -316,3 +321,6 @@ type ValidationErrors implements Error {
   message: String!
   errors: [ValidationError!]!
 }
+
+"""Represents NULL values"""
+scalar Void

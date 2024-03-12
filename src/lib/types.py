@@ -21,3 +21,7 @@ class MangaStatus(enum.IntEnum):
     completed = enum.auto()
     cancelled = enum.auto()
     on_hold = enum.auto()
+
+
+class Unset(enum.Enum):
+    unset = enum.auto()

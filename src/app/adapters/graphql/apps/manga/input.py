@@ -4,7 +4,7 @@ from collections.abc import Sequence
 import strawberry
 
 from app.adapters.graphql.types import MangaStatusGQL, SortDirectionGQL
-from app.core.domain.manga.dto import MangaCreateDTO
+from app.core.domain.manga.dto import MangaCreateDTO, MangaUpdateDTO
 from app.core.domain.manga.filters import (
     MangaFilter,
     MangaSortField,
@@ -56,13 +56,27 @@ class MangaSortGQL:
         )
 
 
-@strawberry.federation.input(name="MangaCreateInput")
-class MangaCreateInput:
+@strawberry.input(name="MangaCreateInput")
+class MangaCreateInputGQL:
     title: str
     status: MangaStatusGQL
 
     def to_dto(self) -> MangaCreateDTO:
         return MangaCreateDTO(
+            title=self.title,
+            status=self.status,
+        )
+
+
+@strawberry.input(name="MangaUpdateInput")
+class MangaUpdateInputGQL:
+    id: strawberry.ID
+    title: str
+    status: MangaStatusGQL
+
+    def to_dto(self) -> MangaUpdateDTO:
+        return MangaUpdateDTO(
+            id=self.id,  # type: ignore[arg-type]
             title=self.title,
             status=self.status,
         )

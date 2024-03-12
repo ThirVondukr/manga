@@ -12,7 +12,6 @@ from tests.types import Resolver
 async def group(db_context: DBContext, user: User) -> Group:
     group = Group(name=str(uuid.uuid4()), created_by=user)
     db_context.add(group)
-    await db_context.flush()
     return group
 
 

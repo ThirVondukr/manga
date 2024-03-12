@@ -34,7 +34,6 @@ async def test_ok(
     manga.tags = MangaTagFactory.build_batch(size=collection_size)
     manga.tags.sort(key=lambda tag: casefold(tag.name_slug))
     session.add(manga)
-    await session.flush()
 
     response = await graphql_client.query(
         query=_QUERY,

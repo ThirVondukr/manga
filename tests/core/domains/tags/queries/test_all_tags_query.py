@@ -20,7 +20,6 @@ async def test_ok(
     tags = MangaTagFactory.build_batch(size=collection_size)
     tags.sort(key=lambda tag: casefold(tag.name))
     session.add_all(tags)
-    await session.flush()
 
     result = await query.execute()
     assert result == tags

@@ -13,7 +13,6 @@ from tests.factories import MangaFactory
 async def manga(session: AsyncSession) -> Manga:
     manga = MangaFactory.build()
     session.add(manga)
-    await session.flush()
     return manga
 
 
@@ -27,7 +26,6 @@ async def mangas(
         manga.tags = list(random.sample(tags, k=3))
 
     session.add_all(mangas)
-    await session.flush()
     return mangas
 
 

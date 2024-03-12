@@ -42,7 +42,13 @@ async def user(
     user = result.unwrap()
     user.id = user_token.claims.sub
     db_context.add(user)
-    await db_context.flush()
+    return user
+
+
+@pytest.fixture
+async def make_user_superuser(user: User, db_context: DBContext) -> User:
+    user.is_superuser = True
+    db_context.add(user)
     return user
 
 

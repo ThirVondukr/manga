@@ -6,11 +6,14 @@ from app.adapters.graphql.apps.manga.types import MangaGQL
 from app.adapters.graphql.errors import (
     EntityAlreadyExistsErrorGQL,
     NotFoundErrorGQL,
+    PermissionDeniedErrorGQL,
 )
 from app.adapters.graphql.validation import ValidationErrorsGQL
 
 MangaCreateErrorGQL = Annotated[
-    ValidationErrorsGQL | EntityAlreadyExistsErrorGQL,
+    ValidationErrorsGQL
+    | EntityAlreadyExistsErrorGQL
+    | PermissionDeniedErrorGQL,
     strawberry.union("MangaCreateError"),
 ]
 

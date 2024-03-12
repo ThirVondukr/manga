@@ -54,7 +54,6 @@ async def test_filter_search_term(
 ) -> None:
     manga.title = title
     db_context.add(manga)
-    await db_context.flush()
 
     result = await manga_repository.paginate(
         filter=MangaFilter(search_term=search_term),
@@ -84,7 +83,6 @@ async def test_filter_search_term_alt_title(
         AltTitle(title=title, language=Language.eng),
     ]
     db_context.add(manga)
-    await db_context.flush()
 
     result = await manga_repository.paginate(
         filter=MangaFilter(search_term=search_term),
@@ -104,7 +102,6 @@ async def test_tags(
     assert manga.tags
 
     db_context.add(manga)
-    await db_context.flush()
     pagination = PagePaginationParamsDTO(page=1, page_size=100)
 
     for tag in manga.tags:
@@ -147,7 +144,6 @@ async def test_filter_by_status(
 ) -> None:
     mangas = {status: MangaFactory(status=status) for status in MangaStatus}
     db_context.add_all(mangas.values())
-    await db_context.flush()
 
     for status, manga in mangas.items():
         result = await manga_repository.paginate(
@@ -209,7 +205,6 @@ async def test_sort_by_latest_chapter_upload_date(
         manga_latest_chapter_dates[manga.id] = chapter.created_at
         manga.latest_chapter_id = chapter.id
         db_context.add(manga)
-    await db_context.flush()
 
     expected = sorted(
         mangas,

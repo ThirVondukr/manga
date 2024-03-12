@@ -99,7 +99,7 @@ async def container() -> AsyncIterator[aioinject.Container]:
         yield container
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 async def resolver(
     container: aioinject.Container,
     session: AsyncSession,

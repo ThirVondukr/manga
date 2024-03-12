@@ -35,7 +35,6 @@ async def test_ok(
     ]
     manga_chapter.pages = pages
     db_context.add(manga_chapter)
-    await db_context.flush()
 
     response = await graphql_client.query(
         QUERY,

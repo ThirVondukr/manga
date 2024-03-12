@@ -36,7 +36,6 @@ async def test_ok(
         key=lambda alt_title: (alt_title.language.name, alt_title.id),
     )
     db_context.add(manga)
-    await db_context.flush()
 
     response = await graphql_client.query(
         query=_QUERY,

@@ -33,7 +33,6 @@ async def test_ok(
         for _ in range(collection_size)
     ]
     db_context.add(manga_branch)
-    await db_context.flush()
 
     response = await graphql_client.query(
         QUERY,

@@ -67,6 +67,7 @@ class RegConfigLanguage(enum.Enum):
 
 
 class Base(DeclarativeBase):
+    __mapper_args__ = {"eager_defaults": True}  # noqa: RUF012
     metadata = meta
 
     registry = registry(

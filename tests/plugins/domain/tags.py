@@ -11,5 +11,4 @@ from tests.factories import MangaTagFactory
 async def tags(session: AsyncSession) -> Sequence[MangaTag]:
     tags = MangaTagFactory.build_batch(size=10)
     session.add_all(tags)
-    await session.flush()
     return tags

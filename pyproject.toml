@@ -41,9 +41,6 @@ requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
 
 
-[tool.black]
-line-length = 80
-
 [tool.pdm]
 [tool.pdm.dev-dependencies]
 dev = [
@@ -92,6 +89,9 @@ test = { composite = [
     "coverage report",
 ] }
 
+
+[tool.black]
+line-length = 80
 
 [tool]
 [tool.pytest.ini_options]

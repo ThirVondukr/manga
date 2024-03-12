@@ -13,5 +13,4 @@ async def manga_branch(
 ) -> MangaBranch:
     branch = MangaBranchFactory.build(manga=manga, group=group)
     db_context.add(branch)
-    await db_context.flush()
     return branch

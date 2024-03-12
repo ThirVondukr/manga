@@ -1,13 +1,34 @@
+from typing import Literal
+
 from result import Err, Ok, Result
 from slugify import slugify
 
-from app.core.errors import EntityAlreadyExistsError
-from app.db.models import Manga
+from app.core.domain.users.services import PermissionService
+from app.core.errors import EntityAlreadyExistsError, PermissionDeniedError
+from app.db.models import Manga, User
 from lib.db import DBContext
 
 from .dto import MangaCreateDTO
 from .filters import MangaFindFilter
 from .repositories import MangaRepository
+
+
+class MangaPermissions:
+    def __init__(self, permissions: PermissionService) -> None:
+        self._permissions = permissions
+
+    async def can_create(
+        self,
+        user: User,
+    ) -> Result[Literal[True], PermissionDeniedError]:
+        return await self._permissions.is_superuser_check(user=user)
+
+    async def can_edit(
+        self,
+        user: User,
+        manga: Manga,  # noqa: ARG002
+    ) -> Result[Literal[True], PermissionDeniedError]:
+        return await self._permissions.is_superuser_check(user=user)
 
 
 class MangaService:
@@ -23,19 +44,51 @@ class MangaService:
         self,
         dto: MangaCreateDTO,
     ) -> Result[Manga, EntityAlreadyExistsError]:
+        if isinstance(
+            check := await self._update_precondition(title=dto.title),
+            Err,
+        ):
+            return check
+
         manga = Manga(
             title=dto.title,
-            title_slug=slugify(dto.title),
+            title_slug=self._slug(dto.title),
             status=dto.status,
         )
+        self._db_context.add(manga)
+        return Ok(manga)
+
+    async def update(
+        self,
+        dto: MangaCreateDTO,
+        manga: Manga,
+    ) -> Result[Manga, EntityAlreadyExistsError]:
+        if isinstance(
+            check := await self._update_precondition(title=dto.title),
+            Err,
+        ):
+            return check
+
+        manga.title = dto.title
+        manga.title_slug = self._slug(dto.title)
+        manga.status = dto.status
+        self._db_context.add(manga)
+        await self._db_context.flush()
+        return Ok(manga)
+
+    async def _update_precondition(
+        self,
+        title: str,
+    ) -> Result[None, EntityAlreadyExistsError]:
         if (
-            await self._repository.find_one(
-                MangaFindFilter(title=dto.title, title_slug=manga.title_slug),
+            await self._repository.find_any(
+                MangaFindFilter(title=title, title_slug=self._slug(title)),
             )
             is not None
         ):
             return Err(EntityAlreadyExistsError())
+        return Ok(None)
 
-        self._db_context.add(manga)
-        await self._db_context.flush()
-        return Ok(manga)
+    @classmethod
+    def _slug(cls, title: str) -> str:
+        return slugify(title)

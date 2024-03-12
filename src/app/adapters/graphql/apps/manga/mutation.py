@@ -5,7 +5,10 @@ from aioinject import Inject
 from aioinject.ext.strawberry import inject
 from result import Err
 
-from app.adapters.graphql.apps.manga.input import MangaCreateInput
+from app.adapters.graphql.apps.manga.input import (
+    MangaCreateInputGQL,
+    MangaUpdateInputGQL,
+)
 from app.adapters.graphql.apps.manga.payload import (
     MangaBookmarkPayloadGQL,
     MangaCreatePayloadGQL,
@@ -15,6 +18,7 @@ from app.adapters.graphql.context import Info
 from app.adapters.graphql.errors import (
     EntityAlreadyExistsErrorGQL,
     NotFoundErrorGQL,
+    PermissionDeniedErrorGQL,
 )
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.validation import validate_callable
@@ -23,7 +27,11 @@ from app.core.domain.bookmarks.commands import (
     MangaBookmarkRemoveCommand,
 )
 from app.core.domain.manga.commands import MangaCreateCommand
-from app.core.errors import EntityAlreadyExistsError, NotFoundError
+from app.core.errors import (
+    EntityAlreadyExistsError,
+    NotFoundError,
+    PermissionDeniedError,
+)
 from lib.validators import validate_uuid
 
 
@@ -33,7 +41,7 @@ class MangaMutationsGQL:
     @inject
     async def create(
         self,
-        input: MangaCreateInput,
+        input: MangaCreateInputGQL,
         command: Annotated[MangaCreateCommand, Inject],
         info: Info,
     ) -> MangaCreatePayloadGQL:
@@ -50,6 +58,10 @@ class MangaMutationsGQL:
                 case EntityAlreadyExistsError():  # pragma: no branch
                     return MangaCreatePayloadGQL(
                         error=EntityAlreadyExistsErrorGQL(),
+                    )
+                case PermissionDeniedError():  # pragma: no branch
+                    return MangaCreatePayloadGQL(
+                        error=PermissionDeniedErrorGQL(),
                     )
 
         return MangaCreatePayloadGQL(
@@ -113,3 +125,7 @@ class MangaMutationsGQL:
             manga=MangaGQL.from_dto(result.ok_value),
             error=None,
         )
+
+    @strawberry.mutation
+    async def update(self, input: MangaUpdateInputGQL) -> None:
+        pass

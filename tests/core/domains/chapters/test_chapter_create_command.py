@@ -61,7 +61,6 @@ async def test_permission_denied(
 ) -> None:
     group.created_by = other_user
     session.add(group)
-    await session.flush()
 
     err = (await command.execute(dto, user)).unwrap_err()
     assert err == PermissionDeniedError()

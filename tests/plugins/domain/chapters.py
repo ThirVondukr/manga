@@ -21,7 +21,6 @@ async def manga_chapter(
         volume=None,
     )
     db_context.add(chapter)
-    await db_context.flush()
     return chapter
 
 
