@@ -12,6 +12,7 @@ from app.adapters.graphql.apps.manga.input import (
 from app.adapters.graphql.apps.manga.payload import (
     MangaBookmarkPayloadGQL,
     MangaCreatePayloadGQL,
+    MangaUpdatePayloadGQL,
 )
 from app.adapters.graphql.apps.manga.types import MangaGQL
 from app.adapters.graphql.context import Info
@@ -25,7 +26,10 @@ from app.core.domain.bookmarks.commands import (
     MangaBookmarkAddCommand,
     MangaBookmarkRemoveCommand,
 )
-from app.core.domain.manga.commands import MangaCreateCommand
+from app.core.domain.manga.commands import (
+    MangaCreateCommand,
+    MangaUpdateCommand,
+)
 from lib.validators import validate_uuid
 
 
@@ -39,8 +43,7 @@ class MangaMutationsGQL:
         command: Annotated[MangaCreateCommand, Inject],
         info: Info,
     ) -> MangaCreatePayloadGQL:
-        dto = validate_callable(input.to_dto)
-        if isinstance(dto, Err):
+        if isinstance(dto := validate_callable(input.to_dto), Err):
             return MangaCreatePayloadGQL(error=dto.err_value)
 
         manga = await command.execute(
@@ -59,14 +62,38 @@ class MangaMutationsGQL:
 
     @strawberry.mutation(extensions=[AuthExtension])  # type: ignore[misc]
     @inject
+    async def update(
+        self,
+        input: MangaUpdateInputGQL,
+        command: Annotated[MangaUpdateCommand, Inject],
+        info: Info,
+    ) -> MangaUpdatePayloadGQL:
+        if isinstance(dto := validate_callable(input.to_dto), Err):
+            return MangaUpdatePayloadGQL(error=dto.err_value)
+
+        manga = await command.execute(
+            dto=dto.ok_value,
+            user=await info.context.user,
+        )
+        if isinstance(manga, Err):
+            return MangaUpdatePayloadGQL(
+                error=map_error_to_gql(manga.err_value),
+            )
+
+        return MangaUpdatePayloadGQL(
+            manga=MangaGQL.from_dto(manga.ok_value),
+            error=None,
+        )
+
+    @strawberry.mutation(extensions=[AuthExtension])  # type: ignore[misc]
+    @inject
     async def add_bookmark(
         self,
         id: strawberry.ID,
         info: Info,
         command: Annotated[MangaBookmarkAddCommand, Inject],
     ) -> MangaBookmarkPayloadGQL:
-        manga_id = validate_uuid(id)
-        if isinstance(manga_id, Err):
+        if isinstance(manga_id := validate_uuid(id), Err):
             return MangaBookmarkPayloadGQL(
                 error=NotFoundErrorGQL(entity_id=id),
             )
@@ -111,7 +138,3 @@ class MangaMutationsGQL:
             manga=MangaGQL.from_dto(result.ok_value),
             error=None,
         )
-
-    @strawberry.mutation
-    async def update(self, input: MangaUpdateInputGQL) -> None:
-        pass

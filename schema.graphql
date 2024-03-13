@@ -165,9 +165,9 @@ input MangaFilter {
 
 type MangaMutations {
   create(input: MangaCreateInput!): MangaCreatePayload! @isAuthenticated
+  update(input: MangaUpdateInput!): MangaUpdatePayload! @isAuthenticated
   addBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
   removeBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
-  update(input: MangaUpdateInput!): Void
 }
 
 type MangaPage {
@@ -216,10 +216,17 @@ input MangaTagFilter {
   exclude: [String!] = null
 }
 
+union MangaUpdateError = ValidationErrors | EntityAlreadyExistsError | PermissionDeniedError | NotFoundError
+
 input MangaUpdateInput {
   id: ID!
   title: String!
   status: MangaStatus!
+}
+
+type MangaUpdatePayload {
+  manga: Manga
+  error: MangaUpdateError
 }
 
 type Mutation {
@@ -321,6 +328,3 @@ type ValidationErrors implements Error {
   message: String!
   errors: [ValidationError!]!
 }
-
-"""Represents NULL values"""
-scalar Void

@@ -101,5 +101,5 @@ def map_error_to_gql(
             return EntityAlreadyExistsErrorGQL.from_err(error)
         case RelationshipNotFoundError():
             return RelationshipNotFoundErrorGQL.from_err(error)
-        case _:
+        case _:  # pragma: no cover
             assert_never(error)

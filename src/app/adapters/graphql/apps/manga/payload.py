@@ -24,6 +24,21 @@ class MangaCreatePayloadGQL:
     error: MangaCreateErrorGQL | None
 
 
+MangaUpdateErrorGQL = Annotated[
+    ValidationErrorsGQL
+    | EntityAlreadyExistsErrorGQL
+    | PermissionDeniedErrorGQL
+    | NotFoundErrorGQL,
+    strawberry.union("MangaUpdateError"),
+]
+
+
+@strawberry.type(name="MangaUpdatePayload")
+class MangaUpdatePayloadGQL:
+    manga: MangaGQL | None = None
+    error: MangaUpdateErrorGQL | None
+
+
 MangaBookmarkErrorGQL = Annotated[
     NotFoundErrorGQL,
     strawberry.union("MangaBookmarkError"),
