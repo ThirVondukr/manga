@@ -149,6 +149,7 @@ union MangaCreateError = ValidationErrors | EntityAlreadyExistsError | Permissio
 
 input MangaCreateInput {
   title: String!
+  description: String!
   status: MangaStatus!
 }
 
@@ -221,6 +222,7 @@ union MangaUpdateError = ValidationErrors | EntityAlreadyExistsError | Permissio
 input MangaUpdateInput {
   id: ID!
   title: String!
+  description: String!
   status: MangaStatus!
 }
 

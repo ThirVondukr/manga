@@ -59,11 +59,13 @@ class MangaSortGQL:
 @strawberry.input(name="MangaCreateInput")
 class MangaCreateInputGQL:
     title: str
+    description: str
     status: MangaStatusGQL
 
     def to_dto(self) -> MangaCreateDTO:
         return MangaCreateDTO(
             title=self.title,
+            description=self.description,
             status=self.status,
         )
 
@@ -72,11 +74,13 @@ class MangaCreateInputGQL:
 class MangaUpdateInputGQL:
     id: strawberry.ID
     title: str
+    description: str
     status: MangaStatusGQL
 
     def to_dto(self) -> MangaUpdateDTO:
         return MangaUpdateDTO(
             id=self.id,  # type: ignore[arg-type]
+            description=self.description,
             title=self.title,
             status=self.status,
         )

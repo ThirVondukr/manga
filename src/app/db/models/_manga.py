@@ -105,6 +105,7 @@ class Manga(
 
     title: Mapped[str_title] = mapped_column(unique=True)
     title_slug: Mapped[str_title] = mapped_column(unique=True)
+    description: Mapped[str]
     status: Mapped[MangaStatus]
     latest_chapter_id: Mapped[UUID | None] = mapped_column(
         ForeignKey(

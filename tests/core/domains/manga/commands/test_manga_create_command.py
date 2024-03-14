@@ -18,7 +18,11 @@ async def command(resolver: Resolver) -> MangaCreateCommand:
 
 @pytest.fixture
 def dto(manga_status: MangaStatus) -> MangaCreateDTO:
-    return MangaCreateDTO(title=str(uuid.uuid4()), status=manga_status)
+    return MangaCreateDTO(
+        title=str(uuid.uuid4()),
+        description=str(uuid.uuid4()),
+        status=manga_status,
+    )
 
 
 async def test_should_be_superuser(
@@ -55,4 +59,5 @@ async def test_ok(
     manga = (await command.execute(dto=dto, user=user)).unwrap()
     assert manga.title == dto.title
     assert manga.title_slug == slugify(dto.title)
+    assert manga.description == dto.description
     assert manga.status == manga_status

@@ -1,6 +1,7 @@
 import uuid
 
 import pytest
+from slugify import slugify
 
 from app.core.domain.manga.commands import MangaUpdateCommand
 from app.core.domain.manga.dto import MangaUpdateDTO
@@ -26,6 +27,7 @@ def dto(manga_status: MangaStatus, manga: Manga) -> MangaUpdateDTO:
     return MangaUpdateDTO(
         id=manga.id,
         title=str(uuid.uuid4()),
+        description=str(uuid.uuid4()),
         status=manga_status,
     )
 
@@ -59,7 +61,8 @@ async def test_ok(
     manga = result.unwrap()
 
     assert manga.title == dto.title
-    assert manga.status == dto.status
+    assert manga.title_slug == slugify(dto.title)
+    assert manga.description == dto.description
     assert manga.status == dto.status
 
 

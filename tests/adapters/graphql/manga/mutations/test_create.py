@@ -46,7 +46,11 @@ def _tpl(manga: object = None, error: object = None) -> object:
 
 @pytest.fixture
 def input(manga_status: MangaStatus) -> dict[str, Any]:
-    return {"title": str(uuid.uuid4()), "status": manga_status.name.upper()}
+    return {
+        "title": str(uuid.uuid4()),
+        "description": str(uuid.uuid4()),
+        "status": manga_status.name.upper(),
+    }
 
 
 async def test_requires_auth(

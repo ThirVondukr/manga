@@ -49,6 +49,7 @@ class GenericFactory(factory.Factory, Generic[T]):  # type: ignore[misc]
 class MangaFactory(GenericFactory[Manga]):
     title = factory.Faker("sentence")
     title_slug = factory.Faker("sentence")
+    description = factory.Faker("sentence")
     status = factory.Faker("enum", enum_cls=MangaStatus)
     created_at = factory.Faker("date_time", tzinfo=UTC)
 

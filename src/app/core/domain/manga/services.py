@@ -53,6 +53,7 @@ class MangaService:
         manga = Manga(
             title=dto.title,
             title_slug=self._slug(dto.title),
+            description=dto.description,
             status=dto.status,
         )
         self._db_context.add(manga)
@@ -71,6 +72,7 @@ class MangaService:
 
         manga.title = dto.title
         manga.title_slug = self._slug(dto.title)
+        manga.description = dto.description
         manga.status = dto.status
         self._db_context.add(manga)
         await self._db_context.flush()

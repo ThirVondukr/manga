@@ -51,6 +51,7 @@ def input(manga_status: MangaStatus, manga: Manga) -> dict[str, Any]:
     return {
         "id": str(manga.id),
         "title": str(uuid.uuid4()),
+        "description": str(uuid.uuid4()),
         "status": manga_status.name.upper(),
     }
 
