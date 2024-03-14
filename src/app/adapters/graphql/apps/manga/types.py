@@ -88,6 +88,7 @@ class MangaGQL(DTOMixin[Manga]):
     id: strawberry.ID
     title: str
     title_slug: str
+    description: str
     status: MangaStatusGQL
     created_at: datetime
     updated_at: datetime
@@ -99,6 +100,7 @@ class MangaGQL(DTOMixin[Manga]):
             id=strawberry.ID(str(model.id)),
             title=model.title,
             title_slug=model.title_slug,
+            description=model.description,
             status=model.status,
             created_at=model.created_at,
             updated_at=model.updated_at,
