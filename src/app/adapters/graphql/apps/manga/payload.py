@@ -68,3 +68,15 @@ MangaArtsAddErrorGQL = Annotated[
 class MangaArtsAddPayloadGQL:
     manga: MangaGQL | None = None
     error: MangaArtsAddErrorGQL | None = None
+
+
+MangaSetCoverArtErrorGQL = Annotated[
+    NotFoundErrorGQL | PermissionDeniedErrorGQL | ValidationErrorsGQL,
+    strawberry.union("MangaSetCoverArtErrorGQL"),
+]
+
+
+@strawberry.type(name="MangaSetCoverArtPayload")
+class MangaSetCoverArtPayloadGQL:
+    manga: MangaGQL | None = None
+    error: MangaSetCoverArtErrorGQL | None = None

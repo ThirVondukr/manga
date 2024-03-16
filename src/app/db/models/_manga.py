@@ -116,7 +116,11 @@ class MangaArt(
     language: Mapped[Language]
 
     manga_id: Mapped[UUID] = mapped_column(ForeignKey("manga.id"), init=False)
-    manga: Mapped[Manga] = relationship(back_populates="arts", default=None)
+    manga: Mapped[Manga] = relationship(
+        back_populates="arts",
+        default=None,
+        foreign_keys=[manga_id],
+    )
     image_id: Mapped[UUID] = mapped_column(ForeignKey("image.id"), init=False)
     image: Mapped[Image] = relationship(foreign_keys=[image_id])
     preview_image_id: Mapped[UUID] = mapped_column(
@@ -187,6 +191,15 @@ class Manga(
         default_factory=list,
         back_populates="manga",
         order_by="MangaArt.volume",
+        foreign_keys="MangaArt.manga_id",
+    )
+    cover_art_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("manga_art.id"),
+        init=False,
+    )
+    cover_art: Mapped[MangaArt | None] = relationship(
+        default=None,
+        foreign_keys=[cover_art_id],
     )
 
 

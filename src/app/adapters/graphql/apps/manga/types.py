@@ -28,6 +28,7 @@ from app.core.domain.chapters.queries import MangaChaptersQuery
 from app.core.domain.images.loaders import ImageLoader
 from app.core.domain.manga.loaders import (
     MangaAltTitleLoader,
+    MangaArtLoader,
     MangaArtsLoader,
     MangaTagLoader,
 )
@@ -239,3 +240,13 @@ class MangaGQL(DTOMixin[Manga]):
             self._instance.id,
         )
         return MangaArtGQL.from_dto_list(arts)
+
+    @strawberry.field
+    async def cover_art(self, info: Info) -> MangaArtGQL | None:
+        if self._instance.cover_art_id is None:  # pragma: no cover
+            return None
+
+        art = await info.context.loaders.map(MangaArtLoader).load(
+            self._instance.cover_art_id,
+        )
+        return MangaArtGQL.from_dto_optional(art)

@@ -1,12 +1,13 @@
 import contextlib
 from pathlib import PurePath
+from uuid import UUID
 
 from result import Err, Ok, Result
 from uuid_utils.compat import uuid7
 
 from app.core.domain.art.dto import MangaArtsAddDTO
 from app.core.domain.images.services import ImageService
-from app.core.errors import EntityAlreadyExistsError
+from app.core.errors import EntityAlreadyExistsError, NotFoundError
 from app.core.storage import FileUpload
 from app.db.models import Manga
 from app.db.models._manga import MangaArt
@@ -61,4 +62,19 @@ class MangaArtService:
             self._db_context.add(manga)
             await self._db_context.flush()
 
+        return Ok(manga)
+
+    async def set_cover_art(
+        self,
+        manga: Manga,
+        art_id: UUID | None,
+    ) -> Result[Manga, NotFoundError]:
+        art = None
+        if art_id is not None:
+            art = next((art for art in manga.arts if art.id == art_id), None)
+            if art is None:
+                return Err(NotFoundError(entity_id=str(art_id)))
+
+        manga.cover_art = art
+        self._db_context.add(manga)
         return Ok(manga)

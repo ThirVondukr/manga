@@ -18,3 +18,8 @@ class MangaArtAddDTO(BaseDTO):
 class MangaArtsAddDTO(BaseDTO):
     manga_id: UUID
     arts: Sequence[MangaArtAddDTO]
+
+
+class MangaSetCoverArtDTO(BaseDTO):
+    manga_id: UUID
+    art_id: UUID | None

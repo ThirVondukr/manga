@@ -9,7 +9,11 @@ from app.adapters.graphql.types import (
     MangaStatusGQL,
     SortDirectionGQL,
 )
-from app.core.domain.art.dto import MangaArtAddDTO, MangaArtsAddDTO
+from app.core.domain.art.dto import (
+    MangaArtAddDTO,
+    MangaArtsAddDTO,
+    MangaSetCoverArtDTO,
+)
 from app.core.domain.manga.dto import MangaCreateDTO, MangaUpdateDTO
 from app.core.domain.manga.filters import (
     MangaFilter,
@@ -117,4 +121,16 @@ class MangaArtsAddInputGQL:
         return MangaArtsAddDTO(
             manga_id=self.manga_id,  # type: ignore[arg-type]
             arts=arts,
+        )
+
+
+@strawberry.input(name="MangaSetCoverArtInput")
+class MangaSetCoverArtInputGQL:
+    manga_id: strawberry.ID
+    art_id: strawberry.ID | None
+
+    def to_dto(self) -> MangaSetCoverArtDTO:
+        return MangaSetCoverArtDTO(
+            manga_id=self.manga_id,  # type: ignore[arg-type]
+            art_id=self.art_id,  # type: ignore[arg-type]
         )

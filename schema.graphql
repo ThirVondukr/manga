@@ -103,6 +103,7 @@ type Manga {
   commentCount: Int!
   bookmark: MangaBookmark @isAuthenticated
   arts: [MangaArt!]!
+  coverArt: MangaArt
 }
 
 type MangaArt {
@@ -205,6 +206,7 @@ type MangaMutations {
   addBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
   removeBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
   addArts(input: MangaArtsAddInput!): MangaArtsAddPayload! @isAuthenticated
+  setCoverArt(input: MangaSetCoverArtInput!): MangaSetCoverArtPayload! @isAuthenticated
 }
 
 type MangaPage {
@@ -216,6 +218,18 @@ type MangaPage {
 type MangaPagePaginationResult {
   items: [Manga!]!
   pageInfo: PagePaginationInfo!
+}
+
+union MangaSetCoverArtErrorGQL = NotFoundError | PermissionDeniedError | ValidationErrors
+
+input MangaSetCoverArtInput {
+  mangaId: ID!
+  artId: ID
+}
+
+type MangaSetCoverArtPayload {
+  manga: Manga
+  error: MangaSetCoverArtErrorGQL
 }
 
 input MangaSort {

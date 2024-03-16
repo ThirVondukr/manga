@@ -33,6 +33,12 @@ class MangaArtsLoader(SQLAListLoader[UUID, MangaArt]):
     stmt = select(MangaArt.manga_id, MangaArt).order_by(MangaArt.volume)
 
 
+@final
+class MangaArtLoader(SQLALoader[UUID, MangaArt]):
+    column = MangaArt.id
+    stmt = select(MangaArt)
+
+
 class MangaTagLoader(SQLAListLoader[UUID, MangaTag]):
     column = manga_manga_tag_secondary_table.c.manga_id
     stmt = (

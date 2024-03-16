@@ -9,12 +9,14 @@ from result import Err
 from app.adapters.graphql.apps.manga.input import (
     MangaArtsAddInputGQL,
     MangaCreateInputGQL,
+    MangaSetCoverArtInputGQL,
     MangaUpdateInputGQL,
 )
 from app.adapters.graphql.apps.manga.payload import (
     MangaArtsAddPayloadGQL,
     MangaBookmarkPayloadGQL,
     MangaCreatePayloadGQL,
+    MangaSetCoverArtPayloadGQL,
     MangaUpdatePayloadGQL,
 )
 from app.adapters.graphql.apps.manga.types import MangaGQL
@@ -25,7 +27,10 @@ from app.adapters.graphql.errors import (
 )
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.validation import validate_callable
-from app.core.domain.art.command import AddArtsToMangaCommand
+from app.core.domain.art.command import (
+    AddArtsToMangaCommand,
+    MangaSetCoverArtCommand,
+)
 from app.core.domain.bookmarks.commands import (
     MangaBookmarkAddCommand,
     MangaBookmarkRemoveCommand,
@@ -175,5 +180,29 @@ class MangaMutationsGQL:
             )
 
         return MangaArtsAddPayloadGQL(
+            manga=MangaGQL.from_dto(result.ok_value),
+        )
+
+    @strawberry.mutation(extensions=[AuthExtension])  # type: ignore[misc]
+    @inject
+    async def set_cover_art(
+        self,
+        input: MangaSetCoverArtInputGQL,
+        info: Info,
+        command: Annotated[MangaSetCoverArtCommand, Inject],
+    ) -> MangaSetCoverArtPayloadGQL:
+        if isinstance(dto := validate_callable(input.to_dto), Err):
+            return MangaSetCoverArtPayloadGQL(error=dto.err_value)
+
+        result = await command.execute(
+            dto=dto.ok_value,
+            user=await info.context.user,
+        )
+        if isinstance(result, Err):
+            return MangaSetCoverArtPayloadGQL(
+                error=map_error_to_gql(result.err_value),
+            )
+
+        return MangaSetCoverArtPayloadGQL(
             manga=MangaGQL.from_dto(result.ok_value),
         )
