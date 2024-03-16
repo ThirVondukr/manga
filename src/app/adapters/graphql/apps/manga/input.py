@@ -3,7 +3,13 @@ from collections.abc import Sequence
 
 import strawberry
 
-from app.adapters.graphql.types import MangaStatusGQL, SortDirectionGQL
+from app.adapters.graphql.types import (
+    GraphQLFile,
+    LanguageGQL,
+    MangaStatusGQL,
+    SortDirectionGQL,
+)
+from app.core.domain.art.dto import MangaArtAddDTO, MangaArtsAddDTO
 from app.core.domain.manga.dto import MangaCreateDTO, MangaUpdateDTO
 from app.core.domain.manga.filters import (
     MangaFilter,
@@ -11,6 +17,7 @@ from app.core.domain.manga.filters import (
     Sort,
     TagFilter,
 )
+from lib.files import File
 
 
 @strawberry.input(name="MangaTagFilter")
@@ -83,4 +90,31 @@ class MangaUpdateInputGQL:
             description=self.description,
             title=self.title,
             status=self.status,
+        )
+
+
+@strawberry.input(name="MangaArtAddInput")
+class MangaArtAddInputGQL:
+    image: GraphQLFile
+    volume: int
+    language: LanguageGQL
+
+
+@strawberry.input(name="MangaArtsAddInput")
+class MangaArtsAddInputGQL:
+    manga_id: strawberry.ID
+    arts: Sequence[MangaArtAddInputGQL]
+
+    def to_dto(self, images: Sequence[File]) -> MangaArtsAddDTO:
+        arts = [
+            MangaArtAddDTO(
+                image=image,
+                volume=art.volume,
+                language=art.language,
+            )
+            for image, art in zip(images, self.arts, strict=True)
+        ]
+        return MangaArtsAddDTO(
+            manga_id=self.manga_id,  # type: ignore[arg-type]
+            arts=arts,
         )

@@ -69,5 +69,10 @@ class AppSettings(BaseSettings):
     max_upload_size_bytes: int = 200 * _MEGABYTES
 
 
-class Buckets(SimpleNamespace):
+class ImageSettings(BaseSettings):
+    preview_width: int = 400
+
+
+class ImagePaths(SimpleNamespace):
     chapter_images = "chapters"
+    manga_arts = "manga-art"

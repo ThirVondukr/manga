@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.domain.chapters.commands import ChapterCreateCommand
-from app.core.domain.const import GENERIC_NAME_LENGTH
+from app.core.domain.const import NAME_LENGTH
 from app.core.errors import (
     EntityAlreadyExistsError,
     PermissionDeniedError,
@@ -21,7 +21,7 @@ from app.core.errors import (
 )
 from app.db.models import MangaBranch, MangaChapter
 from tests.adapters.graphql.client import GraphQLClient, GraphQLFile
-from tests.utils import TestImageStorage
+from tests.utils import TestFileStorage
 
 QUERY = """mutation($input: ChapterCreateInput!, $pages: [Upload!]!) {
   chapters {
@@ -100,7 +100,7 @@ async def test_file_upload_error(
 @pytest.mark.parametrize(
     ("field", "value"),
     [
-        ("title", "a" * (GENERIC_NAME_LENGTH + 1)),
+        ("title", "a" * (NAME_LENGTH + 1)),
         ("number", []),
         ("number", [-1]),
         ("number", [0, -1]),
@@ -162,7 +162,7 @@ async def test_ok(
     authenticated_graphql_client: GraphQLClient,
     input: MutableMapping[str, Any],
     session: AsyncSession,
-    s3_mock: TestImageStorage,
+    s3_mock: TestFileStorage,
     upload_pages: Sequence[GraphQLFile],
 ) -> None:
     response = await authenticated_graphql_client.query(
@@ -178,7 +178,7 @@ async def test_ok(
         )
     ).one()
     for file, page in zip(upload_pages, new_chapter.pages, strict=True):
-        assert PurePath(page.image_path).suffix == PurePath(file.name).suffix
+        assert PurePath(file.name).suffix == PurePath(page.image_path).suffix
 
     expected = {
         "__typename": "MangaChapter",

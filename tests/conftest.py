@@ -17,11 +17,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import tests.plugins
 from app.core.di import create_container
 from app.core.domain.auth.dto import TokenWrapper
-from app.core.storage import ImageStorage
+from app.core.storage import FileStorage
 from app.db.models import User
 from lib.time import utc_now
 from tests.types import Resolver
-from tests.utils import TestImageStorage
+from tests.utils import TestFileStorage
 
 dotenv.load_dotenv(".env")
 
@@ -120,9 +120,9 @@ def collection_size(request: SubRequest) -> int:
 
 
 @pytest.fixture(autouse=True)
-def s3_mock(container: aioinject.Container) -> Iterator[TestImageStorage]:
-    storage = TestImageStorage()
-    with container.override(Object(storage, type_=ImageStorage)):
+def s3_mock(container: aioinject.Container) -> Iterator[TestFileStorage]:
+    storage = TestFileStorage()
+    with container.override(Object(storage, type_=FileStorage)):
         yield storage
 
 

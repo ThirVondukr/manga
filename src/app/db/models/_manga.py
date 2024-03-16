@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from datetime import datetime
+from pathlib import PurePath
 from typing import TYPE_CHECKING
 from uuid import UUID
 
@@ -84,6 +85,47 @@ class MangaBookmark(MappedAsDataclass, Base, kw_only=True):
     created_at: Mapped[datetime] = mapped_column(default_factory=utc_now)
 
 
+class Image(PkUUID, MappedAsDataclass, Base, kw_only=True):
+    __tablename__ = "image"
+
+    path: Mapped[PurePath]
+    dimensions: Mapped[tuple[int, int]] = mapped_column(
+        ARRAY(Integer, as_tuple=True),
+    )
+
+
+class MangaArt(
+    PkUUID,
+    HasTimestamps,
+    MappedAsDataclass,
+    Base,
+    kw_only=True,
+    repr=False,
+):
+    __tablename__ = "manga_art"
+    __table_args__ = (
+        UniqueConstraint(
+            "manga_id",
+            "language",
+            "volume",
+            name="manga_art__manga_language_volume_uq",
+        ),
+    )
+
+    volume: Mapped[int]
+    language: Mapped[Language]
+
+    manga_id: Mapped[UUID] = mapped_column(ForeignKey("manga.id"), init=False)
+    manga: Mapped[Manga] = relationship(back_populates="arts", default=None)
+    image_id: Mapped[UUID] = mapped_column(ForeignKey("image.id"), init=False)
+    image: Mapped[Image] = relationship(foreign_keys=[image_id])
+    preview_image_id: Mapped[UUID] = mapped_column(
+        ForeignKey("image.id"),
+        init=False,
+    )
+    preview_image: Mapped[Image] = relationship(foreign_keys=[preview_image_id])
+
+
 class Manga(
     PkUUID,
     HasPrivate,
@@ -140,6 +182,11 @@ class Manga(
         default_factory=list,
         compare=False,
         lazy="raise",
+    )
+    arts: Mapped[list[MangaArt]] = relationship(
+        default_factory=list,
+        back_populates="manga",
+        order_by="MangaArt.volume",
     )
 
 

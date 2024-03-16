@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.domain.chapters.dto import ChapterCreateDTO
 from app.core.domain.chapters.repositories import ChapterRepository
 from app.core.errors import EntityAlreadyExistsError, PermissionDeniedError
-from app.core.storage import FileUpload, ImageStorage
+from app.core.storage import FileStorage, FileUpload
 from app.db.models import (
     Group,
     Manga,
@@ -16,7 +16,7 @@ from app.db.models import (
     MangaPage,
     User,
 )
-from app.settings import Buckets
+from app.settings import ImagePaths
 from lib.db import DBContext
 
 
@@ -34,7 +34,7 @@ class ChapterService:
     def __init__(
         self,
         db_context: DBContext,
-        image_storage: ImageStorage,
+        image_storage: FileStorage,
         permissions: ChapterPermissionService,
         repository: ChapterRepository,
     ) -> None:
@@ -72,7 +72,7 @@ class ChapterService:
         files_to_upload = [
             FileUpload(
                 path=PurePath(
-                    f"{Buckets.chapter_images}/{branch.manga_id}/{chapter.id}/{number}{file.filename.suffix}",
+                    f"{ImagePaths.chapter_images}/{branch.manga_id}/{chapter.id}/{number}{file.filename.suffix}",
                 ),
                 buffer=file.buffer,
             )

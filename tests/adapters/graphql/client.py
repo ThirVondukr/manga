@@ -34,7 +34,9 @@ class GraphQLFile:
 
 
 def _create_file_mapping(
-    files: Mapping[str, Sequence[GraphQLFile]] | None = None,
+    *,
+    files: Mapping[str, Sequence[GraphQLFile] | GraphQLFile] | None = None,
+    placeholder: str,
 ) -> tuple[
     Mapping[str, list[str]],
     Mapping[str, tuple[str, BytesIO, str]],
@@ -44,25 +46,50 @@ def _create_file_mapping(
     file_mappings = {}
 
     for key, file_list in files.items():
-        for i, file in enumerate(file_list):
+        if isinstance(file_list, GraphQLFile):
             id_ = str(uuid.uuid4())
-            file_key = f"variables.{key}.{i}"
+            file_key = f"variables.{key}"
             file_ids[id_] = [file_key]
-            file_mappings[id_] = (file.name, file.buffer, file.content_type_)
+            file_mappings[id_] = (
+                file_list.name,
+                file_list.buffer,
+                file_list.content_type_,
+            )
+
+        else:
+            for i, file in enumerate(file_list):
+                id_ = str(uuid.uuid4())
+                if placeholder in key:
+                    file_key = f"variables.{key.replace(placeholder, str(i))}"
+                else:
+                    file_key = f"variables.{key}.{i}"
+
+                file_ids[id_] = [file_key]
+                file_mappings[id_] = (
+                    file.name,
+                    file.buffer,
+                    file.content_type_,
+                )
 
     return file_ids, file_mappings
 
 
 class GraphQLClient:
-    def __init__(self, client: httpx.AsyncClient, endpoint: str) -> None:
+    def __init__(
+        self,
+        client: httpx.AsyncClient,
+        endpoint: str,
+        file_map_placeholder: str = "$",
+    ) -> None:
         self._client = client
         self._endpoint = endpoint
+        self._file_map_placeholder = file_map_placeholder
 
     async def query(
         self,
         query: str,
         variables: MutableMapping[str, Any] | None = None,
-        files: Mapping[str, Sequence[GraphQLFile]] | None = None,
+        files: Mapping[str, Sequence[GraphQLFile] | GraphQLFile] | None = None,
     ) -> GraphQLResponseData:
         return (
             await self.request(query=query, variables=variables, files=files)
@@ -72,14 +99,20 @@ class GraphQLClient:
         self,
         query: str,
         variables: MutableMapping[str, Any] | None = None,
-        files: Mapping[str, Sequence[GraphQLFile]] | None = None,
+        files: Mapping[str, Sequence[GraphQLFile] | GraphQLFile] | None = None,
     ) -> GraphQLResponse:
         variables = variables or {}
         files = files or {}
-        file_ids, file_mappings = _create_file_mapping(files)
+        file_ids, file_mappings = _create_file_mapping(
+            files=files,
+            placeholder=self._file_map_placeholder,
+        )
 
         for key, file_list in files.items():
-            variables[key] = [None] * len(file_list)
+            if isinstance(file_list, list):
+                variables[key] = [None] * len(file_list)
+            else:
+                variables[key] = None
 
         response = await self._client.post(
             self._endpoint,

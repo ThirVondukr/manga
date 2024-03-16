@@ -1,7 +1,7 @@
 import uuid
 from uuid import UUID
 
-from app.core.domain.const import GENERIC_NAME_LENGTH
+from app.core.domain.const import NAME_LENGTH
 from app.core.domain.groups.repositories import GroupRepository
 from app.db.models import Group
 from tests.adapters.graphql.client import GraphQLClient
@@ -53,7 +53,7 @@ async def test_validation_error(
 ) -> None:
     response = await authenticated_graphql_client.query(
         query=QUERY,
-        variables={"input": {"name": "A" * (GENERIC_NAME_LENGTH + 1)}},
+        variables={"input": {"name": "A" * (NAME_LENGTH + 1)}},
     )
     assert response == _tpl(error={"__typename": "ValidationErrors"})
 

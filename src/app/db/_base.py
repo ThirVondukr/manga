@@ -1,6 +1,7 @@
 import enum
 import uuid
 from datetime import datetime
+from pathlib import PurePath
 from typing import Annotated
 
 from sqlalchemy import DateTime, Enum, MetaData, String, func
@@ -14,8 +15,8 @@ from sqlalchemy.orm import (
 from sqlalchemy.sql import expression
 from uuid_utils.compat import uuid7
 
-from app.core.domain.const import GENERIC_NAME_LENGTH
-from app.db._types import IntEnumType
+from app.core.domain.const import NAME_LENGTH
+from app.db._types import IntEnumType, PurePathType
 from lib.time import utc_now
 from lib.types import MangaStatus
 
@@ -39,7 +40,7 @@ class PkUUID(MappedAsDataclass):
     )
 
 
-str_title = Annotated[str, mapped_column(String(GENERIC_NAME_LENGTH))]
+str_title = Annotated[str, mapped_column(String(NAME_LENGTH))]
 
 
 class HasPrivate(MappedAsDataclass):
@@ -75,5 +76,6 @@ class Base(DeclarativeBase):
             datetime: DateTime(timezone=True),
             enum.Enum: Enum(native_enum=False),
             MangaStatus: IntEnumType(MangaStatus),
+            PurePath: PurePathType,
         },
     )

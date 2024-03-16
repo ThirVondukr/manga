@@ -7,6 +7,7 @@ from app.core.domain.manga.commands import (
 )
 from app.core.domain.manga.loaders import (
     MangaAltTitleLoader,
+    MangaArtsLoader,
     MangaLoader,
     MangaTagLoader,
 )
@@ -23,6 +24,7 @@ providers: Providers = [
     Scoped(MangaService),
     # Loaders
     Scoped(MangaTagLoader),
+    Scoped(MangaArtsLoader),
     Scoped(MangaAltTitleLoader),
     Scoped(MangaBookmarkLoader),
     Scoped(MangaLoader),

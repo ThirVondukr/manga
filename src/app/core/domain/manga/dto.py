@@ -4,8 +4,8 @@ from uuid import UUID
 from pydantic import StringConstraints
 
 from app.core.domain.const import (
-    GENERIC_NAME_LENGTH,
     MANGA_DESCRIPTION_MAX_LENGTH,
+    NAME_LENGTH,
 )
 from lib.dto import BaseDTO
 from lib.types import MangaStatus
@@ -15,7 +15,7 @@ class MangaCreateDTO(BaseDTO):
     title: Annotated[
         str,
         StringConstraints(
-            max_length=GENERIC_NAME_LENGTH,
+            max_length=NAME_LENGTH,
             strip_whitespace=True,
         ),
     ]

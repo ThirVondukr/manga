@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import ConfigDict, Field, StringConstraints
 
-from app.core.domain.const import GENERIC_NAME_LENGTH, GENERIC_NAME_MIN_LENGTH
+from app.core.domain.const import NAME_LENGTH, NAME_MIN_LENGTH
 from lib.dto import BaseDTO
 from lib.files import File
 
@@ -17,8 +17,8 @@ class ChapterCreateDTO(BaseDTO):
     title: Annotated[
         str,
         StringConstraints(
-            min_length=GENERIC_NAME_MIN_LENGTH,
-            max_length=GENERIC_NAME_LENGTH,
+            min_length=NAME_MIN_LENGTH,
+            max_length=NAME_LENGTH,
             strip_whitespace=True,
         ),
     ]

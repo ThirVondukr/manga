@@ -1,9 +1,11 @@
+from collections.abc import Sequence
 from typing import Any, assert_never
 from uuid import UUID
 
 from sqlalchemy import Select, SQLColumnExpression, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
+from sqlalchemy.orm.interfaces import ORMOption
 
 from app.db.models import AltTitle, Manga, MangaChapter, MangaTag
 from lib.pagination.pagination import (
@@ -22,8 +24,12 @@ class MangaRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def get(self, id: UUID) -> Manga | None:
-        stmt = self._base_stmt.where(Manga.id == id)
+    async def get(
+        self,
+        id: UUID,
+        options: Sequence[ORMOption] = (),
+    ) -> Manga | None:
+        stmt = self._base_stmt.where(Manga.id == id).options(*options)
         return (await self._session.scalars(stmt)).one_or_none()
 
     async def find_any(

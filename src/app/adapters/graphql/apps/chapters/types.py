@@ -10,7 +10,7 @@ from strawberry import Private
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.dto import DTOMixin
 from app.core.domain.chapters.loaders import ChapterPagesLoader
-from app.core.storage import ImageStorage
+from app.core.storage import FileStorage
 from app.db.models import MangaChapter, MangaPage
 
 
@@ -31,7 +31,7 @@ class MangaPageGQL(DTOMixin[MangaPage]):
 
     @strawberry.field
     @inject
-    async def image(self, storage: Annotated[ImageStorage, Inject]) -> str:
+    async def image(self, storage: Annotated[FileStorage, Inject]) -> str:
         return await storage.url(path=self._image_path)
 
 

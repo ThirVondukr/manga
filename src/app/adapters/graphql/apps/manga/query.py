@@ -17,12 +17,6 @@ from app.core.domain.manga.loaders import MangaLoader
 from app.core.domain.manga.queries import MangaSearchQuery
 from lib.validators import validate_uuid
 
-IdOrSlug = strawberry.scalar(
-    cls=str,
-    name="IdOrSlug",
-    description="Object ID or it's slug",
-)
-
 
 @strawberry.type
 class MangaQuery:

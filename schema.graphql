@@ -69,6 +69,13 @@ type GroupMutations {
   create(input: GroupCreateInput!): GroupCreatePayload! @isAuthenticated
 }
 
+type Image {
+  id: ID!
+  width: Int!
+  height: Int!
+  url: String!
+}
+
 type InvalidCredentialsError implements Error {
   message: String!
 }
@@ -82,6 +89,7 @@ type Manga {
   id: ID!
   title: String!
   titleSlug: String!
+  description: String!
   status: MangaStatus!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -94,6 +102,33 @@ type Manga {
   bookmarkCount: Int!
   commentCount: Int!
   bookmark: MangaBookmark @isAuthenticated
+  arts: [MangaArt!]!
+}
+
+type MangaArt {
+  id: ID!
+  volume: Int!
+  language: LanguageEnum!
+  image: Image!
+  previewImage: Image!
+}
+
+input MangaArtAddInput {
+  image: Upload!
+  volume: Int!
+  language: LanguageEnum!
+}
+
+union MangaArtsAddError = PermissionDeniedError | NotFoundError | EntityAlreadyExistsError | FileUploadError | ValidationErrors
+
+input MangaArtsAddInput {
+  mangaId: ID!
+  arts: [MangaArtAddInput!]!
+}
+
+type MangaArtsAddPayload {
+  manga: Manga
+  error: MangaArtsAddError
 }
 
 type MangaBookmark {
@@ -169,6 +204,7 @@ type MangaMutations {
   update(input: MangaUpdateInput!): MangaUpdatePayload! @isAuthenticated
   addBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
   removeBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
+  addArts(input: MangaArtsAddInput!): MangaArtsAddPayload! @isAuthenticated
 }
 
 type MangaPage {

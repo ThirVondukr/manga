@@ -6,7 +6,7 @@ import pytest
 from result import Err, Ok
 
 from app.core.domain.branches.commands import MangaBranchCreateCommand
-from app.core.domain.const import GENERIC_NAME_LENGTH
+from app.core.domain.const import NAME_LENGTH
 from app.core.errors import RelationshipNotFoundError
 from app.db.models import MangaBranch
 from lib.types import Language
@@ -73,7 +73,7 @@ async def test_validation_err(
     authenticated_graphql_client: GraphQLClient,
     input: dict[str, Any],
 ) -> None:
-    input["name"] = "a" * (GENERIC_NAME_LENGTH + 1)
+    input["name"] = "a" * (NAME_LENGTH + 1)
     response = await authenticated_graphql_client.query(
         QUERY,
         variables={"input": input},

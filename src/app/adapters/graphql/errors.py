@@ -9,6 +9,7 @@ from app.core.errors import (
     PermissionDeniedError,
     RelationshipNotFoundError,
 )
+from lib.files import FileReadError
 
 
 @strawberry.interface(name="Error")
@@ -57,6 +58,15 @@ class InvalidCredentialsErrorGQL(ErrorGQL):
     message: str = "Invalid credentials"
 
 
+@strawberry.type(name="FileUploadError")
+class FileUploadErrorGQL(ErrorGQL):
+    message: str
+
+    @classmethod
+    def from_error(cls, err: FileReadError) -> Self:
+        return cls(message=err.message)
+
+
 @typing.overload
 def map_error_to_gql(error: NotFoundError) -> NotFoundErrorGQL: ...
 
@@ -79,18 +89,26 @@ def map_error_to_gql(
 ) -> RelationshipNotFoundErrorGQL: ...
 
 
+@typing.overload
+def map_error_to_gql(
+    error: FileReadError,
+) -> FileUploadErrorGQL: ...
+
+
 def map_error_to_gql(
     error: (
         NotFoundError
         | PermissionDeniedError
         | EntityAlreadyExistsError
         | RelationshipNotFoundError
+        | FileReadError
     ),
 ) -> (
     NotFoundErrorGQL
     | PermissionDeniedErrorGQL
     | EntityAlreadyExistsErrorGQL
     | RelationshipNotFoundErrorGQL
+    | FileUploadErrorGQL
 ):
     match error:
         case NotFoundError():
@@ -101,5 +119,7 @@ def map_error_to_gql(
             return EntityAlreadyExistsErrorGQL.from_err(error)
         case RelationshipNotFoundError():
             return RelationshipNotFoundErrorGQL.from_err(error)
+        case FileReadError():
+            return FileUploadErrorGQL.from_error(error)
         case _:  # pragma: no cover
             assert_never(error)

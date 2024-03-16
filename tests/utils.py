@@ -1,9 +1,14 @@
 import contextlib
 import uuid
-from collections.abc import AsyncIterator, Sequence
+from collections.abc import AsyncIterator, Collection, Sequence
+from io import BytesIO
+from pathlib import PurePath
 from typing import final
 
-from app.core.storage import FileUpload, ImageStorage
+import PIL.Image
+
+from app.core.storage import FileStorage, FileUpload
+from lib.files import File
 
 
 def casefold(string: str) -> str:
@@ -14,8 +19,26 @@ def casefold_obj(obj: object) -> object:
     return casefold(obj) if isinstance(obj, str) else obj
 
 
+def create_dummy_image() -> BytesIO:
+    image = PIL.Image.new("RGB", (32, 32))
+    io = BytesIO()
+    image.save(io, format="png")
+    io.seek(0)
+    return io
+
+
+def create_dummy_image_file() -> File:
+    buffer = create_dummy_image()
+    return File(
+        content_type="image/png",
+        buffer=buffer,
+        size=buffer.getbuffer().nbytes,
+        filename=PurePath(f"{uuid.uuid4()}.png"),
+    )
+
+
 @final
-class TestImageStorage(ImageStorage):
+class TestFileStorage(FileStorage):
     __test__ = False
 
     def __init__(self) -> None:
@@ -41,3 +64,13 @@ class TestImageStorage(ImageStorage):
         to_upload = [f.path.as_posix() for f in files]
         yield tuple(f.path.as_posix() for f in files)
         self.files.extend(to_upload)
+
+    @contextlib.asynccontextmanager
+    async def one_upload_context(
+        self,
+        file: FileUpload,
+    ) -> AsyncIterator[str]:
+        yield file.path.as_posix()
+
+    async def delete(self, keys: Collection[str]) -> None:
+        raise NotImplementedError

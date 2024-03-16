@@ -5,10 +5,13 @@ import strawberry
 from app.adapters.graphql.apps.manga.types import MangaGQL
 from app.adapters.graphql.errors import (
     EntityAlreadyExistsErrorGQL,
+    FileUploadErrorGQL,
     NotFoundErrorGQL,
     PermissionDeniedErrorGQL,
 )
-from app.adapters.graphql.validation import ValidationErrorsGQL
+from app.adapters.graphql.validation import (
+    ValidationErrorsGQL,
+)
 
 MangaCreateErrorGQL = Annotated[
     ValidationErrorsGQL
@@ -49,3 +52,19 @@ MangaBookmarkErrorGQL = Annotated[
 class MangaBookmarkPayloadGQL:
     manga: MangaGQL | None = None
     error: MangaBookmarkErrorGQL | None
+
+
+MangaArtsAddErrorGQL = Annotated[
+    PermissionDeniedErrorGQL
+    | NotFoundErrorGQL
+    | EntityAlreadyExistsErrorGQL
+    | FileUploadErrorGQL
+    | ValidationErrorsGQL,
+    strawberry.union("MangaArtsAddError"),
+]
+
+
+@strawberry.type(name="MangaArtsAddPayload")
+class MangaArtsAddPayloadGQL:
+    manga: MangaGQL | None = None
+    error: MangaArtsAddErrorGQL | None = None

@@ -7,7 +7,7 @@ import pydantic
 import pytest
 
 from app.core.domain.chapters.dto import ChapterCreateDTO
-from app.core.domain.const import GENERIC_NAME_LENGTH
+from app.core.domain.const import NAME_LENGTH
 from lib.files import File
 
 
@@ -40,7 +40,7 @@ def test_ok(kwargs: dict[str, Any]) -> None:
     ("field", "value"),
     [
         ("title", " ab  "),
-        ("title", "a" * (GENERIC_NAME_LENGTH + 1)),
+        ("title", "a" * (NAME_LENGTH + 1)),
         ("volume", 0),
         ("volume", -1),
         ("number", []),

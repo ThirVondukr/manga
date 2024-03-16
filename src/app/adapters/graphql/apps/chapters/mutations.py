@@ -17,7 +17,6 @@ from app.adapters.graphql.errors import (
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.types import GraphQLFile
 from app.adapters.graphql.validation import (
-    FileUploadErrorGQL,
     validate_callable,
 )
 from app.core.domain.chapters.commands import ChapterCreateCommand
@@ -41,7 +40,7 @@ class ChapterMutationGQL:
         pages_result = await reader.read(files=pages)
         if isinstance(pages_result, Err):
             return ChapterCreatePayloadGQL(
-                error=FileUploadErrorGQL(),
+                error=map_error_to_gql(pages_result.err_value),
             )
 
         dto = validate_callable(

@@ -9,6 +9,7 @@ from app.db.models import (
     MangaTag,
     manga_manga_tag_secondary_table,
 )
+from app.db.models._manga import MangaArt
 from lib.loaders import SQLAListLoader, SQLALoader
 
 
@@ -24,6 +25,12 @@ class MangaAltTitleLoader(SQLAListLoader[UUID, AltTitle]):
 class MangaLoader(SQLALoader[UUID, Manga]):
     column = Manga.id
     stmt = select(Manga)
+
+
+@final
+class MangaArtsLoader(SQLAListLoader[UUID, MangaArt]):
+    column = MangaArt.manga_id
+    stmt = select(MangaArt.manga_id, MangaArt).order_by(MangaArt.volume)
 
 
 class MangaTagLoader(SQLAListLoader[UUID, MangaTag]):

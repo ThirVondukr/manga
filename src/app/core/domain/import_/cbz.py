@@ -16,9 +16,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.domain.chapters.dto import ChapterCreateDTO
 from app.core.domain.chapters.services import ChapterService
-from app.core.storage import FileUpload, ImageStorage
+from app.core.storage import FileStorage, FileUpload
 from app.db.models import MangaBranch, MangaChapter, MangaPage, User
-from app.settings import Buckets
+from app.settings import ImagePaths
 from lib.files import File
 
 
@@ -60,7 +60,7 @@ def parse_filename(name: str) -> PageMeta:
 
 
 async def _upload_file(
-    storage: ImageStorage,
+    storage: FileStorage,
     storage_path: PurePath,
     file_path: PurePath,
 ) -> str:
@@ -74,13 +74,13 @@ async def _upload_file(
 async def collect_pages(
     chapter: MangaChapter,
     directory: Path,
-    storage: ImageStorage,
+    storage: FileStorage,
 ) -> list[MangaPage]:
     tasks = {}
     async with asyncio.TaskGroup() as tg:
         for file_path, page in zip(directory.iterdir(), itertools.count(1)):
             storage_path = PurePath(
-                f"{Buckets.chapter_images}/{chapter.id}/{page}{file_path.suffix}",
+                f"{ImagePaths.chapter_images}/{chapter.id}/{page}{file_path.suffix}",
             )
             tasks[page] = tg.create_task(
                 _upload_file(

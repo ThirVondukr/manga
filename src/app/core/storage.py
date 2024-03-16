@@ -1,7 +1,7 @@
 import contextlib
 import dataclasses
 import mimetypes
-from collections.abc import AsyncIterator, Sequence
+from collections.abc import AsyncIterator, Collection, Sequence
 from contextlib import AbstractAsyncContextManager
 from io import BytesIO
 from pathlib import PurePath
@@ -33,7 +33,7 @@ class FileUpload:
 
 
 @runtime_checkable
-class ImageStorage(Protocol):
+class FileStorage(Protocol):
 
     async def upload(self, file: FileUpload) -> str: ...
 
@@ -44,9 +44,16 @@ class ImageStorage(Protocol):
         files: Sequence[FileUpload],
     ) -> AbstractAsyncContextManager[tuple[str, ...]]: ...
 
+    def one_upload_context(
+        self,
+        file: FileUpload,
+    ) -> AbstractAsyncContextManager[str]: ...
+
+    async def delete(self, keys: Collection[str]) -> None: ...
+
 
 @final
-class S3ImageStorage(ImageStorage):
+class S3FileStorage(FileStorage):
     def __init__(self, client: S3Client, settings: S3Settings) -> None:
         self._client = client
         self._settings = settings
@@ -79,8 +86,26 @@ class S3ImageStorage(ImageStorage):
                 uploaded.add(path_str)
             yield tuple(f.path.as_posix() for f in files)
         except:
-            await self._client.delete_objects(
-                Bucket=self._settings.bucket,
-                Delete={"Objects": [{"Key": path} for path in uploaded]},
-            )
+            await self.delete(uploaded)
             raise
+
+    @contextlib.asynccontextmanager
+    async def one_upload_context(
+        self,
+        file: FileUpload,
+    ) -> AsyncIterator[str]:
+        path_str = await self.upload(file=file)
+        try:
+            yield path_str
+        except:
+            await self.delete(path_str)
+            raise
+
+    async def delete(self, keys: Collection[str]) -> None:
+        if isinstance(keys, str):
+            keys = [keys]
+
+        await self._client.delete_objects(
+            Bucket=self._settings.bucket,
+            Delete={"Objects": [{"Key": path} for path in keys]},
+        )

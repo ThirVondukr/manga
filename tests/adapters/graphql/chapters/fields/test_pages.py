@@ -1,6 +1,6 @@
 import uuid
 
-from app.core.storage import ImageStorage
+from app.core.storage import FileStorage
 from app.db.models import MangaChapter, MangaPage
 from lib.db import DBContext
 from tests.adapters.graphql.client import GraphQLClient
@@ -23,7 +23,7 @@ async def test_ok(
     manga_chapter: MangaChapter,
     collection_size: int,
     db_context: DBContext,
-    image_storage: ImageStorage,
+    image_storage: FileStorage,
 ) -> None:
     pages = [
         MangaPage(

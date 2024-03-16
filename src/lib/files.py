@@ -17,7 +17,7 @@ class File:
 
 @dataclasses.dataclass
 class FileReadError:
-    pass
+    message: str
 
 
 class FileReader:
@@ -32,25 +32,45 @@ class FileReader:
         total_size = 0
         result = []
         for file in files:
-            if not file.content_type or not file.filename or not file.size:
-                return Err(FileReadError())
+            file_result = await self.read_one(file=file)
+            if isinstance(file_result, Err):
+                return file_result
 
-            buffer = BytesIO()
-            while chunk := await file.read(self._chunk_size):
-                total_size += len(chunk)
-                if total_size > self._max_size:  # pragma: no cover
-                    return Err(FileReadError())
-                buffer.write(chunk)
-            await file.seek(0)
-            buffer.seek(0)
+            total_size += file_result.ok_value.size
+            if total_size > self._max_size:  # pragma: no cover
+                return Err(
+                    FileReadError(
+                        f"Upload size of {total_size} exceeds max size of {self._max_size}",
+                    ),
+                )
 
-            result.append(
-                File(
-                    buffer=buffer,
-                    size=file.size,
-                    content_type=file.content_type,
-                    filename=PurePath(file.filename),
-                ),
-            )
+            result.append(file_result.ok_value)
 
         return Ok(result)
+
+    async def read_one(self, file: UploadFile) -> Result[File, FileReadError]:
+        if not file.content_type or not file.filename or not file.size:
+            return Err(FileReadError("Invalid file"))
+
+        total_size = 0
+        buffer = BytesIO()
+        while chunk := await file.read(self._chunk_size):
+            total_size += len(chunk)
+            if total_size > self._max_size:  # pragma: no cover
+                return Err(
+                    FileReadError(
+                        f"Upload size of {total_size} exceeds max size of {self._max_size}",
+                    ),
+                )
+            buffer.write(chunk)
+        await file.seek(0)
+        buffer.seek(0)
+
+        return Ok(
+            File(
+                buffer=buffer,
+                size=file.size,
+                content_type=file.content_type,
+                filename=PurePath(file.filename),
+            ),
+        )

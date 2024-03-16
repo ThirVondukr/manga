@@ -5,11 +5,11 @@ import strawberry
 from app.adapters.graphql.apps.chapters.types import MangaChapterGQL
 from app.adapters.graphql.errors import (
     EntityAlreadyExistsErrorGQL,
+    FileUploadErrorGQL,
     PermissionDeniedErrorGQL,
     RelationshipNotFoundErrorGQL,
 )
 from app.adapters.graphql.validation import (
-    FileUploadErrorGQL,
     ValidationErrorsGQL,
 )
 

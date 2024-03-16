@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Annotated
 
 import strawberry
@@ -6,10 +7,12 @@ from aioinject.ext.strawberry import inject
 from result import Err
 
 from app.adapters.graphql.apps.manga.input import (
+    MangaArtsAddInputGQL,
     MangaCreateInputGQL,
     MangaUpdateInputGQL,
 )
 from app.adapters.graphql.apps.manga.payload import (
+    MangaArtsAddPayloadGQL,
     MangaBookmarkPayloadGQL,
     MangaCreatePayloadGQL,
     MangaUpdatePayloadGQL,
@@ -22,6 +25,7 @@ from app.adapters.graphql.errors import (
 )
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.validation import validate_callable
+from app.core.domain.art.command import AddArtsToMangaCommand
 from app.core.domain.bookmarks.commands import (
     MangaBookmarkAddCommand,
     MangaBookmarkRemoveCommand,
@@ -30,6 +34,8 @@ from app.core.domain.manga.commands import (
     MangaCreateCommand,
     MangaUpdateCommand,
 )
+from app.settings import AppSettings
+from lib.files import FileReader
 from lib.validators import validate_uuid
 
 
@@ -137,4 +143,37 @@ class MangaMutationsGQL:
         return MangaBookmarkPayloadGQL(
             manga=MangaGQL.from_dto(result.ok_value),
             error=None,
+        )
+
+    @strawberry.mutation(extensions=[AuthExtension])  # type: ignore[misc]
+    @inject
+    async def add_arts(
+        self,
+        input: MangaArtsAddInputGQL,
+        command: Annotated[AddArtsToMangaCommand, Inject],
+        info: Info,
+        settings: Annotated[AppSettings, Inject],
+    ) -> MangaArtsAddPayloadGQL:
+        reader = FileReader(max_size=settings.max_upload_size_bytes)
+        files = await reader.read([art.image for art in input.arts])
+        if isinstance(files, Err):  # pragma: no cover
+            return MangaArtsAddPayloadGQL(
+                error=map_error_to_gql(files.err_value),
+            )
+
+        dto = validate_callable(partial(input.to_dto, files.ok_value))
+        if isinstance(dto, Err):
+            return MangaArtsAddPayloadGQL(error=dto.err_value)
+
+        result = await command.execute(
+            user=await info.context.user,
+            dto=dto.ok_value,
+        )
+        if isinstance(result, Err):
+            return MangaArtsAddPayloadGQL(
+                error=map_error_to_gql(result.err_value),
+            )
+
+        return MangaArtsAddPayloadGQL(
+            manga=MangaGQL.from_dto(result.ok_value),
         )

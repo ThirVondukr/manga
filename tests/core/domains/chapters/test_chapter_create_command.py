@@ -13,10 +13,10 @@ from app.core.errors import (
     RelationshipNotFoundError,
 )
 from app.db.models import Group, Manga, MangaBranch, MangaChapter, User
-from app.settings import Buckets
+from app.settings import ImagePaths
 from lib.files import File
 from tests.types import Resolver
-from tests.utils import TestImageStorage
+from tests.utils import TestFileStorage
 
 
 @pytest.fixture
@@ -84,7 +84,7 @@ async def test_ok(
     command: ChapterCreateCommand,
     user: User,
     dto: ChapterCreateDTO,
-    s3_mock: TestImageStorage,
+    s3_mock: TestFileStorage,
     manga: Manga,
 ) -> None:
     chapter = (await command.execute(dto, user)).unwrap()
@@ -98,7 +98,7 @@ async def test_ok(
 
     assert s3_mock.files == [
         PurePath(
-            Buckets.chapter_images,
+            ImagePaths.chapter_images,
             str(manga.id),
             str(chapter.id),
             p.filename,

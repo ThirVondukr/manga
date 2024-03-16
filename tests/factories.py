@@ -14,12 +14,14 @@ from faker import Faker
 from app.core.domain.types import TagCategory
 from app.db.models import (
     AltTitle,
+    Image,
     Manga,
     MangaBranch,
     MangaChapter,
     MangaTag,
     User,
 )
+from app.db.models._manga import MangaArt
 from lib.types import Language, MangaStatus
 
 T = TypeVar("T")
@@ -52,6 +54,24 @@ class MangaFactory(GenericFactory[Manga]):
     description = factory.Faker("sentence")
     status = factory.Faker("enum", enum_cls=MangaStatus)
     created_at = factory.Faker("date_time", tzinfo=UTC)
+
+
+class ImageFactory(GenericFactory[Image]):
+    path = factory.Faker("pystr")
+    dimensions = factory.Faker(
+        "pytuple",
+        nb_elements=2,
+        variable_nb_elements=False,
+        value_types=[int],
+    )
+
+
+class MangaArtFactory(GenericFactory[MangaArt]):
+    volume = factory.Sequence(lambda n: n)
+    language = factory.Faker("enum", enum_cls=Language)
+
+    image = factory.SubFactory(ImageFactory)
+    preview_image = factory.SubFactory(ImageFactory)
 
 
 class MangaBranchFactory(GenericFactory[MangaBranch]):

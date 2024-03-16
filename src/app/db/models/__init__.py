@@ -1,6 +1,7 @@
 from ._groups import Group
 from ._manga import (
     AltTitle,
+    Image,
     Manga,
     MangaBookmark,
     MangaBranch,
@@ -22,4 +23,5 @@ __all__ = [
     "MangaTag",
     "User",
     "manga_manga_tag_secondary_table",
+    "Image",
 ]

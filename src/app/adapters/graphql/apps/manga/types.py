@@ -1,7 +1,9 @@
 import random
 from collections.abc import Sequence
 from datetime import datetime
+from pathlib import PurePath
 from typing import Annotated, Self
+from uuid import UUID
 
 import strawberry
 from aioinject import Inject
@@ -23,8 +25,15 @@ from app.core.domain.bookmarks.loaders import (
     MangaBookmarkLoaderKey,
 )
 from app.core.domain.chapters.queries import MangaChaptersQuery
-from app.core.domain.manga.loaders import MangaAltTitleLoader, MangaTagLoader
-from app.db.models import AltTitle, Manga, MangaBookmark, MangaTag
+from app.core.domain.images.loaders import ImageLoader
+from app.core.domain.manga.loaders import (
+    MangaAltTitleLoader,
+    MangaArtsLoader,
+    MangaTagLoader,
+)
+from app.core.storage import FileStorage
+from app.db.models import AltTitle, Image, Manga, MangaBookmark, MangaTag
+from app.db.models._manga import MangaArt
 
 
 @strawberry.type(name="MangaTagCategory")
@@ -79,6 +88,67 @@ class MangaBookmarkGQL(DTOMixin[MangaBookmark]):
             id=strawberry.ID(f"{model.manga_id}:{model.user_id}"),
             created_at=model.created_at,
         )
+
+
+@strawberry.type(name="Image")
+class ImageGQL(DTOMixin[Image]):
+    _path: Private[PurePath]
+    id: strawberry.ID
+    width: int
+    height: int
+
+    @classmethod
+    def from_dto(cls, model: Image) -> Self:
+        w, h = model.dimensions
+        return cls(
+            id=strawberry.ID(str(model.id)),
+            _path=model.path,
+            width=w,
+            height=h,
+        )
+
+    @strawberry.field
+    @inject
+    async def url(self, storage: Annotated[FileStorage, Inject]) -> str:
+        return await storage.url(path=self._path.as_posix())
+
+
+@strawberry.type(name="MangaArt")
+class MangaArtGQL(DTOMixin[MangaArt]):
+    _image_id: Private[UUID]
+    _preview_image_id: Private[UUID]
+
+    id: strawberry.ID
+    volume: int
+    language: LanguageGQL
+
+    @classmethod
+    def from_dto(cls, model: MangaArt) -> Self:
+        return cls(
+            id=strawberry.ID(str(model.id)),
+            volume=model.volume,
+            language=model.language,
+            _image_id=model.image_id,
+            _preview_image_id=model.preview_image_id,
+        )
+
+    @strawberry.field
+    async def image(self, info: Info) -> ImageGQL:
+        image = await info.context.loaders.map(ImageLoader).load(
+            key=self._image_id,
+        )
+        if not image:  # pragma: no cover
+            raise ValueError
+        return ImageGQL.from_dto(image)
+
+    @strawberry.field
+    async def preview_image(self, info: Info) -> ImageGQL:
+        image = await info.context.loaders.map(ImageLoader).load(
+            key=self._preview_image_id,
+        )
+        if not image:  # pragma: no cover
+            raise ValueError
+        return ImageGQL.from_dto(image)
 
 
 @strawberry.type(name="Manga")
@@ -162,3 +232,10 @@ class MangaGQL(DTOMixin[Manga]):
             ),
         )
         return MangaBookmarkGQL.from_dto_optional(bookmark)
+
+    @strawberry.field
+    async def arts(self, info: Info) -> Sequence[MangaArtGQL]:
+        arts = await info.context.loaders.map(MangaArtsLoader).load(
+            self._instance.id,
+        )
+        return MangaArtGQL.from_dto_list(arts)

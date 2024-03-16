@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 from result import Err, Ok
 
-from app.core.domain.const import GENERIC_NAME_LENGTH
+from app.core.domain.const import NAME_LENGTH
 from app.core.domain.manga.commands import MangaUpdateCommand
 from app.core.errors import NotFoundError
 from app.db.models import Manga
@@ -68,7 +68,7 @@ async def test_validation_error(
     authenticated_graphql_client: GraphQLClient,
     input: dict[str, Any],
 ) -> None:
-    input["title"] = GENERIC_NAME_LENGTH * "a" + "a"
+    input["title"] = NAME_LENGTH * "a" + "a"
     response = await authenticated_graphql_client.query(
         QUERY,
         variables={"input": input},
