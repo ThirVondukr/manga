@@ -10,6 +10,9 @@ api:
     path: /
     pathType: Prefix
     tls: []
+  resources:
+    limits:
+      memory: "512Mi"
   tmpfs:
     enabled: true
     sizeLimit: 2Gi
