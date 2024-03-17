@@ -66,7 +66,7 @@ async def _upload_file(
 ) -> str:
     async with aiofiles.open(file_path, "rb") as f:
         buffer = BytesIO(await f.read())
-        return await storage.streaming_upload(
+        return await storage.upload_file(
             file=FileUpload(
                 file=AsyncBytesIO(buffer=buffer),
                 path=storage_path,

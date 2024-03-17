@@ -45,7 +45,7 @@ class TestFileStorage(FileStorage):
         self._prefix = str(uuid.uuid4())
         self.files: list[str] = []
 
-    async def streaming_upload(
+    async def upload_file(
         self,
         file: FileUpload,
     ) -> str:
@@ -57,7 +57,7 @@ class TestFileStorage(FileStorage):
         return f"{self._prefix}/{path}"
 
     @contextlib.asynccontextmanager
-    async def upload_context(
+    async def upload_contexts(
         self,
         files: Sequence[FileUpload],
     ) -> AsyncIterator[tuple[str, ...]]:
@@ -66,7 +66,7 @@ class TestFileStorage(FileStorage):
         self.files.extend(to_upload)
 
     @contextlib.asynccontextmanager
-    async def one_upload_context(
+    async def upload_context(
         self,
         file: FileUpload,
     ) -> AsyncIterator[str]:

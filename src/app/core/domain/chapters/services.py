@@ -78,7 +78,9 @@ class ChapterService:
             )
             for number, file in enumerate(dto.pages, start=1)
         ]
-        async with self._image_storage.upload_context(files_to_upload) as files:
+        async with self._image_storage.upload_contexts(
+            files_to_upload,
+        ) as files:
             chapter.pages = [
                 MangaPage(image_path=path, number=number, chapter=chapter)
                 for number, path in enumerate(files, start=1)

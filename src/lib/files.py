@@ -10,6 +10,9 @@ from starlette.datastructures import UploadFile
 
 
 class FileProtocol(Protocol):
+    @property
+    def size(self) -> int: ...
+
     async def read(self, size: int = -1) -> bytes: ...
 
     async def seek(self, offset: int) -> None: ...
@@ -33,6 +36,7 @@ class File:
 @dataclasses.dataclass(slots=True, kw_only=True, frozen=True)
 class StarletteFile(File):
     _file: UploadFile
+    size: int
 
     async def read(self, size: int = -1) -> bytes:
         return await self._file.read(size)
@@ -55,6 +59,10 @@ class InMemoryFile(File):
 @dataclasses.dataclass(slots=True, kw_only=True, frozen=True)
 class AsyncBytesIO:
     buffer: BytesIO
+
+    @property
+    def size(self) -> int:
+        return self.buffer.getbuffer().nbytes  # pragma: no cover
 
     async def read(self, size: int = -1) -> bytes:  # pragma: no cover
         return self.buffer.read(size)

@@ -1,5 +1,6 @@
 import contextlib
 import dataclasses
+import mimetypes
 from collections.abc import AsyncIterator, Collection, Sequence
 from contextlib import AbstractAsyncContextManager
 from pathlib import PurePath
@@ -34,16 +35,16 @@ class FileUpload:
 @runtime_checkable
 class FileStorage(Protocol):
 
-    async def streaming_upload(self, file: FileUpload) -> str: ...
+    async def upload_file(self, file: FileUpload) -> str: ...
 
     async def url(self, path: str) -> str: ...
 
-    def upload_context(
+    def upload_contexts(
         self,
         files: Sequence[FileUpload],
     ) -> AbstractAsyncContextManager[tuple[str, ...]]: ...
 
-    def one_upload_context(
+    def upload_context(
         self,
         file: FileUpload,
     ) -> AbstractAsyncContextManager[str]: ...
@@ -56,18 +57,28 @@ class S3FileStorage(FileStorage):
     def __init__(self, client: S3Client, settings: S3Settings) -> None:
         self._client = client
         self._settings = settings
+        self._min_multipart_upload_size = 5 * 1024 * 1024
 
-    async def streaming_upload(self, file: FileUpload) -> str:
+    async def upload_file(self, file: FileUpload) -> str:
+        if file.file.size > self._min_multipart_upload_size * 2:
+            return await self._streaming_upload(file)
+        return await self._upload(file)
+
+    async def _streaming_upload(self, file: FileUpload) -> str:
         path = file.path.as_posix()
+        mimetype, _ = mimetypes.guess_type(url=file.path.name)
         upload_id = (
             await self._client.create_multipart_upload(
                 Bucket=self._settings.bucket,
                 Key=path,
+                ContentType=mimetype or "binary/octet-stream",
             )
         )["UploadId"]
         e_tags = []
         part_number = 1
-        while chunk := await file.file.read(size=1024 * 1024):
+        while chunk := await file.file.read(
+            size=self._min_multipart_upload_size,
+        ):
             part_upload_response = await self._client.upload_part(
                 Bucket=self._settings.bucket,
                 Key=path,
@@ -93,18 +104,29 @@ class S3FileStorage(FileStorage):
         )
         return response["Key"]
 
+    async def _upload(self, file: FileUpload) -> str:
+        key = file.path.as_posix()
+        mimetype, _ = mimetypes.guess_type(url=file.path.name)
+        await self._client.put_object(
+            Body=await file.file.read(),
+            Bucket=self._settings.bucket,
+            Key=key,
+            ContentType=mimetype or "binary/octet-stream",
+        )
+        return key
+
     async def url(self, path: str) -> str:
         return f"{self._settings.public_url.removesuffix('/')}/{self._settings.bucket}/{path.removesuffix('/')}"
 
     @contextlib.asynccontextmanager
-    async def upload_context(
+    async def upload_contexts(
         self,
         files: Sequence[FileUpload],
     ) -> AsyncIterator[tuple[str, ...]]:
         uploaded = set()
         try:
             for file in files:
-                path_str = await self.streaming_upload(file=file)
+                path_str = await self.upload_file(file=file)
                 uploaded.add(path_str)
             yield tuple(f.path.as_posix() for f in files)
         except:
@@ -112,11 +134,11 @@ class S3FileStorage(FileStorage):
             raise
 
     @contextlib.asynccontextmanager
-    async def one_upload_context(
+    async def upload_context(
         self,
         file: FileUpload,
     ) -> AsyncIterator[str]:
-        path_str = await self.streaming_upload(file=file)
+        path_str = await self.upload_file(file=file)
         try:
             yield path_str
         except:

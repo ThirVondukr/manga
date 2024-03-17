@@ -38,8 +38,8 @@ class ImageService:
         thumbnail_io.seek(0)
 
         async with (
-            self._storage.one_upload_context(file=upload) as main,
-            self._storage.one_upload_context(
+            self._storage.upload_context(file=upload) as main,
+            self._storage.upload_context(
                 file=FileUpload(
                     path=upload.path.with_stem(f"{upload.path.stem}-preview"),
                     file=AsyncBytesIO(buffer=thumbnail_io),
