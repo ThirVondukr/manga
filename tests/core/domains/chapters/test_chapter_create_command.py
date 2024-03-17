@@ -14,7 +14,7 @@ from app.core.errors import (
 )
 from app.db.models import Group, Manga, MangaBranch, MangaChapter, User
 from app.settings import ImagePaths
-from lib.files import File
+from lib.files import InMemoryFile
 from tests.types import Resolver
 from tests.utils import TestFileStorage
 
@@ -26,8 +26,8 @@ async def command(resolver: Resolver) -> ChapterCreateCommand:
 
 @pytest.fixture
 def dto(manga_branch: MangaBranch) -> ChapterCreateDTO:
-    file = File(
-        buffer=BytesIO(),
+    file = InMemoryFile(
+        _buffer=BytesIO(),
         size=0,
         content_type="image/png",
         filename=PurePath("1.png"),

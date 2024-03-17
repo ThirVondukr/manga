@@ -39,7 +39,7 @@ class MangaArtService:
         async with contextlib.AsyncExitStack() as exit_stack:
             for art_dto in dto.arts:
                 upload = FileUpload(
-                    buffer=art_dto.image.buffer,
+                    file=art_dto.image,
                     path=PurePath(
                         ImagePaths.manga_arts,
                         str(manga.id),

@@ -74,7 +74,7 @@ class ChapterService:
                 path=PurePath(
                     f"{ImagePaths.chapter_images}/{branch.manga_id}/{chapter.id}/{number}{file.filename.suffix}",
                 ),
-                buffer=file.buffer,
+                file=file,
             )
             for number, file in enumerate(dto.pages, start=1)
         ]

@@ -19,7 +19,7 @@ from app.core.domain.chapters.services import ChapterService
 from app.core.storage import FileStorage, FileUpload
 from app.db.models import MangaBranch, MangaChapter, MangaPage, User
 from app.settings import ImagePaths
-from lib.files import File
+from lib.files import AsyncBytesIO, InMemoryFile
 
 
 @dataclasses.dataclass(kw_only=True, slots=True)
@@ -66,8 +66,11 @@ async def _upload_file(
 ) -> str:
     async with aiofiles.open(file_path, "rb") as f:
         buffer = BytesIO(await f.read())
-        return await storage.upload(
-            file=FileUpload(buffer=buffer, path=storage_path),
+        return await storage.streaming_upload(
+            file=FileUpload(
+                file=AsyncBytesIO(buffer=buffer),
+                path=storage_path,
+            ),
         )
 
 
@@ -162,10 +165,10 @@ class ImportCBZCommand:
                     number=[chapter.chapter],
                     volume=chapter.volume,
                     pages=[
-                        File(
+                        InMemoryFile(
+                            _buffer=buffer,
                             content_type="image/png",
                             size=buffer.getbuffer().nbytes,
-                            buffer=buffer,
                             filename=PurePath(page.filename),
                         )
                         for buffer, page in chapter.pages

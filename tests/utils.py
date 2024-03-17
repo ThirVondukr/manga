@@ -8,7 +8,7 @@ from typing import final
 import PIL.Image
 
 from app.core.storage import FileStorage, FileUpload
-from lib.files import File
+from lib.files import File, InMemoryFile
 
 
 def casefold(string: str) -> str:
@@ -29,9 +29,9 @@ def create_dummy_image() -> BytesIO:
 
 def create_dummy_image_file() -> File:
     buffer = create_dummy_image()
-    return File(
+    return InMemoryFile(
+        _buffer=buffer,
         content_type="image/png",
-        buffer=buffer,
         size=buffer.getbuffer().nbytes,
         filename=PurePath(f"{uuid.uuid4()}.png"),
     )
@@ -45,7 +45,7 @@ class TestFileStorage(FileStorage):
         self._prefix = str(uuid.uuid4())
         self.files: list[str] = []
 
-    async def upload(
+    async def streaming_upload(
         self,
         file: FileUpload,
     ) -> str:

@@ -8,7 +8,7 @@ import pytest
 
 from app.core.domain.chapters.dto import ChapterCreateDTO
 from app.core.domain.const import NAME_LENGTH
-from lib.files import File
+from lib.files import InMemoryFile
 
 
 @pytest.fixture
@@ -19,8 +19,8 @@ def kwargs() -> dict[str, Any]:
         "volume": 1,
         "number": [1],
         "pages": [
-            File(
-                buffer=BytesIO(),
+            InMemoryFile(
+                _buffer=BytesIO(),
                 filename=PurePath("1.png"),
                 content_type="image/png",
                 size=0,

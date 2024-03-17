@@ -1,18 +1,66 @@
+import abc
 import dataclasses
 from collections.abc import Sequence
 from io import BytesIO
 from pathlib import PurePath
+from typing import Protocol, assert_never
 
 from result import Err, Ok, Result
 from starlette.datastructures import UploadFile
 
 
+class FileProtocol(Protocol):
+    async def read(self, size: int = -1) -> bytes: ...
+
+    async def seek(self, offset: int) -> None: ...
+
+
 @dataclasses.dataclass(slots=True, kw_only=True, frozen=True)
 class File:
-    buffer: BytesIO
     filename: PurePath
     content_type: str
     size: int
+
+    @abc.abstractmethod
+    async def read(self, size: int = -1) -> bytes:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def seek(self, offset: int) -> None:
+        raise NotImplementedError
+
+
+@dataclasses.dataclass(slots=True, kw_only=True, frozen=True)
+class StarletteFile(File):
+    _file: UploadFile
+
+    async def read(self, size: int = -1) -> bytes:
+        return await self._file.read(size)
+
+    async def seek(self, offset: int) -> None:
+        await self._file.seek(offset)
+
+
+@dataclasses.dataclass(slots=True, kw_only=True, frozen=True)
+class InMemoryFile(File):
+    _buffer: BytesIO
+
+    async def read(self, size: int = -1) -> bytes:
+        return self._buffer.read(size)
+
+    async def seek(self, offset: int) -> None:
+        self._buffer.seek(offset)
+
+
+@dataclasses.dataclass(slots=True, kw_only=True, frozen=True)
+class AsyncBytesIO:
+    buffer: BytesIO
+
+    async def read(self, size: int = -1) -> bytes:  # pragma: no cover
+        return self.buffer.read(size)
+
+    async def seek(self, offset: int) -> None:  # pragma: no cover
+        self.buffer.seek(offset)
 
 
 @dataclasses.dataclass
@@ -53,7 +101,6 @@ class FileReader:
             return Err(FileReadError("Invalid file"))
 
         total_size = 0
-        buffer = BytesIO()
         while chunk := await file.read(self._chunk_size):
             total_size += len(chunk)
             if total_size > self._max_size:  # pragma: no cover
@@ -62,15 +109,16 @@ class FileReader:
                         f"Upload size of {total_size} exceeds max size of {self._max_size}",
                     ),
                 )
-            buffer.write(chunk)
-        await file.seek(0)
-        buffer.seek(0)
 
-        return Ok(
-            File(
-                buffer=buffer,
-                size=file.size,
-                content_type=file.content_type,
-                filename=PurePath(file.filename),
-            ),
-        )
+        await file.seek(0)
+        match file:
+            case UploadFile():
+                return Ok(
+                    StarletteFile(
+                        _file=file,
+                        size=file.size,
+                        content_type=file.content_type,
+                        filename=PurePath(file.filename),
+                    ),
+                )
+        assert_never(file)  # pragma: no cover

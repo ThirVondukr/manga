@@ -9,6 +9,7 @@ import PIL.Image
 from app.core.storage import FileStorage, FileUpload
 from app.db.models import Image
 from lib.db import DBContext
+from lib.files import AsyncBytesIO
 
 
 class ImageService:
@@ -22,7 +23,9 @@ class ImageService:
         upload: FileUpload,
         max_width: int,
     ) -> AsyncIterator[tuple[Image, Image]]:
-        thumbnail = PIL.Image.open(upload.buffer)
+        io = BytesIO(await upload.file.read())
+        await upload.file.seek(0)
+        thumbnail = PIL.Image.open(io)
         image_dimensions = thumbnail.size
 
         thumbnail.thumbnail(size=(max_width, sys.maxsize))  # Only scale width
@@ -33,14 +36,13 @@ class ImageService:
         )
 
         thumbnail_io.seek(0)
-        upload.buffer.seek(0)
 
         async with (
             self._storage.one_upload_context(file=upload) as main,
             self._storage.one_upload_context(
                 file=FileUpload(
                     path=upload.path.with_stem(f"{upload.path.stem}-preview"),
-                    buffer=thumbnail_io,
+                    file=AsyncBytesIO(buffer=thumbnail_io),
                 ),
             ) as preview,
         ):
