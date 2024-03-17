@@ -2,6 +2,7 @@ import dataclasses
 import enum
 from collections.abc import Sequence
 from typing import Generic, TypeVar
+from uuid import UUID
 
 from lib.sort import SortDirection
 from lib.types import MangaStatus
@@ -23,8 +24,8 @@ class Sort(Generic[_T]):
 
 @dataclasses.dataclass
 class TagFilter:
-    include: list[str] | None = None
-    exclude: list[str] | None = None
+    include: list[UUID] | None = None
+    exclude: list[UUID] | None = None
 
 
 @dataclasses.dataclass

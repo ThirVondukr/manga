@@ -26,13 +26,13 @@ from lib.files import File
 
 @strawberry.input(name="MangaTagFilter")
 class MangaTagFilterGQL:
-    include: list[str] | None = None
-    exclude: list[str] | None = None
+    include: list[strawberry.ID] | None = None
+    exclude: list[strawberry.ID] | None = None
 
     def to_dto(self) -> TagFilter:
         return TagFilter(
-            include=self.include,
-            exclude=self.exclude,
+            include=self.include,  # type: ignore[arg-type]
+            exclude=self.exclude,  # type: ignore[arg-type]
         )
 
 

@@ -98,7 +98,7 @@ async def test_tags_search(
             "pagination": {
                 "pageSize": len(mangas),
             },
-            "filter": {"tags": {"include": [random_tag.name_slug]}},
+            "filter": {"tags": {"include": [str(random_tag.id)]}},
         },
     )
     assert response == _tpl(

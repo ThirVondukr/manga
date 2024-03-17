@@ -110,7 +110,7 @@ class MangaRepository:
             include_alias = aliased(MangaTag, name="tags_include")
             stmt = (
                 stmt.join(include_alias, Manga.tags)
-                .where(include_alias.name_slug.in_(filter.tags.include))
+                .where(include_alias.id.in_(filter.tags.include))
                 .having(
                     func.count(include_alias.id) >= len(filter.tags.include),
                 )
@@ -120,7 +120,7 @@ class MangaRepository:
             stmt = stmt.join(
                 exclude_alias,
                 Manga.tags.and_(
-                    exclude_alias.name_slug.in_(filter.tags.exclude),
+                    exclude_alias.id.in_(filter.tags.exclude),
                 ),
                 isouter=True,
             ).having(func.count(exclude_alias.id) == 0)

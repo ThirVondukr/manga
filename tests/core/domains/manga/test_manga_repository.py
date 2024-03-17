@@ -106,14 +106,14 @@ async def test_tags(
 
     for tag in manga.tags:
         result = await manga_repository.paginate(
-            filter=MangaFilter(tags=TagFilter(include=[tag.name_slug])),
+            filter=MangaFilter(tags=TagFilter(include=[tag.id])),
             pagination=pagination,
             sort=_DEFAULT_SORT,
         )
         assert result.items == [manga]
 
         result = await manga_repository.paginate(
-            filter=MangaFilter(tags=TagFilter(exclude=[tag.name_slug])),
+            filter=MangaFilter(tags=TagFilter(exclude=[tag.id])),
             pagination=pagination,
             sort=_DEFAULT_SORT,
         )
@@ -124,14 +124,14 @@ async def test_tags(
             continue
 
         result = await manga_repository.paginate(
-            filter=MangaFilter(tags=TagFilter(include=[tag.name_slug])),
+            filter=MangaFilter(tags=TagFilter(include=[tag.id])),
             pagination=pagination,
             sort=_DEFAULT_SORT,
         )
         assert result.items == []
 
         result = await manga_repository.paginate(
-            filter=MangaFilter(tags=TagFilter(exclude=[tag.name_slug])),
+            filter=MangaFilter(tags=TagFilter(exclude=[tag.id])),
             pagination=pagination,
             sort=_DEFAULT_SORT,
         )
