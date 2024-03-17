@@ -14,8 +14,8 @@ from zipfile import ZipFile
 import aiofiles
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.domain.chapters.dto import ChapterCreateDTO
-from app.core.domain.chapters.services import ChapterService
+from app.core.domain.manga.chapters.dto import ChapterCreateDTO
+from app.core.domain.manga.chapters.services import ChapterService
 from app.core.storage import FileStorage, FileUpload
 from app.db.models import MangaBranch, MangaChapter, MangaPage, User
 from app.settings import ImagePaths

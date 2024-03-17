@@ -6,8 +6,8 @@ from typing import Any
 import pydantic
 import pytest
 
-from app.core.domain.chapters.dto import ChapterCreateDTO
 from app.core.domain.const import NAME_LENGTH
+from app.core.domain.manga.chapters.dto import ChapterCreateDTO
 from lib.files import InMemoryFile
 
 

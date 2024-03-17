@@ -5,8 +5,8 @@ from pathlib import PurePath
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.domain.chapters.commands import ChapterCreateCommand
-from app.core.domain.chapters.dto import ChapterCreateDTO
+from app.core.domain.manga.chapters.commands import ChapterCreateCommand
+from app.core.domain.manga.chapters.dto import ChapterCreateDTO
 from app.core.errors import (
     EntityAlreadyExistsError,
     PermissionDeniedError,

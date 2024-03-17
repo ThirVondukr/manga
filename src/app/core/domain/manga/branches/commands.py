@@ -1,9 +1,9 @@
 from result import Err, Ok, Result
 
-from app.core.domain.branches.dto import MangaBranchCreateDTO
-from app.core.domain.branches.services import MangaBranchService
 from app.core.domain.groups.repositories import GroupRepository
-from app.core.domain.manga.repositories import MangaRepository
+from app.core.domain.manga.branches.dto import MangaBranchCreateDTO
+from app.core.domain.manga.branches.services import MangaBranchService
+from app.core.domain.manga.manga.repositories import MangaRepository
 from app.core.errors import RelationshipNotFoundError
 from app.db.models import MangaBranch, User
 

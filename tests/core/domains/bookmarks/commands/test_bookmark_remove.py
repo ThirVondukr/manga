@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.domain.bookmarks.commands import (
+from app.core.domain.manga.bookmarks.commands import (
     MangaBookmarkRemoveCommand,
 )
 from app.core.errors import NotFoundError

@@ -1,7 +1,7 @@
 import strawberry
 
 from app.adapters.graphql.types import LanguageGQL
-from app.core.domain.branches.dto import MangaBranchCreateDTO
+from app.core.domain.manga.branches.dto import MangaBranchCreateDTO
 
 
 @strawberry.input(name="MangaBranchCreateInput")

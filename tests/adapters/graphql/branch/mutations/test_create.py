@@ -5,8 +5,8 @@ from unittest.mock import patch
 import pytest
 from result import Err, Ok
 
-from app.core.domain.branches.commands import MangaBranchCreateCommand
 from app.core.domain.const import NAME_LENGTH
+from app.core.domain.manga.branches.commands import MangaBranchCreateCommand
 from app.core.errors import RelationshipNotFoundError
 from app.db.models import MangaBranch
 from lib.types import Language

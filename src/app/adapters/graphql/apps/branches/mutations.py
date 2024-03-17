@@ -14,7 +14,7 @@ from app.adapters.graphql.context import Info
 from app.adapters.graphql.errors import map_error_to_gql
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.validation import validate_callable
-from app.core.domain.branches.commands import MangaBranchCreateCommand
+from app.core.domain.manga.branches.commands import MangaBranchCreateCommand
 
 
 @strawberry.type

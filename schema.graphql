@@ -263,8 +263,8 @@ type MangaTagCategory {
 }
 
 input MangaTagFilter {
-  include: [String!] = null
-  exclude: [String!] = null
+  include: [ID!] = null
+  exclude: [ID!] = null
 }
 
 union MangaUpdateError = ValidationErrors | EntityAlreadyExistsError | PermissionDeniedError | NotFoundError

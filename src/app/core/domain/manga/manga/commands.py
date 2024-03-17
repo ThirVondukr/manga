@@ -1,8 +1,8 @@
 from result import Err, Result
 
-from app.core.domain.manga.dto import MangaCreateDTO, MangaUpdateDTO
-from app.core.domain.manga.repositories import MangaRepository
-from app.core.domain.manga.services import MangaPermissions, MangaService
+from app.core.domain.manga.manga.dto import MangaCreateDTO, MangaUpdateDTO
+from app.core.domain.manga.manga.repositories import MangaRepository
+from app.core.domain.manga.manga.services import MangaPermissions, MangaService
 from app.core.errors import (
     EntityAlreadyExistsError,
     NotFoundError,

@@ -12,8 +12,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.domain.chapters.commands import ChapterCreateCommand
 from app.core.domain.const import NAME_LENGTH
+from app.core.domain.manga.chapters.commands import ChapterCreateCommand
 from app.core.errors import (
     EntityAlreadyExistsError,
     PermissionDeniedError,

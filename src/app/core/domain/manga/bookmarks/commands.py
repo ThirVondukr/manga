@@ -2,9 +2,9 @@ from uuid import UUID
 
 from result import Err, Ok, Result
 
-from app.core.domain.bookmarks.dto import BookmarkMangaResultDTO
-from app.core.domain.bookmarks.services import BookmarkService
-from app.core.domain.manga.repositories import MangaRepository
+from app.core.domain.manga.bookmarks.dto import BookmarkMangaResultDTO
+from app.core.domain.manga.bookmarks.services import BookmarkService
+from app.core.domain.manga.manga.repositories import MangaRepository
 from app.core.errors import NotFoundError
 from app.db.models import Manga, User
 

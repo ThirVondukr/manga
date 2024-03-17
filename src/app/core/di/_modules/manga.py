@@ -1,20 +1,20 @@
 from aioinject import Scoped
 
-from app.core.domain.bookmarks.loaders import MangaBookmarkLoader
-from app.core.domain.manga.commands import (
+from app.core.domain.manga.bookmarks.loaders import MangaBookmarkLoader
+from app.core.domain.manga.manga.commands import (
     MangaCreateCommand,
     MangaUpdateCommand,
 )
-from app.core.domain.manga.loaders import (
+from app.core.domain.manga.manga.loaders import (
     MangaAltTitleLoader,
     MangaArtLoader,
     MangaArtsLoader,
     MangaLoader,
     MangaTagLoader,
 )
-from app.core.domain.manga.queries import MangaSearchQuery
-from app.core.domain.manga.repositories import MangaRepository
-from app.core.domain.manga.services import MangaPermissions, MangaService
+from app.core.domain.manga.manga.queries import MangaSearchQuery
+from app.core.domain.manga.manga.repositories import MangaRepository
+from app.core.domain.manga.manga.services import MangaPermissions, MangaService
 from lib.types import Providers
 
 providers: Providers = [

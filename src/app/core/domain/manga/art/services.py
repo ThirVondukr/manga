@@ -6,8 +6,8 @@ from uuid import UUID
 from result import Err, Ok, Result
 from uuid_utils.compat import uuid7
 
-from app.core.domain.art.dto import MangaArtAddDTO, MangaArtsAddDTO
 from app.core.domain.images.services import ImageService
+from app.core.domain.manga.art.dto import MangaArtAddDTO, MangaArtsAddDTO
 from app.core.errors import EntityAlreadyExistsError, NotFoundError
 from app.core.storage import FileUpload
 from app.db.models import Image, Manga

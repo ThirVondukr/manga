@@ -3,8 +3,8 @@ import uuid
 import pytest
 from slugify import slugify
 
-from app.core.domain.manga.commands import MangaCreateCommand
-from app.core.domain.manga.dto import MangaCreateDTO
+from app.core.domain.manga.manga.commands import MangaCreateCommand
+from app.core.domain.manga.manga.dto import MangaCreateDTO
 from app.core.errors import EntityAlreadyExistsError, PermissionDeniedError
 from app.db.models import Manga, User
 from lib.types import MangaStatus

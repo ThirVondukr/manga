@@ -2,8 +2,8 @@ import uuid
 
 import pytest
 
-from app.core.domain.branches.commands import MangaBranchCreateCommand
-from app.core.domain.branches.dto import MangaBranchCreateDTO
+from app.core.domain.manga.branches.commands import MangaBranchCreateCommand
+from app.core.domain.manga.branches.dto import MangaBranchCreateDTO
 from app.core.errors import RelationshipNotFoundError
 from app.db.models import Group, Manga, User
 from lib.types import Language

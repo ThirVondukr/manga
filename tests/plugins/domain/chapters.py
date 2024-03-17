@@ -1,6 +1,6 @@
 import pytest
 
-from app.core.domain.chapters.services import ChapterService
+from app.core.domain.manga.chapters.services import ChapterService
 from app.db.models import MangaBranch, MangaChapter, User
 from lib.db import DBContext
 from tests.types import Resolver

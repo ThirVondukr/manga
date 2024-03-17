@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 from app.core.di import create_container
-from app.core.domain.import_.cbz import ImportCBZCommand
+from app.core.domain.manga.import_.cbz import ImportCBZCommand
 
 
 async def main() -> None:

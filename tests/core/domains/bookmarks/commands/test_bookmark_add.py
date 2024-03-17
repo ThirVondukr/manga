@@ -2,8 +2,8 @@ import uuid
 
 import pytest
 
-from app.core.domain.bookmarks.commands import MangaBookmarkAddCommand
-from app.core.domain.bookmarks.repositories import BookmarkRepository
+from app.core.domain.manga.bookmarks.commands import MangaBookmarkAddCommand
+from app.core.domain.manga.bookmarks.repositories import BookmarkRepository
 from app.core.errors import NotFoundError
 from app.db.models import Manga, User
 from tests.types import Resolver

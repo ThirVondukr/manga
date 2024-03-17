@@ -1,7 +1,7 @@
 import pytest
 
-from app.core.domain.bookmarks.repositories import BookmarkRepository
-from app.core.domain.bookmarks.services import BookmarkService
+from app.core.domain.manga.bookmarks.repositories import BookmarkRepository
+from app.core.domain.manga.bookmarks.services import BookmarkService
 from app.db.models import Manga, MangaBookmark, User
 from tests.types import Resolver
 

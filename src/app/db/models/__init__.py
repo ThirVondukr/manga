@@ -3,6 +3,7 @@ from ._manga import (
     AltTitle,
     Image,
     Manga,
+    MangaArt,
     MangaBookmark,
     MangaBranch,
     MangaChapter,
@@ -15,7 +16,9 @@ from ._user import User
 __all__ = [
     "AltTitle",
     "Group",
+    "Image",
     "Manga",
+    "MangaArt",
     "MangaBookmark",
     "MangaBranch",
     "MangaChapter",
@@ -23,5 +26,4 @@ __all__ = [
     "MangaTag",
     "User",
     "manga_manga_tag_secondary_table",
-    "Image",
 ]

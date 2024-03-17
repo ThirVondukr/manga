@@ -1,9 +1,9 @@
 from aioinject import Scoped
 
-from app.core.domain.chapters.commands import ChapterCreateCommand
-from app.core.domain.chapters.queries import MangaChaptersQuery
-from app.core.domain.chapters.repositories import ChapterRepository
-from app.core.domain.chapters.services import (
+from app.core.domain.manga.chapters.commands import ChapterCreateCommand
+from app.core.domain.manga.chapters.queries import MangaChaptersQuery
+from app.core.domain.manga.chapters.repositories import ChapterRepository
+from app.core.domain.manga.chapters.services import (
     ChapterPermissionService,
     ChapterService,
 )

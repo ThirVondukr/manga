@@ -1,6 +1,9 @@
 from aioinject import Scoped
 
-from app.core.domain.chapters.loaders import ChapterLoader, ChapterPagesLoader
+from app.core.domain.manga.chapters.loaders import (
+    ChapterLoader,
+    ChapterPagesLoader,
+)
 from lib.types import Providers
 
 providers: Providers = [

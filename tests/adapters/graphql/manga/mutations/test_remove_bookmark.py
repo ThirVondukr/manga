@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from result import Err, Ok
 
-from app.core.domain.bookmarks.commands import (
+from app.core.domain.manga.bookmarks.commands import (
     MangaBookmarkRemoveCommand,
 )
 from app.core.errors import NotFoundError

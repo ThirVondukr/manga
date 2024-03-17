@@ -1,10 +1,10 @@
 from result import Err, Result
 from sqlalchemy.orm import selectinload
 
-from app.core.domain.art.dto import MangaArtsAddDTO, MangaSetCoverArtDTO
-from app.core.domain.art.services import MangaArtService
-from app.core.domain.manga.repositories import MangaRepository
-from app.core.domain.manga.services import MangaPermissions
+from app.core.domain.manga.art.dto import MangaArtsAddDTO, MangaSetCoverArtDTO
+from app.core.domain.manga.art.services import MangaArtService
+from app.core.domain.manga.manga.repositories import MangaRepository
+from app.core.domain.manga.manga.services import MangaPermissions
 from app.core.errors import (
     EntityAlreadyExistsError,
     NotFoundError,

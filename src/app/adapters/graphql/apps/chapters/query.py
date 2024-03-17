@@ -3,7 +3,7 @@ from result import Err
 
 from app.adapters.graphql.apps.chapters.types import MangaChapterGQL
 from app.adapters.graphql.context import Info
-from app.core.domain.chapters.loaders import ChapterLoader
+from app.core.domain.manga.chapters.loaders import ChapterLoader
 from lib.validators import validate_uuid
 
 

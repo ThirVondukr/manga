@@ -109,7 +109,7 @@ omit = [
     "src/app/db/migrations/*",
     "src/app/adapters/cli/seed.py",
     "src/app/core/storage.py",  # S3 Client
-    "src/app/core/domain/import_/cbz.py",
+    "src/app/core/domain/manga/import_/cbz.py",
 ]
 command_line = "-m pytest -vvv --reuse-db"
 concurrency = ["greenlet"]

@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 from result import Err, Ok
 
-from app.core.domain.art.command import MangaSetCoverArtCommand
+from app.core.domain.manga.art.command import MangaSetCoverArtCommand
 from app.core.errors import PermissionDeniedError
 from app.db.models import Manga
 from lib.db import DBContext

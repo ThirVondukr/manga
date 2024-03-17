@@ -27,15 +27,15 @@ from app.adapters.graphql.errors import (
 )
 from app.adapters.graphql.extensions import AuthExtension
 from app.adapters.graphql.validation import validate_callable
-from app.core.domain.art.command import (
+from app.core.domain.manga.art.command import (
     AddArtsToMangaCommand,
     MangaSetCoverArtCommand,
 )
-from app.core.domain.bookmarks.commands import (
+from app.core.domain.manga.bookmarks.commands import (
     MangaBookmarkAddCommand,
     MangaBookmarkRemoveCommand,
 )
-from app.core.domain.manga.commands import (
+from app.core.domain.manga.manga.commands import (
     MangaCreateCommand,
     MangaUpdateCommand,
 )

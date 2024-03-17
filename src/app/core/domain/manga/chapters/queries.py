@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from app.core.domain.chapters.repositories import ChapterRepository
+from app.core.domain.manga.chapters.repositories import ChapterRepository
 from app.db.models import MangaChapter
 from lib.pagination.pagination import (
     PagePaginationParamsDTO,

@@ -2,7 +2,7 @@ from collections.abc import Sequence
 
 import strawberry
 
-from app.core.domain.chapters.dto import ChapterCreateDTO
+from app.core.domain.manga.chapters.dto import ChapterCreateDTO
 from lib.files import File
 
 

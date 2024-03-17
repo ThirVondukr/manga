@@ -7,8 +7,8 @@ from result import Err, Ok, Result
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.domain.chapters.dto import ChapterCreateDTO
-from app.core.domain.chapters.repositories import ChapterRepository
+from app.core.domain.manga.chapters.dto import ChapterCreateDTO
+from app.core.domain.manga.chapters.repositories import ChapterRepository
 from app.core.errors import EntityAlreadyExistsError, PermissionDeniedError
 from app.core.storage import FileStorage, FileUpload
 from app.db.models import (

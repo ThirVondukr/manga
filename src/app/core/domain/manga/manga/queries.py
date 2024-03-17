@@ -1,5 +1,9 @@
-from app.core.domain.manga.filters import MangaFilter, MangaSortField, Sort
-from app.core.domain.manga.repositories import MangaRepository
+from app.core.domain.manga.manga.filters import (
+    MangaFilter,
+    MangaSortField,
+    Sort,
+)
+from app.core.domain.manga.manga.repositories import MangaRepository
 from app.db.models import Manga
 from lib.pagination.pagination import (
     PagePaginationParamsDTO,

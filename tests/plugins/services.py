@@ -2,7 +2,7 @@ import pytest
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.domain.manga.repositories import MangaRepository
+from app.core.domain.manga.manga.repositories import MangaRepository
 from lib.db import DBContext
 from tests.types import Resolver
 

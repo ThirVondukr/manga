@@ -1,4 +1,4 @@
-from app.core.domain.bookmarks.repositories import BookmarkRepository
+from app.core.domain.manga.bookmarks.repositories import BookmarkRepository
 from app.db.models import Manga, MangaBookmark, User
 from lib.db import DBContext
 

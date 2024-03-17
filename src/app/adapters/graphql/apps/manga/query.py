@@ -13,8 +13,8 @@ from app.adapters.graphql.pagination import (
     PagePaginationResultGQL,
     map_page_pagination,
 )
-from app.core.domain.manga.loaders import MangaLoader
-from app.core.domain.manga.queries import MangaSearchQuery
+from app.core.domain.manga.manga.loaders import MangaLoader
+from app.core.domain.manga.manga.queries import MangaSearchQuery
 from lib.validators import validate_uuid
 
 

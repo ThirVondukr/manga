@@ -1,9 +1,9 @@
 from result import Err, Result
 from sqlalchemy.orm import joinedload
 
-from app.core.domain.branches.repositories import BranchRepository
-from app.core.domain.chapters.dto import ChapterCreateDTO
-from app.core.domain.chapters.services import ChapterService
+from app.core.domain.manga.branches.repositories import BranchRepository
+from app.core.domain.manga.chapters.dto import ChapterCreateDTO
+from app.core.domain.manga.chapters.services import ChapterService
 from app.core.errors import (
     EntityAlreadyExistsError,
     PermissionDeniedError,

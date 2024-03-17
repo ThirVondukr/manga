@@ -20,21 +20,27 @@ from app.adapters.graphql.pagination import (
     map_page_pagination,
 )
 from app.adapters.graphql.types import LanguageGQL, MangaStatusGQL
-from app.core.domain.bookmarks.loaders import (
+from app.core.domain.images.loaders import ImageLoader
+from app.core.domain.manga.bookmarks.loaders import (
     MangaBookmarkLoader,
     MangaBookmarkLoaderKey,
 )
-from app.core.domain.chapters.queries import MangaChaptersQuery
-from app.core.domain.images.loaders import ImageLoader
-from app.core.domain.manga.loaders import (
+from app.core.domain.manga.chapters.queries import MangaChaptersQuery
+from app.core.domain.manga.manga.loaders import (
     MangaAltTitleLoader,
     MangaArtLoader,
     MangaArtsLoader,
     MangaTagLoader,
 )
 from app.core.storage import FileStorage
-from app.db.models import AltTitle, Image, Manga, MangaBookmark, MangaTag
-from app.db.models._manga import MangaArt
+from app.db.models import (
+    AltTitle,
+    Image,
+    Manga,
+    MangaArt,
+    MangaBookmark,
+    MangaTag,
+)
 
 
 @strawberry.type(name="MangaTagCategory")

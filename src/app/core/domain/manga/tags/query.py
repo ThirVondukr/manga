@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from app.core.domain.tags.repository import MangaTagRepository
+from app.core.domain.manga.tags.repository import MangaTagRepository
 from app.db.models import MangaTag
 
 

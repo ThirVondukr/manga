@@ -3,8 +3,8 @@ import uuid
 
 import pytest
 
-from app.core.domain.art.command import MangaSetCoverArtCommand
-from app.core.domain.art.dto import MangaSetCoverArtDTO
+from app.core.domain.manga.art.command import MangaSetCoverArtCommand
+from app.core.domain.manga.art.dto import MangaSetCoverArtDTO
 from app.core.errors import NotFoundError, PermissionDeniedError
 from app.db.models import Manga, User
 from tests.factories import MangaArtFactory

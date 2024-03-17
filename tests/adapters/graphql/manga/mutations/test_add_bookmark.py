@@ -4,8 +4,8 @@ from unittest.mock import patch
 import pytest
 from result import Err, Ok
 
-from app.core.domain.bookmarks.commands import MangaBookmarkAddCommand
-from app.core.domain.bookmarks.dto import BookmarkMangaResultDTO
+from app.core.domain.manga.bookmarks.commands import MangaBookmarkAddCommand
+from app.core.domain.manga.bookmarks.dto import BookmarkMangaResultDTO
 from app.core.errors import NotFoundError
 from app.db.models import Manga, MangaBookmark
 from tests.adapters.graphql.client import GraphQLClient

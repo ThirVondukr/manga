@@ -9,13 +9,13 @@ from app.adapters.graphql.types import (
     MangaStatusGQL,
     SortDirectionGQL,
 )
-from app.core.domain.art.dto import (
+from app.core.domain.manga.art.dto import (
     MangaArtAddDTO,
     MangaArtsAddDTO,
     MangaSetCoverArtDTO,
 )
-from app.core.domain.manga.dto import MangaCreateDTO, MangaUpdateDTO
-from app.core.domain.manga.filters import (
+from app.core.domain.manga.manga.dto import MangaCreateDTO, MangaUpdateDTO
+from app.core.domain.manga.manga.filters import (
     MangaFilter,
     MangaSortField,
     Sort,

@@ -6,7 +6,7 @@ from aioinject import Inject
 from aioinject.ext.strawberry import inject
 
 from app.adapters.graphql.apps.manga.types import MangaTagGQL
-from app.core.domain.tags.query import AllMangaTagsQuery
+from app.core.domain.manga.tags.query import AllMangaTagsQuery
 
 
 @strawberry.type

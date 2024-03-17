@@ -2,8 +2,8 @@ import uuid
 
 import pytest
 
-from app.core.domain.art.command import AddArtsToMangaCommand
-from app.core.domain.art.dto import MangaArtAddDTO, MangaArtsAddDTO
+from app.core.domain.manga.art.command import AddArtsToMangaCommand
+from app.core.domain.manga.art.dto import MangaArtAddDTO, MangaArtsAddDTO
 from app.core.errors import (
     EntityAlreadyExistsError,
     NotFoundError,

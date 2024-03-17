@@ -9,7 +9,7 @@ from strawberry import Private
 
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.dto import DTOMixin
-from app.core.domain.chapters.loaders import ChapterPagesLoader
+from app.core.domain.manga.chapters.loaders import ChapterPagesLoader
 from app.core.storage import FileStorage
 from app.db.models import MangaChapter, MangaPage
 

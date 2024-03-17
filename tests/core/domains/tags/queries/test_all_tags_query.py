@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.domain.tags.query import AllMangaTagsQuery
+from app.core.domain.manga.tags.query import AllMangaTagsQuery
 from tests.factories import MangaTagFactory
 from tests.types import Resolver
 from tests.utils import casefold

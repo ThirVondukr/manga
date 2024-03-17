@@ -19,7 +19,7 @@ from app.adapters.graphql.types import GraphQLFile
 from app.adapters.graphql.validation import (
     validate_callable,
 )
-from app.core.domain.chapters.commands import ChapterCreateCommand
+from app.core.domain.manga.chapters.commands import ChapterCreateCommand
 from app.settings import AppSettings
 from lib.files import FileReader
 

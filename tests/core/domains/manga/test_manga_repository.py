@@ -6,13 +6,13 @@ from datetime import datetime
 
 import pytest
 
-from app.core.domain.manga.filters import (
+from app.core.domain.manga.manga.filters import (
     MangaFilter,
     MangaSortField,
     Sort,
     TagFilter,
 )
-from app.core.domain.manga.repositories import MangaRepository
+from app.core.domain.manga.manga.repositories import MangaRepository
 from app.db.models import AltTitle, Group, Manga, MangaTag, User
 from lib.db import DBContext
 from lib.pagination.pagination import PagePaginationParamsDTO

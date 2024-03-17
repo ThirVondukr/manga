@@ -3,8 +3,8 @@ import uuid
 import pytest
 from slugify import slugify
 
-from app.core.domain.manga.commands import MangaUpdateCommand
-from app.core.domain.manga.dto import MangaUpdateDTO
+from app.core.domain.manga.manga.commands import MangaUpdateCommand
+from app.core.domain.manga.manga.dto import MangaUpdateDTO
 from app.core.errors import (
     EntityAlreadyExistsError,
     NotFoundError,
