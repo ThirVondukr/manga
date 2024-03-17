@@ -17,36 +17,22 @@ from app.settings import (
 from lib.settings import get_settings
 
 from ._modules import (
-    art,
     auth,
-    bookmarks,
-    branches,
-    chapters,
     database,
     groups,
     images,
-    import_,
     manga,
-    manga_chapters,
     s3,
-    tags,
     users,
 )
 
 modules: Iterable[Iterable[Provider[Any]]] = [
-    art.providers,
     auth.providers,
-    bookmarks.providers,
-    branches.providers,
-    chapters.providers,
     database.providers,
     groups.providers,
     images.providers,
-    import_.providers,
     manga.providers,
-    manga_chapters.providers,
     s3.providers,
-    tags.providers,
     users.providers,
 ]
 
