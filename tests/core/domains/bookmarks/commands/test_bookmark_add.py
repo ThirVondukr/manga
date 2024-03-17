@@ -40,6 +40,7 @@ async def test_ok(
     manga: Manga,
     bookmark_repository: BookmarkRepository,
 ) -> None:
+    assert manga.bookmark_count == 0
     result = (await command.execute(manga_id=manga.id, user=user)).unwrap()
 
     assert (
@@ -48,3 +49,4 @@ async def test_ok(
     assert result.bookmark.manga == manga
     assert result.bookmark.user == user
     assert result.manga is manga
+    assert manga.bookmark_count == 1

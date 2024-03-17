@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from datetime import datetime
 from pathlib import PurePath
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 from uuid import UUID
 
 from sqlalchemy import (
@@ -14,7 +14,7 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
-    UniqueConstraint,
+    UniqueConstraint, literal,
 )
 from sqlalchemy.orm import (
     Mapped,
@@ -139,7 +139,6 @@ class Manga(
     kw_only=True,
     repr=False,
 ):
-
     __tablename__ = "manga"
     __table_args__ = (
         Index(
@@ -153,6 +152,11 @@ class Manga(
     title_slug: Mapped[str_title] = mapped_column(unique=True)
     description: Mapped[str]
     status: Mapped[MangaStatus]
+    if TYPE_CHECKING:
+        bookmark_count: Final[Mapped[int]] = mapped_column(default=0)
+    else:
+        bookmark_count: Mapped[int] = mapped_column(default=0, server_default=literal(0))
+
     latest_chapter_id: Mapped[UUID | None] = mapped_column(
         ForeignKey(
             "manga_chapter.id",
@@ -194,7 +198,7 @@ class Manga(
         foreign_keys="MangaArt.manga_id",
     )
     cover_art_id: Mapped[UUID | None] = mapped_column(
-        ForeignKey("manga_art.id"),
+        ForeignKey("manga_art.id", use_alter=True, initially="DEFERRED"),
         init=False,
     )
     cover_art: Mapped[MangaArt | None] = relationship(

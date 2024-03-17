@@ -41,6 +41,8 @@ async def test_ok(
     manga: Manga,
     session: AsyncSession,
 ) -> None:
+    assert manga.bookmark_count == 1
     (await command.execute(manga_id=manga.id, user=user)).unwrap()
     bookmarks = (await session.scalars(select(MangaBookmark))).all()
     assert bookmarks == []
+    assert manga.bookmark_count == 0

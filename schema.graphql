@@ -93,13 +93,13 @@ type Manga {
   status: MangaStatus!
   createdAt: DateTime!
   updatedAt: DateTime!
+  bookmarkCount: Int!
   tags: [MangaTag!]!
   chapters(pagination: PagePaginationInput = null): MangaChapterPagePaginationResult!
   altTitles: [AltTitle!]!
 
   """Manga rating, from 0 to 10"""
   rating: Float!
-  bookmarkCount: Int!
   commentCount: Int!
   bookmark: MangaBookmark @isAuthenticated
   arts: [MangaArt!]!

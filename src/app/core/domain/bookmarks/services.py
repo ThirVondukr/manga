@@ -18,8 +18,12 @@ class BookmarkService:
 
         bookmark = MangaBookmark(manga=manga, user=user)
         self._db_context.add(bookmark)
-        await self._db_context.flush()
+        await self._repository.change_bookmark_count(manga_id=manga.id, delta=1)
         return bookmark
 
     async def remove_bookmark(self, manga: Manga, user: User) -> None:
         await self._repository.delete(manga=manga, user=user)
+        await self._repository.change_bookmark_count(
+            manga_id=manga.id,
+            delta=-1,
+        )

@@ -163,6 +163,7 @@ class MangaGQL(DTOMixin[Manga]):
     status: MangaStatusGQL
     created_at: datetime
     updated_at: datetime
+    bookmark_count: int
 
     @classmethod
     def from_dto(cls, model: Manga) -> Self:
@@ -175,6 +176,7 @@ class MangaGQL(DTOMixin[Manga]):
             status=model.status,
             created_at=model.created_at,
             updated_at=model.updated_at,
+            bookmark_count=model.bookmark_count,
         )
 
     @strawberry.field
@@ -213,11 +215,6 @@ class MangaGQL(DTOMixin[Manga]):
     async def rating(self) -> float:  # pragma: no cover
         random.seed(self.id)
         return random.uniform(0, 10)  # noqa: S311
-
-    @strawberry.field
-    async def bookmark_count(self) -> int:  # pragma: no cover
-        random.seed(self.id)
-        return random.randint(0, 100_000)  # noqa: S311
 
     @strawberry.field
     async def comment_count(self) -> int:  # pragma: no cover
