@@ -1,3 +1,6 @@
+import asyncio
+import contextlib
+from contextlib import AbstractAsyncContextManager
 from pathlib import PurePath
 
 from result import Err, Ok, Result
@@ -16,8 +19,9 @@ from app.db.models import (
     MangaPage,
     User,
 )
-from app.settings import ImagePaths
+from app.settings import AppSettings, ImagePaths
 from lib.db import DBContext
+from lib.files import File
 
 
 class ChapterPermissionService:
@@ -31,17 +35,19 @@ class ChapterPermissionService:
 
 
 class ChapterService:
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         db_context: DBContext,
         image_storage: FileStorage,
         permissions: ChapterPermissionService,
         repository: ChapterRepository,
+        app_settings: AppSettings,
     ) -> None:
         self._db_context = db_context
         self._image_storage = image_storage
         self._permissions = permissions
         self._repository = repository
+        self._app_settings = app_settings
 
     async def create(
         self,
@@ -69,26 +75,53 @@ class ChapterService:
             number=dto.number,
             pages=[],
         )
-        files_to_upload = [
-            FileUpload(
-                path=PurePath(
-                    f"{ImagePaths.chapter_images}/{branch.manga_id}/{chapter.id}/{number}{file.filename.suffix}",
-                ),
-                file=file,
-            )
-            for number, file in enumerate(dto.pages, start=1)
-        ]
-        async with self._image_storage.upload_contexts(
-            files_to_upload,
-        ) as files:
-            chapter.pages = [
-                MangaPage(image_path=path, number=number, chapter=chapter)
-                for number, path in enumerate(files, start=1)
+        limiter = asyncio.Semaphore(self._app_settings.max_concurrent_uploads)
+        async with (
+            contextlib.AsyncExitStack() as exit_stack,
+            asyncio.TaskGroup() as tg,
+        ):
+            tasks = [
+                tg.create_task(
+                    self._upload_image(
+                        branch=branch,
+                        chapter=chapter,
+                        number=number,
+                        file=file,
+                        exit_stack=exit_stack,
+                        limiter=limiter,
+                    ),
+                )
+                for number, file in enumerate(dto.pages, start=1)
             ]
-            self._update_manga(manga=branch.manga, chapter=chapter)
-            self._db_context.add(chapter)
-            await self._db_context.flush()
-            return Ok(chapter)
+        results = [task.result() for task in tasks]
+        chapter.pages = [
+            MangaPage(image_path=path, number=number, chapter=chapter)
+            for number, path in enumerate(results, start=1)
+        ]
+        self._update_manga(manga=branch.manga, chapter=chapter)
+        self._db_context.add(chapter)
+        await self._db_context.flush()
+        return Ok(chapter)
+
+    async def _upload_image(  # noqa: PLR0913
+        self,
+        branch: MangaBranch,
+        chapter: MangaChapter,
+        number: int,
+        file: File,
+        exit_stack: contextlib.AsyncExitStack,
+        limiter: AbstractAsyncContextManager[None],
+    ) -> str:
+        upload = FileUpload(
+            path=PurePath(
+                f"{ImagePaths.chapter_images}/{branch.manga_id}/{chapter.id}/{number}{file.filename.suffix}",
+            ),
+            file=file,
+        )
+        async with limiter:
+            return await exit_stack.enter_async_context(
+                self._image_storage.upload_context(file=upload),
+            )
 
     def _update_manga(self, manga: Manga, chapter: MangaChapter) -> None:
         manga.latest_chapter_id = chapter.id

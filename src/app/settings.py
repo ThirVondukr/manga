@@ -68,7 +68,8 @@ class S3Settings(BaseSettings):
 
 
 class AppSettings(BaseSettings):
-    max_upload_size_bytes: int = 200 * _MEGABYTES
+    max_upload_size_bytes: int = 250 * _MEGABYTES
+    max_concurrent_uploads: int = 5
 
 
 class ImageSettings(BaseSettings):

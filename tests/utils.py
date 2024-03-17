@@ -1,6 +1,6 @@
 import contextlib
 import uuid
-from collections.abc import AsyncIterator, Collection, Sequence
+from collections.abc import AsyncIterator, Collection
 from io import BytesIO
 from pathlib import PurePath
 from typing import final
@@ -57,20 +57,11 @@ class TestFileStorage(FileStorage):
         return f"{self._prefix}/{path}"
 
     @contextlib.asynccontextmanager
-    async def upload_contexts(
-        self,
-        files: Sequence[FileUpload],
-    ) -> AsyncIterator[tuple[str, ...]]:
-        to_upload = [f.path.as_posix() for f in files]
-        yield tuple(f.path.as_posix() for f in files)
-        self.files.extend(to_upload)
-
-    @contextlib.asynccontextmanager
     async def upload_context(
         self,
         file: FileUpload,
     ) -> AsyncIterator[str]:
-        yield file.path.as_posix()
+        yield await self.upload_file(file)
 
     async def delete(self, keys: Collection[str]) -> None:
         raise NotImplementedError

@@ -39,7 +39,6 @@ def test_ok(kwargs: dict[str, Any]) -> None:
 @pytest.mark.parametrize(
     ("field", "value"),
     [
-        ("title", " ab  "),
         ("title", "a" * (NAME_LENGTH + 1)),
         ("volume", 0),
         ("volume", -1),

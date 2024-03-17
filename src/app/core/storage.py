@@ -1,7 +1,7 @@
 import contextlib
 import dataclasses
 import mimetypes
-from collections.abc import AsyncIterator, Collection, Sequence
+from collections.abc import AsyncIterator, Collection
 from contextlib import AbstractAsyncContextManager
 from pathlib import PurePath
 from typing import Protocol, final, runtime_checkable
@@ -38,11 +38,6 @@ class FileStorage(Protocol):
     async def upload_file(self, file: FileUpload) -> str: ...
 
     async def url(self, path: str) -> str: ...
-
-    def upload_contexts(
-        self,
-        files: Sequence[FileUpload],
-    ) -> AbstractAsyncContextManager[tuple[str, ...]]: ...
 
     def upload_context(
         self,
@@ -100,21 +95,6 @@ class S3FileStorage(FileStorage):
 
     async def url(self, path: str) -> str:
         return f"{self._settings.public_url.removesuffix('/')}/{self._settings.bucket}/{path.removesuffix('/')}"
-
-    @contextlib.asynccontextmanager
-    async def upload_contexts(
-        self,
-        files: Sequence[FileUpload],
-    ) -> AsyncIterator[tuple[str, ...]]:
-        uploaded = set()
-        try:
-            for file in files:
-                path_str = await self.upload_file(file=file)
-                uploaded.add(path_str)
-            yield tuple(f.path.as_posix() for f in files)
-        except:
-            await self.delete(uploaded)
-            raise
 
     @contextlib.asynccontextmanager
     async def upload_context(
