@@ -8,8 +8,6 @@ Create Date: 2024-03-17 07:11:31.702469
 """
 
 from alembic import op
-import sqlalchemy as sa
-
 
 # revision identifiers, used by Alembic.
 revision = "7d135886432d"
@@ -20,7 +18,9 @@ depends_on: str | None = None
 
 def upgrade() -> None:
     op.drop_constraint(
-        "fk_manga_cover_art_id_manga_art", "manga", type_="foreignkey"
+        "fk_manga_cover_art_id_manga_art",
+        "manga",
+        type_="foreignkey",
     )
     op.create_foreign_key(
         op.f("fk_manga_cover_art_id_manga_art"),
@@ -35,7 +35,9 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_constraint(
-        op.f("fk_manga_cover_art_id_manga_art"), "manga", type_="foreignkey"
+        op.f("fk_manga_cover_art_id_manga_art"),
+        "manga",
+        type_="foreignkey",
     )
     op.create_foreign_key(
         "fk_manga_cover_art_id_manga_art",

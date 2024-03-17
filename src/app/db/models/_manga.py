@@ -14,7 +14,8 @@ from sqlalchemy import (
     Integer,
     String,
     Table,
-    UniqueConstraint, literal,
+    UniqueConstraint,
+    literal,
 )
 from sqlalchemy.orm import (
     Mapped,
@@ -155,7 +156,10 @@ class Manga(
     if TYPE_CHECKING:
         bookmark_count: Final[Mapped[int]] = mapped_column(default=0)
     else:
-        bookmark_count: Mapped[int] = mapped_column(default=0, server_default=literal(0))
+        bookmark_count: Mapped[int] = mapped_column(
+            default=0,
+            server_default=literal(0),
+        )
 
     latest_chapter_id: Mapped[UUID | None] = mapped_column(
         ForeignKey(
