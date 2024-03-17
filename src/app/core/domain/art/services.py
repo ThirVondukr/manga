@@ -1,3 +1,4 @@
+import asyncio
 import contextlib
 from pathlib import PurePath
 from uuid import UUID
@@ -5,11 +6,11 @@ from uuid import UUID
 from result import Err, Ok, Result
 from uuid_utils.compat import uuid7
 
-from app.core.domain.art.dto import MangaArtsAddDTO
+from app.core.domain.art.dto import MangaArtAddDTO, MangaArtsAddDTO
 from app.core.domain.images.services import ImageService
 from app.core.errors import EntityAlreadyExistsError, NotFoundError
 from app.core.storage import FileUpload
-from app.db.models import Manga
+from app.db.models import Image, Manga
 from app.db.models._manga import MangaArt
 from app.settings import ImagePaths
 from lib.db import DBContext
@@ -37,21 +38,20 @@ class MangaArtService:
             return Err(EntityAlreadyExistsError())
 
         async with contextlib.AsyncExitStack() as exit_stack:
-            for art_dto in dto.arts:
-                upload = FileUpload(
-                    file=art_dto.image,
-                    path=PurePath(
-                        ImagePaths.manga_arts,
-                        str(manga.id),
-                        str(uuid7()),
-                    ).with_suffix(art_dto.image.filename.suffix),
-                )
-                image, preview = await exit_stack.enter_async_context(
-                    self._image_service.upload_image_with_preview(
-                        upload,
-                        max_width=400,
-                    ),
-                )
+            async with asyncio.TaskGroup() as tg:
+                tasks = [
+                    tg.create_task(
+                        self._upload_art(
+                            manga_id=manga.id,
+                            art_dto=art_dto,
+                            exit_stack=exit_stack,
+                        ),
+                    )
+                    for art_dto in dto.arts
+                ]
+
+            for art_dto, task in zip(dto.arts, tasks, strict=True):
+                image, preview = task.result()
                 art = MangaArt(
                     language=art_dto.language,
                     volume=art_dto.volume,
@@ -63,6 +63,27 @@ class MangaArtService:
             await self._db_context.flush()
 
         return Ok(manga)
+
+    async def _upload_art(
+        self,
+        manga_id: UUID,
+        art_dto: MangaArtAddDTO,
+        exit_stack: contextlib.AsyncExitStack,
+    ) -> tuple[Image, Image]:
+        upload = FileUpload(
+            file=art_dto.image,
+            path=PurePath(
+                ImagePaths.manga_arts,
+                str(manga_id),
+                str(uuid7()),
+            ).with_suffix(art_dto.image.filename.suffix),
+        )
+        return await exit_stack.enter_async_context(
+            self._image_service.upload_image_with_preview(
+                upload,
+                max_width=400,
+            ),
+        )
 
     async def set_cover_art(
         self,

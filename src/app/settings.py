@@ -64,6 +64,8 @@ class S3Settings(BaseSettings):
 
     bucket: str = "manga"
 
+    multipart_upload_chunk_size: int = 5 * _MEGABYTES
+
 
 class AppSettings(BaseSettings):
     max_upload_size_bytes: int = 200 * _MEGABYTES

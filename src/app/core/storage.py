@@ -57,14 +57,8 @@ class S3FileStorage(FileStorage):
     def __init__(self, client: S3Client, settings: S3Settings) -> None:
         self._client = client
         self._settings = settings
-        self._min_multipart_upload_size = 5 * 1024 * 1024
 
     async def upload_file(self, file: FileUpload) -> str:
-        if file.file.size > self._min_multipart_upload_size * 2:
-            return await self._streaming_upload(file)
-        return await self._upload(file)
-
-    async def _streaming_upload(self, file: FileUpload) -> str:
         path = file.path.as_posix()
         mimetype, _ = mimetypes.guess_type(url=file.path.name)
         upload_id = (
@@ -77,7 +71,7 @@ class S3FileStorage(FileStorage):
         e_tags = []
         part_number = 1
         while chunk := await file.file.read(
-            size=self._min_multipart_upload_size,
+            size=self._settings.multipart_upload_chunk_size,
         ):
             part_upload_response = await self._client.upload_part(
                 Bucket=self._settings.bucket,
@@ -103,17 +97,6 @@ class S3FileStorage(FileStorage):
             },
         )
         return response["Key"]
-
-    async def _upload(self, file: FileUpload) -> str:
-        key = file.path.as_posix()
-        mimetype, _ = mimetypes.guess_type(url=file.path.name)
-        await self._client.put_object(
-            Body=await file.file.read(),
-            Bucket=self._settings.bucket,
-            Key=key,
-            ContentType=mimetype or "binary/octet-stream",
-        )
-        return key
 
     async def url(self, path: str) -> str:
         return f"{self._settings.public_url.removesuffix('/')}/{self._settings.bucket}/{path.removesuffix('/')}"
