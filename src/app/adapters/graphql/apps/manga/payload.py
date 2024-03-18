@@ -2,7 +2,7 @@ from typing import Annotated
 
 import strawberry
 
-from app.adapters.graphql.apps.manga.types import MangaGQL
+from app.adapters.graphql.apps.manga.types import MangaGQL, MangaRatingGQL
 from app.adapters.graphql.errors import (
     EntityAlreadyExistsErrorGQL,
     FileUploadErrorGQL,
@@ -80,3 +80,16 @@ MangaSetCoverArtErrorGQL = Annotated[
 class MangaSetCoverArtPayloadGQL:
     manga: MangaGQL | None = None
     error: MangaSetCoverArtErrorGQL | None = None
+
+
+MangaSetRatingErrorGQL = Annotated[
+    NotFoundErrorGQL | ValidationErrorsGQL,
+    strawberry.union("MangaSetRatingError"),
+]
+
+
+@strawberry.type(name="MangaSetRatingPayload")
+class MangaSetRatingPayloadGQL:
+    manga: MangaGQL | None = None
+    rating: MangaRatingGQL | None = None
+    error: MangaSetRatingErrorGQL | None = None

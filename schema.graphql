@@ -94,12 +94,11 @@ type Manga {
   createdAt: DateTime!
   updatedAt: DateTime!
   bookmarkCount: Int!
+  rating: Float!
+  ratingCount: Int!
   tags: [MangaTag!]!
   chapters(pagination: PagePaginationInput = null): MangaChapterPagePaginationResult!
   altTitles: [AltTitle!]!
-
-  """Manga rating, from 0 to 10"""
-  rating: Float!
   commentCount: Int!
   bookmark: MangaBookmark @isAuthenticated
   arts: [MangaArt!]!
@@ -207,6 +206,7 @@ type MangaMutations {
   removeBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
   addArts(input: MangaArtsAddInput!): MangaArtsAddPayload! @isAuthenticated
   setCoverArt(input: MangaSetCoverArtInput!): MangaSetCoverArtPayload! @isAuthenticated
+  setRating(input: MangaSetRatingInput!): MangaSetRatingPayload! @isAuthenticated
 }
 
 type MangaPage {
@@ -220,6 +220,11 @@ type MangaPagePaginationResult {
   pageInfo: PagePaginationInfo!
 }
 
+type MangaRating {
+  id: ID!
+  value: Int!
+}
+
 union MangaSetCoverArtErrorGQL = NotFoundError | PermissionDeniedError | ValidationErrors
 
 input MangaSetCoverArtInput {
@@ -230,6 +235,19 @@ input MangaSetCoverArtInput {
 type MangaSetCoverArtPayload {
   manga: Manga
   error: MangaSetCoverArtErrorGQL
+}
+
+union MangaSetRatingError = NotFoundError | ValidationErrors
+
+input MangaSetRatingInput {
+  mangaId: ID!
+  rating: Int!
+}
+
+type MangaSetRatingPayload {
+  manga: Manga
+  rating: MangaRating
+  error: MangaSetRatingError
 }
 
 input MangaSort {

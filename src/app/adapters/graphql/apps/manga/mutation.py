@@ -10,6 +10,7 @@ from app.adapters.graphql.apps.manga.input import (
     MangaArtsAddInputGQL,
     MangaCreateInputGQL,
     MangaSetCoverArtInputGQL,
+    MangaSetRatingInputGQL,
     MangaUpdateInputGQL,
 )
 from app.adapters.graphql.apps.manga.payload import (
@@ -17,9 +18,10 @@ from app.adapters.graphql.apps.manga.payload import (
     MangaBookmarkPayloadGQL,
     MangaCreatePayloadGQL,
     MangaSetCoverArtPayloadGQL,
+    MangaSetRatingPayloadGQL,
     MangaUpdatePayloadGQL,
 )
-from app.adapters.graphql.apps.manga.types import MangaGQL
+from app.adapters.graphql.apps.manga.types import MangaGQL, MangaRatingGQL
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.errors import (
     NotFoundErrorGQL,
@@ -39,6 +41,7 @@ from app.core.domain.manga.manga.commands import (
     MangaCreateCommand,
     MangaUpdateCommand,
 )
+from app.core.domain.manga.ratings.commands import MangaSetRatingCommand
 from app.settings import AppSettings
 from lib.files import FileReader
 from lib.validators import validate_uuid
@@ -205,4 +208,31 @@ class MangaMutationsGQL:
 
         return MangaSetCoverArtPayloadGQL(
             manga=MangaGQL.from_dto(result.ok_value),
+        )
+
+    @strawberry.mutation(extensions=[AuthExtension])  # type: ignore[misc]
+    @inject
+    async def set_rating(
+        self,
+        input: MangaSetRatingInputGQL,
+        command: Annotated[MangaSetRatingCommand, Inject],
+        info: Info,
+    ) -> MangaSetRatingPayloadGQL:
+        if isinstance(dto := validate_callable(input.to_dto), Err):
+            return MangaSetRatingPayloadGQL(
+                error=dto.err_value,
+            )
+
+        result = await command.execute(
+            user=await info.context.user,
+            dto=dto.ok_value,
+        )
+        if isinstance(result, Err):
+            return MangaSetRatingPayloadGQL(
+                error=map_error_to_gql(result.err_value),
+            )
+
+        return MangaSetRatingPayloadGQL(
+            manga=MangaGQL.from_dto(result.ok_value.manga),
+            rating=MangaRatingGQL.from_dto_optional(result.ok_value.rating),
         )

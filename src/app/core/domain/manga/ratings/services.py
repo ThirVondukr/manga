@@ -29,11 +29,12 @@ class MangaRatingService:
     ) -> Result[MangaSetRatingResult, NotFoundError]:
         if (manga := await self._manga_repository.get(id=dto.manga_id)) is None:
             return Err(NotFoundError(entity_id=str(dto.manga_id)))
+
+        await self._rating_repository.delete_rating(
+            user_id=user.id,
+            manga=manga,
+        )
         if dto.rating is None:
-            await self._rating_repository.delete_rating(
-                user_id=user.id,
-                manga=manga,
-            )
             return Ok(MangaSetRatingResult(manga=manga, rating=None))
 
         rating = MangaRating(

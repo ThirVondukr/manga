@@ -21,6 +21,7 @@ from app.core.domain.manga.manga.filters import (
     Sort,
     TagFilter,
 )
+from app.core.domain.manga.ratings.dto import MangaSetRatingDTO
 from lib.files import File
 
 
@@ -133,4 +134,16 @@ class MangaSetCoverArtInputGQL:
         return MangaSetCoverArtDTO(
             manga_id=self.manga_id,  # type: ignore[arg-type]
             art_id=self.art_id,  # type: ignore[arg-type]
+        )
+
+
+@strawberry.input(name="MangaSetRatingInput")
+class MangaSetRatingInputGQL:
+    manga_id: strawberry.ID
+    rating: int
+
+    def to_dto(self) -> MangaSetRatingDTO:
+        return MangaSetRatingDTO(
+            manga_id=self.manga_id,  # type: ignore[arg-type]
+            rating=self.rating,
         )

@@ -7,15 +7,23 @@ from app.core.domain.manga.ratings.dto import (
 from app.core.domain.manga.ratings.services import MangaRatingService
 from app.core.errors import NotFoundError
 from app.db.models import User
+from lib.db import DBContext
 
 
 class MangaSetRatingCommand:
-    def __init__(self, service: MangaRatingService) -> None:
+    def __init__(
+        self,
+        service: MangaRatingService,
+        db_context: DBContext,
+    ) -> None:
         self._service = service
+        self._db_context = db_context
 
     async def execute(
         self,
         dto: MangaSetRatingDTO,
         user: User,
     ) -> Result[MangaSetRatingResult, NotFoundError]:
-        return await self._service.set_rating(dto=dto, user=user)
+        result = await self._service.set_rating(dto=dto, user=user)
+        await self._db_context.flush()
+        return result

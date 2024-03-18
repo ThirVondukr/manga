@@ -39,6 +39,7 @@ from app.db.models import (
     Manga,
     MangaArt,
     MangaBookmark,
+    MangaRating,
     MangaTag,
 )
 
@@ -158,6 +159,19 @@ class MangaArtGQL(DTOMixin[MangaArt]):
         return ImageGQL.from_dto(image)
 
 
+@strawberry.type(name="MangaRating")
+class MangaRatingGQL(DTOMixin[MangaRating]):
+    id: strawberry.ID
+    value: int
+
+    @classmethod
+    def from_dto(cls, model: MangaRating) -> Self:
+        return cls(
+            id=strawberry.ID(f"{model.manga_id}:{model.user_id}"),
+            value=model.rating,
+        )
+
+
 @strawberry.type(name="Manga")
 class MangaGQL(DTOMixin[Manga]):
     _instance: Private[Manga]
@@ -170,6 +184,8 @@ class MangaGQL(DTOMixin[Manga]):
     created_at: datetime
     updated_at: datetime
     bookmark_count: int
+    rating: float
+    rating_count: int
 
     @classmethod
     def from_dto(cls, model: Manga) -> Self:
@@ -183,6 +199,8 @@ class MangaGQL(DTOMixin[Manga]):
             created_at=model.created_at,
             updated_at=model.updated_at,
             bookmark_count=model.bookmark_count,
+            rating=model.rating,
+            rating_count=model.rating_count,
         )
 
     @strawberry.field
@@ -216,11 +234,6 @@ class MangaGQL(DTOMixin[Manga]):
             self._instance.id,
         )
         return AltTitleGQL.from_dto_list(alt_titles)
-
-    @strawberry.field(description="Manga rating, from 0 to 10")  # type: ignore[misc]
-    async def rating(self) -> float:  # pragma: no cover
-        random.seed(self.id)
-        return random.uniform(0, 10)  # noqa: S311
 
     @strawberry.field
     async def comment_count(self) -> int:  # pragma: no cover
