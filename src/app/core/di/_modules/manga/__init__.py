@@ -10,6 +10,7 @@ from . import (
     _import,
     _manga,
     _manga_chapters,
+    _ratings,
     _tags,
 )
 
@@ -22,6 +23,7 @@ providers: Providers = list(
         _import.providers,
         _manga.providers,
         _manga_chapters.providers,
+        _ratings.providers,
         _tags.providers,
     ),
 )

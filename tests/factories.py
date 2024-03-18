@@ -16,12 +16,12 @@ from app.db.models import (
     AltTitle,
     Image,
     Manga,
+    MangaArt,
     MangaBranch,
     MangaChapter,
     MangaTag,
     User,
 )
-from app.db.models._manga import MangaArt
 from lib.types import Language, MangaStatus
 
 T = TypeVar("T")
@@ -54,6 +54,12 @@ class MangaFactory(GenericFactory[Manga]):
     description = factory.Faker("sentence")
     status = factory.Faker("enum", enum_cls=MangaStatus)
     created_at = factory.Faker("date_time", tzinfo=UTC)
+
+
+class UserFactory(GenericFactory[User]):
+    username = factory.Faker("pystr")
+    email = factory.Faker("email")
+    password_hash = ""
 
 
 class ImageFactory(GenericFactory[Image]):

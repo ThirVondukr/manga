@@ -8,7 +8,9 @@ from uuid import UUID
 
 from sqlalchemy import (
     ARRAY,
+    CheckConstraint,
     Column,
+    Double,
     ForeignKey,
     Index,
     Integer,
@@ -131,6 +133,30 @@ class MangaArt(
     preview_image: Mapped[Image] = relationship(foreign_keys=[preview_image_id])
 
 
+class MangaRating(HasTimestamps, MappedAsDataclass, Base, kw_only=True):
+    __tablename__ = "manga_rating"
+    __table_args__ = (
+        CheckConstraint(
+            "rating >= 1 and rating <= 10",
+            "valid_rating_range_check",
+        ),
+    )
+
+    manga_id: Mapped[UUID] = mapped_column(
+        ForeignKey("manga.id"),
+        primary_key=True,
+        init=False,
+    )
+    manga: Mapped[Manga] = relationship()
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey("user.id"),
+        primary_key=True,
+        init=False,
+    )
+    user: Mapped[User] = relationship()
+    rating: Mapped[int]
+
+
 class Manga(
     PkUUID,
     HasPrivate,
@@ -154,8 +180,19 @@ class Manga(
     description: Mapped[str]
     status: Mapped[MangaStatus]
     if TYPE_CHECKING:
+        rating_count: Final[Mapped[int]] = mapped_column(default=0)
+        rating: Final[Mapped[float]] = mapped_column(default=0.0)
         bookmark_count: Final[Mapped[int]] = mapped_column(default=0)
     else:
+        rating_count: Mapped[int] = mapped_column(
+            default=0,
+            server_default=literal(0),
+        )
+        rating: Mapped[float] = mapped_column(
+            Double,
+            default=0.0,
+            server_default=literal(0),
+        )
         bookmark_count: Mapped[int] = mapped_column(
             default=0,
             server_default=literal(0),

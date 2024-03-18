@@ -8,6 +8,7 @@ from ._manga import (
     MangaBranch,
     MangaChapter,
     MangaPage,
+    MangaRating,
     MangaTag,
     manga_manga_tag_secondary_table,
 )
@@ -23,6 +24,7 @@ __all__ = [
     "MangaBranch",
     "MangaChapter",
     "MangaPage",
+    "MangaRating",
     "MangaTag",
     "User",
     "manga_manga_tag_secondary_table",
