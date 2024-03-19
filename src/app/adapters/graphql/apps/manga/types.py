@@ -20,7 +20,7 @@ from app.adapters.graphql.pagination import (
     map_page_pagination,
 )
 from app.adapters.graphql.types import LanguageGQL, MangaStatusGQL
-from app.core.domain.images.loaders import ImageLoader
+from app.core.domain.images.loaders import MangaArtImagesLoader
 from app.core.domain.manga.bookmarks.loaders import (
     MangaBookmarkLoader,
     MangaBookmarkLoaderKey,
@@ -98,9 +98,7 @@ class MangaBookmarkGQL(DTOMixin[MangaBookmark]):
 
 @strawberry.type(name="MangaArt")
 class MangaArtGQL(DTOMixin[MangaArt]):
-    _image_id: Private[UUID]
-    _preview_image_id: Private[UUID]
-
+    _id: Private[UUID]
     id: strawberry.ID
     volume: int
     language: LanguageGQL
@@ -108,30 +106,18 @@ class MangaArtGQL(DTOMixin[MangaArt]):
     @classmethod
     def from_dto(cls, model: MangaArt) -> Self:
         return cls(
+            _id=model.id,
             id=strawberry.ID(str(model.id)),
             volume=model.volume,
             language=model.language,
-            _image_id=model.image_id,
-            _preview_image_id=model.preview_image_id,
         )
 
     @strawberry.field
-    async def image(self, info: Info) -> ImageGQL:
-        image = await info.context.loaders.map(ImageLoader).load(
-            key=self._image_id,
+    async def images(self, info: Info) -> Sequence[ImageGQL]:
+        images = await info.context.loaders.map(MangaArtImagesLoader).load(
+            key=self._id,
         )
-        if not image:  # pragma: no cover
-            raise ValueError
-        return ImageGQL.from_dto(image)
-
-    @strawberry.field
-    async def preview_image(self, info: Info) -> ImageGQL:
-        image = await info.context.loaders.map(ImageLoader).load(
-            key=self._preview_image_id,
-        )
-        if not image:  # pragma: no cover
-            raise ValueError
-        return ImageGQL.from_dto(image)
+        return ImageGQL.from_dto_list(images)
 
 
 @strawberry.type(name="MangaRating")

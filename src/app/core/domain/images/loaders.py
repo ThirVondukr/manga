@@ -3,11 +3,22 @@ from uuid import UUID
 
 from sqlalchemy import select
 
-from app.db.models import Image
-from lib.loaders import SQLALoader
+from app.db.models import Image, MangaArt
+from lib.loaders import SQLAListLoader, SQLALoader
 
 
 @final
 class ImageLoader(SQLALoader[UUID, Image]):
     column = Image.id
     stmt = select(Image)
+
+
+@final
+class MangaArtImagesLoader(SQLAListLoader[UUID, Image]):
+    column = MangaArt.id
+    stmt = (
+        select(MangaArt.id, Image)
+        .select_from(MangaArt)
+        .join(MangaArt.images)
+        .order_by(Image.width.desc())
+    )

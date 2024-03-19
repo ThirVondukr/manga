@@ -96,6 +96,22 @@ class Image(PkUUID, MappedAsDataclass, Base, kw_only=True):
     height: Mapped[int]
 
 
+manga_art__image = Table(
+    "manga_art__image",
+    Base.metadata,
+    Column(
+        "manga_art_id",
+        ForeignKey("manga_art.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "image_id",
+        ForeignKey("image.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)
+
+
 class MangaArt(
     PkUUID,
     HasTimestamps,
@@ -123,13 +139,7 @@ class MangaArt(
         default=None,
         foreign_keys=[manga_id],
     )
-    image_id: Mapped[UUID] = mapped_column(ForeignKey("image.id"), init=False)
-    image: Mapped[Image] = relationship(foreign_keys=[image_id])
-    preview_image_id: Mapped[UUID] = mapped_column(
-        ForeignKey("image.id"),
-        init=False,
-    )
-    preview_image: Mapped[Image] = relationship(foreign_keys=[preview_image_id])
+    images: Mapped[list[Image]] = relationship(secondary=manga_art__image)
 
 
 class MangaRating(HasTimestamps, MappedAsDataclass, Base, kw_only=True):

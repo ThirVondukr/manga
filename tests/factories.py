@@ -72,8 +72,7 @@ class MangaArtFactory(GenericFactory[MangaArt]):
     volume = factory.Sequence(lambda n: n)
     language = factory.Faker("enum", enum_cls=Language)
 
-    image = factory.SubFactory(ImageFactory)
-    preview_image = factory.SubFactory(ImageFactory)
+    images = factory.LazyFunction(lambda: ImageFactory.create_batch(size=5))
 
 
 class MangaBranchFactory(GenericFactory[MangaBranch]):

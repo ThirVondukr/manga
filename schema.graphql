@@ -109,8 +109,7 @@ type MangaArt {
   id: ID!
   volume: Int!
   language: LanguageEnum!
-  image: Image!
-  previewImage: Image!
+  images: [Image!]!
 }
 
 input MangaArtAddInput {

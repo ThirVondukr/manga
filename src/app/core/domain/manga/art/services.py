@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+from collections.abc import Sequence
 from pathlib import PurePath
 from uuid import UUID
 
@@ -51,12 +52,10 @@ class MangaArtService:
                 ]
 
             for art_dto, task in zip(dto.arts, tasks, strict=True):
-                image, preview = task.result()
                 art = MangaArt(
                     language=art_dto.language,
                     volume=art_dto.volume,
-                    image=image,
-                    preview_image=preview,
+                    images=list(task.result()),
                 )
                 manga.arts.append(art)
             self._db_context.add(manga)
@@ -69,7 +68,7 @@ class MangaArtService:
         manga_id: UUID,
         art_dto: MangaArtAddDTO,
         exit_stack: contextlib.AsyncExitStack,
-    ) -> tuple[Image, Image]:
+    ) -> Sequence[Image]:
         upload = FileUpload(
             file=art_dto.image,
             path=PurePath(
@@ -79,10 +78,7 @@ class MangaArtService:
             ).with_suffix(art_dto.image.filename.suffix),
         )
         return await exit_stack.enter_async_context(
-            self._image_service.upload_image_with_preview(
-                upload,
-                max_width=400,
-            ),
+            self._image_service.upload_src_set(upload),
         )
 
     async def set_cover_art(

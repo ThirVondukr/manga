@@ -38,49 +38,6 @@ class ImageService:
         self._settings = settings
 
     @contextlib.asynccontextmanager
-    async def upload_image_with_preview(
-        self,
-        upload: FileUpload,
-        max_width: int,
-    ) -> AsyncIterator[tuple[Image, Image]]:
-        io = BytesIO(await upload.file.read())
-        await upload.file.seek(0)
-        thumbnail = PIL.Image.open(io)
-        image_width, image_height = thumbnail.width, thumbnail.height
-
-        thumbnail.thumbnail(size=(max_width, sys.maxsize))  # Only scale width
-        thumbnail_io = BytesIO()
-        thumbnail.save(
-            thumbnail_io,
-            format=thumbnail.format,
-        )
-
-        thumbnail_io.seek(0)
-
-        async with (
-            self._storage.upload_context(file=upload) as main,
-            self._storage.upload_context(
-                file=FileUpload(
-                    path=upload.path.with_stem(f"{upload.path.stem}-preview"),
-                    file=AsyncBytesIO(buffer=thumbnail_io),
-                ),
-            ) as preview,
-        ):
-            main_image = Image(
-                path=PurePath(main),
-                width=image_width,
-                height=image_height,
-            )
-            preview_image = Image(
-                path=PurePath(preview),
-                width=thumbnail.width,
-                height=thumbnail.height,
-            )
-            self._db_context.add(main_image)
-            self._db_context.add(preview_image)
-            yield main_image, preview_image
-
-    @contextlib.asynccontextmanager
     async def upload_src_set(
         self,
         upload: FileUpload,

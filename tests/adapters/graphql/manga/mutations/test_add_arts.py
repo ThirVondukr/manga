@@ -22,11 +22,10 @@ QUERY = """mutation($input: MangaArtsAddInput!) {
           id
           volume
           language
-          image {
+          images {
             url
-          }
-          previewImage {
-            url
+            width
+            height
           }
         }
       }
@@ -137,12 +136,14 @@ async def test_ok(
         "arts": [
             {
                 "id": str(art.id),
-                "image": {
-                    "url": await s3_mock.url(art.image.path.as_posix()),
-                },
-                "previewImage": {
-                    "url": await s3_mock.url(art.preview_image.path.as_posix()),
-                },
+                "images": [
+                    {
+                        "url": await s3_mock.url(image.path.as_posix()),
+                        "width": image.width,
+                        "height": image.height,
+                    }
+                    for image in art.images
+                ],
                 "language": art.language.name.upper(),
                 "volume": art.volume,
             }
