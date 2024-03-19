@@ -2,7 +2,8 @@ import uuid
 from pathlib import PurePath
 
 from app.core.storage import FileStorage
-from app.db.models import Image, MangaChapter, MangaPage
+from app.db.models import Image
+from app.db.models.manga import MangaChapter, MangaPage
 from lib.db import DBContext
 from tests.adapters.graphql.client import GraphQLClient
 

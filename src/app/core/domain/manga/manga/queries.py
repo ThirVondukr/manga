@@ -4,7 +4,7 @@ from app.core.domain.manga.manga.filters import (
     Sort,
 )
 from app.core.domain.manga.manga.repositories import MangaRepository
-from app.db.models import Manga
+from app.db.models.manga import Manga
 from lib.pagination.pagination import (
     PagePaginationParamsDTO,
     PagePaginationResultDTO,

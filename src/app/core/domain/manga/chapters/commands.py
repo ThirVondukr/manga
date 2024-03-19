@@ -9,7 +9,8 @@ from app.core.errors import (
     PermissionDeniedError,
     RelationshipNotFoundError,
 )
-from app.db.models import MangaBranch, MangaChapter, User
+from app.db.models import User
+from app.db.models.manga import MangaBranch, MangaChapter
 
 
 class ChapterCreateCommand:

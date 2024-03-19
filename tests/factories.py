@@ -12,15 +12,14 @@ import factory  # type: ignore[import-untyped]
 from faker import Faker
 
 from app.core.domain.types import TagCategory
-from app.db.models import (
+from app.db.models import Image, User
+from app.db.models.manga import (
     AltTitle,
-    Image,
     Manga,
     MangaArt,
     MangaBranch,
     MangaChapter,
     MangaTag,
-    User,
 )
 from lib.types import Language, MangaStatus
 

@@ -6,7 +6,8 @@ from app.core.domain.manga.bookmarks.dto import BookmarkMangaResultDTO
 from app.core.domain.manga.bookmarks.services import BookmarkService
 from app.core.domain.manga.manga.repositories import MangaRepository
 from app.core.errors import NotFoundError
-from app.db.models import Manga, User
+from app.db.models import User
+from app.db.models.manga import Manga
 
 
 class MangaBookmarkAddCommand:

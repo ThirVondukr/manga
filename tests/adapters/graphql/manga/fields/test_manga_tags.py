@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Manga
+from app.db.models.manga import Manga
 from tests.adapters.graphql.client import GraphQLClient
 from tests.factories import MangaTagFactory
 from tests.utils import casefold

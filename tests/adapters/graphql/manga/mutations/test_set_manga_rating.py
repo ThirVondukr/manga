@@ -3,7 +3,8 @@ import uuid
 
 import pytest
 
-from app.db.models import Manga, User
+from app.db.models import User
+from app.db.models.manga import Manga
 from tests.adapters.graphql.client import GraphQLClient
 from tests.adapters.graphql.utils import assert_not_authenticated
 

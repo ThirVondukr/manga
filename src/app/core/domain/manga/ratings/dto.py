@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import Field
 
-from app.db.models import Manga, MangaRating
+from app.db.models.manga import Manga, MangaRating
 from lib.dto import BaseDTO
 
 

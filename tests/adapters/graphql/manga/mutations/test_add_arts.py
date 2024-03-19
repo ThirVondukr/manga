@@ -7,7 +7,7 @@ from result import Err
 
 from app.core.domain.manga.art.command import AddArtsToMangaCommand
 from app.core.errors import NotFoundError
-from app.db.models import Manga
+from app.db.models.manga import Manga
 from lib.types import Language
 from tests.adapters.graphql.client import GraphQLClient, GraphQLFile
 from tests.adapters.graphql.utils import assert_not_authenticated

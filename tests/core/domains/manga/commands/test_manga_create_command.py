@@ -6,7 +6,8 @@ from slugify import slugify
 from app.core.domain.manga.manga.commands import MangaCreateCommand
 from app.core.domain.manga.manga.dto import MangaCreateDTO
 from app.core.errors import EntityAlreadyExistsError, PermissionDeniedError
-from app.db.models import Manga, User
+from app.db.models import User
+from app.db.models.manga import Manga
 from lib.types import MangaStatus
 from tests.types import Resolver
 

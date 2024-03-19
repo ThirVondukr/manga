@@ -17,7 +17,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.domain.manga.chapters.dto import ChapterCreateDTO
 from app.core.domain.manga.chapters.services import ChapterService
 from app.core.storage import FileStorage, FileUpload
-from app.db.models import MangaBranch, MangaChapter, MangaPage, User
+from app.db.models import User
+from app.db.models.manga import MangaBranch, MangaChapter, MangaPage
 from app.settings import ImagePaths
 from lib.files import AsyncBytesIO, InMemoryFile
 

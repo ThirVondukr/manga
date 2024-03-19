@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm.interfaces import ORMOption
 
-from app.db.models import AltTitle, Manga, MangaChapter, MangaTag
+from app.db.models.manga import AltTitle, Manga, MangaChapter, MangaTag
 from lib.pagination.pagination import (
     PagePaginationParamsDTO,
     PagePaginationResultDTO,

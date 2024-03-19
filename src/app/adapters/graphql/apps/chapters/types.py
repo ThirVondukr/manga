@@ -12,7 +12,7 @@ from app.core.domain.manga.chapters.loaders import (
     ChapterPagesLoader,
     MangaPageImagesLoader,
 )
-from app.db.models import MangaChapter, MangaPage
+from app.db.models.manga import MangaChapter, MangaPage
 
 
 @strawberry.type(name="MangaPage")

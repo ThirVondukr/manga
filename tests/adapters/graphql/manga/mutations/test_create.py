@@ -7,7 +7,7 @@ from result import Err, Ok
 
 from app.core.domain.manga.manga.commands import MangaCreateCommand
 from app.core.errors import EntityAlreadyExistsError
-from app.db.models import Manga
+from app.db.models.manga import Manga
 from lib.types import MangaStatus
 from tests.adapters.graphql.client import GraphQLClient
 from tests.adapters.graphql.utils import assert_not_authenticated

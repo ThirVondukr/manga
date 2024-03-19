@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import MangaTag
+from app.db.models.manga import MangaTag
 
 
 class MangaTagRepository:

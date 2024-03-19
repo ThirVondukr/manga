@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.interfaces import ORMOption
 
-from app.db.models import MangaBranch
+from app.db.models.manga import MangaBranch
 
 
 class BranchRepository:

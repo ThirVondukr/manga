@@ -3,7 +3,7 @@ from collections.abc import Sequence
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import MangaTag
+from app.db.models.manga import MangaTag
 from tests.factories import MangaTagFactory
 
 

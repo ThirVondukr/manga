@@ -7,7 +7,7 @@ from result import Err, Ok
 
 from app.core.domain.manga.art.command import MangaSetCoverArtCommand
 from app.core.errors import PermissionDeniedError
-from app.db.models import Manga
+from app.db.models.manga import Manga
 from lib.db import DBContext
 from tests.adapters.graphql.client import GraphQLClient
 from tests.adapters.graphql.utils import assert_not_authenticated
@@ -100,6 +100,7 @@ async def test_ok(
     manga.arts = [cover_art]
     await db_context.flush()
     manga.cover_art = cover_art
+    assert manga.cover_art
     await db_context.flush()
 
     with patch.object(

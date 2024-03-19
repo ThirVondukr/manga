@@ -11,8 +11,8 @@ from app.core.domain.images.services import ImageService
 from app.core.domain.manga.art.dto import MangaArtAddDTO, MangaArtsAddDTO
 from app.core.errors import EntityAlreadyExistsError, NotFoundError
 from app.core.storage import FileUpload
-from app.db.models import Image, Manga
-from app.db.models._manga import MangaArt
+from app.db.models import Image
+from app.db.models.manga import Manga, MangaArt
 from app.settings import ImagePaths
 from lib.db import DBContext
 

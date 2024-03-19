@@ -4,7 +4,7 @@ import strawberry
 
 from app.adapters.graphql.dto import DTOMixin
 from app.adapters.graphql.types import LanguageGQL
-from app.db.models import MangaBranch
+from app.db.models.manga import MangaBranch
 
 
 @strawberry.type(name="MangaBranch")

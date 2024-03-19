@@ -5,7 +5,7 @@ from sqlalchemy import delete
 from tests.factories import MangaAltTitleFactory, MangaFactory, MangaTagFactory
 
 from app.db import async_session_factory
-from app.db.models import AltTitle, Manga, MangaTag
+from app.db.models.manga import AltTitle, Manga, MangaTag
 from lib.types import Language
 
 

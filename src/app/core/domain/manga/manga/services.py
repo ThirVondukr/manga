@@ -5,7 +5,8 @@ from slugify import slugify
 
 from app.core.domain.users.services import PermissionService
 from app.core.errors import EntityAlreadyExistsError, PermissionDeniedError
-from app.db.models import Manga, User
+from app.db.models import User
+from app.db.models.manga import Manga
 from lib.db import DBContext
 
 from .dto import MangaCreateDTO

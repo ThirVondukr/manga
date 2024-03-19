@@ -16,11 +16,13 @@ from app.core.storage import FileStorage, FileUpload
 from app.db.models import (
     Group,
     Image,
+    User,
+)
+from app.db.models.manga import (
     Manga,
     MangaBranch,
     MangaChapter,
     MangaPage,
-    User,
 )
 from app.settings import AppSettings, ImagePaths, ImageSettings
 from lib.db import DBContext

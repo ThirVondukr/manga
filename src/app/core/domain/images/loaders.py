@@ -3,7 +3,8 @@ from uuid import UUID
 
 from sqlalchemy import select
 
-from app.db.models import Image, MangaArt
+from app.db.models import Image
+from app.db.models.manga import MangaArt
 from lib.loaders import SQLAListLoader, SQLALoader
 
 

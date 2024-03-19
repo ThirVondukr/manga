@@ -1,4 +1,5 @@
-from app.db.models import Manga, MangaBranch, User
+from app.db.models import User
+from app.db.models.manga import Manga, MangaBranch
 from lib.db import DBContext
 from tests.adapters.graphql.client import GraphQLClient
 from tests.factories import ChapterFactory

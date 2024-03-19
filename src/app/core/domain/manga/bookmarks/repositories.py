@@ -4,7 +4,8 @@ from uuid import UUID
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Manga, MangaBookmark, User
+from app.db.models import User
+from app.db.models.manga import Manga, MangaBookmark
 
 
 class BookmarkRepository:

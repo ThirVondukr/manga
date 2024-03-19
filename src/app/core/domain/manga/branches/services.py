@@ -1,5 +1,6 @@
 from app.core.domain.manga.branches.dto import MangaBranchCreateDTO
-from app.db.models import Group, Manga, MangaBranch
+from app.db.models import Group
+from app.db.models.manga import Manga, MangaBranch
 from lib.db import DBContext
 
 

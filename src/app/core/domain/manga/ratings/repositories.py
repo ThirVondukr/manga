@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy import func, literal, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Manga, MangaRating
+from app.db.models.manga import Manga, MangaRating
 
 
 class MangaRatingRepository:

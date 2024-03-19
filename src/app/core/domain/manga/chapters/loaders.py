@@ -2,7 +2,8 @@ from uuid import UUID
 
 from sqlalchemy import select
 
-from app.db.models import Image, MangaChapter, MangaPage
+from app.db.models import Image
+from app.db.models.manga import MangaChapter, MangaPage
 from lib.loaders import SQLAListLoader, SQLALoader
 
 

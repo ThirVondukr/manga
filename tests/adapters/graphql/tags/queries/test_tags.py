@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from unittest.mock import patch
 
 from app.core.domain.manga.tags.query import AllMangaTagsQuery
-from app.db.models import MangaTag
+from app.db.models.manga import MangaTag
 from tests.adapters.graphql.client import GraphQLClient
 from tests.utils import casefold
 

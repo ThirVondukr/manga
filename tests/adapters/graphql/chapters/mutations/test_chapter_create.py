@@ -18,7 +18,7 @@ from app.core.errors import (
     PermissionDeniedError,
     RelationshipNotFoundError,
 )
-from app.db.models import MangaBranch, MangaChapter, MangaPage
+from app.db.models.manga import MangaBranch, MangaChapter, MangaPage
 from tests.adapters.graphql.client import GraphQLClient, GraphQLFile
 from tests.utils import TestFileStorage, create_dummy_image_file
 

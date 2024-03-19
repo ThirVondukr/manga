@@ -8,7 +8,8 @@ from app.core.domain.manga.bookmarks.commands import (
     MangaBookmarkRemoveCommand,
 )
 from app.core.errors import NotFoundError
-from app.db.models import Manga, MangaBookmark, User
+from app.db.models import User
+from app.db.models.manga import Manga, MangaBookmark
 from tests.types import Resolver
 
 

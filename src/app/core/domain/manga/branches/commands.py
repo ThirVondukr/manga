@@ -5,7 +5,8 @@ from app.core.domain.manga.branches.dto import MangaBranchCreateDTO
 from app.core.domain.manga.branches.services import MangaBranchService
 from app.core.domain.manga.manga.repositories import MangaRepository
 from app.core.errors import RelationshipNotFoundError
-from app.db.models import MangaBranch, User
+from app.db.models import User
+from app.db.models.manga import MangaBranch
 
 
 class MangaBranchCreateCommand:

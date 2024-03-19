@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import MangaBranch, MangaChapter
+from app.db.models.manga import MangaBranch, MangaChapter
 from lib.pagination.pagination import (
     PagePaginationParamsDTO,
     PagePaginationResultDTO,

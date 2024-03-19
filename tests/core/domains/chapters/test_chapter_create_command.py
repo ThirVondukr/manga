@@ -11,7 +11,8 @@ from app.core.errors import (
     PermissionDeniedError,
     RelationshipNotFoundError,
 )
-from app.db.models import Group, Manga, MangaBranch, MangaChapter, User
+from app.db.models import Group, User
+from app.db.models.manga import Manga, MangaBranch, MangaChapter
 from app.settings import ImagePaths
 from lib.files import InMemoryFile
 from tests.types import Resolver

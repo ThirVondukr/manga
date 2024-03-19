@@ -6,7 +6,8 @@ import pytest
 from app.core.domain.manga.art.command import MangaSetCoverArtCommand
 from app.core.domain.manga.art.dto import MangaSetCoverArtDTO
 from app.core.errors import NotFoundError, PermissionDeniedError
-from app.db.models import Manga, User
+from app.db.models import User
+from app.db.models.manga import Manga
 from tests.factories import MangaArtFactory
 from tests.types import Resolver
 

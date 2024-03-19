@@ -4,7 +4,7 @@ from collections.abc import Sequence
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Manga, MangaTag
+from app.db.models.manga import Manga, MangaTag
 from lib.types import MangaStatus
 from tests.factories import MangaFactory
 

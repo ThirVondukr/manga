@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
 from app.core.domain.manga.tags.repository import MangaTagRepository
-from app.db.models import MangaTag
+from app.db.models.manga import MangaTag
 
 
 class AllMangaTagsQuery:

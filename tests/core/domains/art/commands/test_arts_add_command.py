@@ -9,7 +9,8 @@ from app.core.errors import (
     NotFoundError,
     PermissionDeniedError,
 )
-from app.db.models import Manga, User
+from app.db.models import User
+from app.db.models.manga import Manga
 from lib.types import Language
 from tests.factories import MangaArtFactory
 from tests.types import Resolver

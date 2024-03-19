@@ -6,7 +6,8 @@ import pytest
 from app.core.domain.manga.ratings.commands import MangaSetRatingCommand
 from app.core.domain.manga.ratings.dto import MangaSetRatingDTO
 from app.core.errors import NotFoundError
-from app.db.models import Manga, User
+from app.db.models import User
+from app.db.models.manga import Manga
 from tests.factories import UserFactory
 from tests.types import Resolver
 

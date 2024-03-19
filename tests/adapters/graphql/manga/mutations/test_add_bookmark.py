@@ -7,7 +7,7 @@ from result import Err, Ok
 from app.core.domain.manga.bookmarks.commands import MangaBookmarkAddCommand
 from app.core.domain.manga.bookmarks.dto import BookmarkMangaResultDTO
 from app.core.errors import NotFoundError
-from app.db.models import Manga, MangaBookmark
+from app.db.models.manga import Manga, MangaBookmark
 from tests.adapters.graphql.client import GraphQLClient
 from tests.adapters.graphql.utils import assert_not_authenticated
 

@@ -5,7 +5,8 @@ import pytest
 from app.core.domain.manga.bookmarks.commands import MangaBookmarkAddCommand
 from app.core.domain.manga.bookmarks.repositories import BookmarkRepository
 from app.core.errors import NotFoundError
-from app.db.models import Manga, User
+from app.db.models import User
+from app.db.models.manga import Manga
 from tests.types import Resolver
 
 

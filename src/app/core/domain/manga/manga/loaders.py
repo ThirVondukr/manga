@@ -3,13 +3,13 @@ from uuid import UUID
 
 from sqlalchemy import select
 
-from app.db.models import (
+from app.db.models.manga import (
     AltTitle,
     Manga,
+    MangaArt,
     MangaTag,
     manga_manga_tag_secondary_table,
 )
-from app.db.models._manga import MangaArt
 from lib.loaders import SQLAListLoader, SQLALoader
 
 

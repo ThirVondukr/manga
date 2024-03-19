@@ -5,7 +5,8 @@ import pytest
 from app.core.domain.manga.branches.commands import MangaBranchCreateCommand
 from app.core.domain.manga.branches.dto import MangaBranchCreateDTO
 from app.core.errors import RelationshipNotFoundError
-from app.db.models import Group, Manga, User
+from app.db.models import Group, User
+from app.db.models.manga import Manga
 from lib.types import Language
 from tests.types import Resolver
 

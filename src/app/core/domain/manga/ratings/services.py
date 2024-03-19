@@ -7,7 +7,8 @@ from app.core.domain.manga.ratings.dto import (
 )
 from app.core.domain.manga.ratings.repositories import MangaRatingRepository
 from app.core.errors import NotFoundError
-from app.db.models import MangaRating, User
+from app.db.models import User
+from app.db.models.manga import MangaRating
 from lib.db import DBContext
 
 

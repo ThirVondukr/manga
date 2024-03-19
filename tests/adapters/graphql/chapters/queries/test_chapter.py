@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from app.db.models import MangaChapter
+from app.db.models.manga import MangaChapter
 from tests.adapters.graphql.client import GraphQLClient
 
 pytestmark = pytest.mark.usefixtures("session")

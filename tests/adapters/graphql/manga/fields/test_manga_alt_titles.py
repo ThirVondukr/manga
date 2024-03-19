@@ -1,4 +1,4 @@
-from app.db.models import Manga
+from app.db.models.manga import Manga
 from lib.db import DBContext
 from tests.adapters.graphql.client import GraphQLClient
 from tests.factories import MangaAltTitleFactory

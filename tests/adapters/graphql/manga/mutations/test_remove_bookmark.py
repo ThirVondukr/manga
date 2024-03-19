@@ -8,7 +8,7 @@ from app.core.domain.manga.bookmarks.commands import (
     MangaBookmarkRemoveCommand,
 )
 from app.core.errors import NotFoundError
-from app.db.models import Manga
+from app.db.models.manga import Manga
 from tests.adapters.graphql.client import GraphQLClient
 from tests.adapters.graphql.utils import assert_not_authenticated
 

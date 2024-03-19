@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import select, tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import MangaBookmark
+from app.db.models.manga import MangaBookmark
 from lib.loaders import LoaderProtocol
 
 

@@ -32,7 +32,7 @@ from app.core.domain.manga.manga.loaders import (
     MangaArtsLoader,
     MangaTagLoader,
 )
-from app.db.models import (
+from app.db.models.manga import (
     AltTitle,
     Manga,
     MangaArt,

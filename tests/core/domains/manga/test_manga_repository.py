@@ -13,7 +13,8 @@ from app.core.domain.manga.manga.filters import (
     TagFilter,
 )
 from app.core.domain.manga.manga.repositories import MangaRepository
-from app.db.models import AltTitle, Group, Manga, MangaTag, User
+from app.db.models import Group, User
+from app.db.models.manga import AltTitle, Manga, MangaTag
 from lib.db import DBContext
 from lib.pagination.pagination import PagePaginationParamsDTO
 from lib.sort import SortDirection
