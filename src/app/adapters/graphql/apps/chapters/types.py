@@ -1,22 +1,23 @@
 from collections.abc import Sequence
-from typing import Annotated, Self
+from typing import Self
 from uuid import UUID
 
 import strawberry
-from aioinject import Inject
-from aioinject.ext.strawberry import inject
 from strawberry import Private
 
+from app.adapters.graphql.apps.images.types import ImageGQL
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.dto import DTOMixin
-from app.core.domain.manga.chapters.loaders import ChapterPagesLoader
-from app.core.storage import FileStorage
+from app.core.domain.manga.chapters.loaders import (
+    ChapterPagesLoader,
+    MangaPageImagesLoader,
+)
 from app.db.models import MangaChapter, MangaPage
 
 
 @strawberry.type(name="MangaPage")
 class MangaPageGQL(DTOMixin[MangaPage]):
-    _image_path: Private[str]
+    _id: UUID
     id: strawberry.ID
 
     number: int
@@ -24,15 +25,18 @@ class MangaPageGQL(DTOMixin[MangaPage]):
     @classmethod
     def from_dto(cls, model: MangaPage) -> Self:
         return cls(
+            _id=model.id,
             id=strawberry.ID(str(model.id)),
             number=model.number,
-            _image_path=model.image_path,
         )
 
     @strawberry.field
-    @inject
-    async def image(self, storage: Annotated[FileStorage, Inject]) -> str:
-        return await storage.url(path=self._image_path)
+    async def images(self, info: Info) -> Sequence[ImageGQL]:
+        return ImageGQL.from_dto_list(
+            await info.context.loaders.map(MangaPageImagesLoader).load(
+                self._id,
+            ),
+        )
 
 
 @strawberry.type(name="MangaChapter")

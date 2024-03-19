@@ -210,9 +210,10 @@ type MangaMutations {
 }
 
 type MangaPage {
+  Id: UUID!
   id: ID!
   number: Int!
-  image: String!
+  images: [Image!]!
 }
 
 type MangaPagePaginationResult {
@@ -379,6 +380,8 @@ enum SortDirection {
   ASC
   DESC
 }
+
+scalar UUID
 
 scalar Upload
 

@@ -91,6 +91,7 @@ class S3FileStorage(FileStorage):
                 ],
             },
         )
+        await file.file.seek(0)
         return response["Key"]
 
     async def url(self, path: str) -> str:

@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+from collections.abc import Sequence
 from contextlib import AbstractAsyncContextManager
 from pathlib import PurePath
 
@@ -7,12 +8,14 @@ from result import Err, Ok, Result
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.domain.images.services import ImageService
 from app.core.domain.manga.chapters.dto import ChapterCreateDTO
 from app.core.domain.manga.chapters.repositories import ChapterRepository
 from app.core.errors import EntityAlreadyExistsError, PermissionDeniedError
 from app.core.storage import FileStorage, FileUpload
 from app.db.models import (
     Group,
+    Image,
     Manga,
     MangaBranch,
     MangaChapter,
@@ -39,12 +42,14 @@ class ChapterService:
         self,
         db_context: DBContext,
         image_storage: FileStorage,
+        image_service: ImageService,
         permissions: ChapterPermissionService,
         repository: ChapterRepository,
         app_settings: AppSettings,
     ) -> None:
         self._db_context = db_context
         self._image_storage = image_storage
+        self._image_service = image_service
         self._permissions = permissions
         self._repository = repository
         self._app_settings = app_settings
@@ -76,31 +81,33 @@ class ChapterService:
             pages=[],
         )
         limiter = asyncio.Semaphore(self._app_settings.max_concurrent_uploads)
-        async with (
-            contextlib.AsyncExitStack() as exit_stack,
-            asyncio.TaskGroup() as tg,
-        ):
-            tasks = [
-                tg.create_task(
-                    self._upload_image(
-                        branch=branch,
-                        chapter=chapter,
-                        number=number,
-                        file=file,
-                        exit_stack=exit_stack,
-                        limiter=limiter,
-                    ),
+        async with contextlib.AsyncExitStack() as exit_stack:
+            async with asyncio.TaskGroup() as tg:
+                tasks = [
+                    tg.create_task(
+                        self._upload_image(
+                            branch=branch,
+                            chapter=chapter,
+                            number=number,
+                            file=file,
+                            exit_stack=exit_stack,
+                            limiter=limiter,
+                        ),
+                    )
+                    for number, file in enumerate(dto.pages, start=1)
+                ]
+            results = [task.result() for task in tasks]
+            chapter.pages = [
+                MangaPage(
+                    images=list(images),
+                    number=number,
+                    chapter=chapter,
                 )
-                for number, file in enumerate(dto.pages, start=1)
+                for number, images in enumerate(results, start=1)
             ]
-        results = [task.result() for task in tasks]
-        chapter.pages = [
-            MangaPage(image_path=path, number=number, chapter=chapter)
-            for number, path in enumerate(results, start=1)
-        ]
-        self._update_manga(manga=branch.manga, chapter=chapter)
-        self._db_context.add(chapter)
-        await self._db_context.flush()
+            self._update_manga(manga=branch.manga, chapter=chapter)
+            self._db_context.add(chapter)
+            await self._db_context.flush()
         return Ok(chapter)
 
     async def _upload_image(  # noqa: PLR0913
@@ -111,16 +118,17 @@ class ChapterService:
         file: File,
         exit_stack: contextlib.AsyncExitStack,
         limiter: AbstractAsyncContextManager[None],
-    ) -> str:
+    ) -> Sequence[Image]:
         upload = FileUpload(
             path=PurePath(
                 f"{ImagePaths.chapter_images}/{branch.manga_id}/{chapter.id}/{number}{file.filename.suffix}",
             ),
             file=file,
         )
+
         async with limiter:
             return await exit_stack.enter_async_context(
-                self._image_storage.upload_context(file=upload),
+                self._image_service.upload_src_set(upload=upload),
             )
 
     def _update_manga(self, manga: Manga, chapter: MangaChapter) -> None:

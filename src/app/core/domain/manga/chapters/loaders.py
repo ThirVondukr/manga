@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy import select
 
-from app.db.models import MangaChapter, MangaPage
+from app.db.models import Image, MangaChapter, MangaPage
 from lib.loaders import SQLAListLoader, SQLALoader
 
 
@@ -14,3 +14,13 @@ class ChapterPagesLoader(SQLAListLoader[UUID, MangaPage]):
 class ChapterLoader(SQLALoader[UUID, MangaChapter | None]):
     column = MangaChapter.id
     stmt = select(MangaChapter)
+
+
+class MangaPageImagesLoader(SQLAListLoader[UUID, Image]):
+    column = MangaPage.id
+    stmt = (
+        select(MangaPage.id, Image)
+        .select_from(MangaPage)
+        .join(MangaPage.images)
+        .order_by(Image.width.desc())
+    )

@@ -4,7 +4,9 @@ import aioinject
 import pytest
 from aioinject import Object
 
+from app.core.domain.images.services import ImageService
 from app.core.storage import FileStorage
+from tests.types import Resolver
 from tests.utils import TestFileStorage
 
 
@@ -15,3 +17,8 @@ def image_storage(
     storage = TestFileStorage()
     with container.override(Object(storage, FileStorage)):
         yield storage
+
+
+@pytest.fixture
+async def image_service(resolver: Resolver) -> ImageService:
+    return await resolver(ImageService)

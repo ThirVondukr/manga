@@ -92,9 +92,8 @@ class Image(PkUUID, MappedAsDataclass, Base, kw_only=True):
     __tablename__ = "image"
 
     path: Mapped[PurePath]
-    dimensions: Mapped[tuple[int, int]] = mapped_column(
-        ARRAY(Integer, as_tuple=True),
-    )
+    width: Mapped[int]
+    height: Mapped[int]
 
 
 class MangaArt(
@@ -306,6 +305,22 @@ class MangaBranch(PkUUID, HasTimestamps, MappedAsDataclass, Base, kw_only=True):
     )
 
 
+manga_page__image = Table(
+    "manga_page__image",
+    Base.metadata,
+    Column(
+        "manga_page_id",
+        ForeignKey("manga_page.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "image_id",
+        ForeignKey("image.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)
+
+
 class MangaPage(PkUUID, MappedAsDataclass, Base, kw_only=True):
     __tablename__ = "manga_page"
     __table_args__ = (UniqueConstraint("chapter_id", "number"),)
@@ -316,9 +331,8 @@ class MangaPage(PkUUID, MappedAsDataclass, Base, kw_only=True):
         init=False,
     )
     chapter: Mapped[MangaChapter] = relationship(back_populates="pages")
-
     number: Mapped[int]
-    image_path: Mapped[str] = mapped_column(String(250))
+    images: Mapped[list[Image]] = relationship(secondary=manga_page__image)
 
 
 class AltTitle(

@@ -20,7 +20,7 @@ def kwargs() -> dict[str, Any]:
         "number": [1],
         "pages": [
             InMemoryFile(
-                _buffer=BytesIO(),
+                buffer=BytesIO(),
                 filename=PurePath("1.png"),
                 content_type="image/png",
                 size=0,

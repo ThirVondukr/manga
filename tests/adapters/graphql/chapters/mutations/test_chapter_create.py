@@ -1,4 +1,3 @@
-import random
 import uuid
 from collections.abc import MutableMapping, Sequence
 from io import BytesIO
@@ -19,9 +18,9 @@ from app.core.errors import (
     PermissionDeniedError,
     RelationshipNotFoundError,
 )
-from app.db.models import MangaBranch, MangaChapter
+from app.db.models import MangaBranch, MangaChapter, MangaPage
 from tests.adapters.graphql.client import GraphQLClient, GraphQLFile
-from tests.utils import TestFileStorage
+from tests.utils import TestFileStorage, create_dummy_image_file
 
 QUERY = """mutation($input: ChapterCreateInput!, $pages: [Upload!]!) {
   chapters {
@@ -35,8 +34,12 @@ QUERY = """mutation($input: ChapterCreateInput!, $pages: [Upload!]!) {
         pages {
           __typename
           id
-          image
           number
+          images {
+            url
+            width
+            height
+          }
         }
       }
       error {
@@ -64,11 +67,13 @@ def _tpl(chapter: object = None, error: object = None) -> object:
 def upload_pages() -> Sequence[GraphQLFile]:
     files = []
     for i in range(10):
-        io = BytesIO()
-        io.write(str(i).encode())
-        io.seek(0)
-        extension = random.choice(["png", "jpg", "jpeg"])
-        files.append(GraphQLFile(buffer=io, name=f"{i}.{extension}"))
+        image = create_dummy_image_file()
+        files.append(
+            GraphQLFile(
+                buffer=image.buffer,
+                name=f"{i}{image.filename.suffix}",
+            ),
+        )
     return files
 
 
@@ -174,11 +179,17 @@ async def test_ok(
     )
     new_chapter = (
         await session.scalars(
-            select(MangaChapter).options(selectinload(MangaChapter.pages)),
+            select(MangaChapter).options(
+                selectinload(MangaChapter.pages).selectinload(MangaPage.images),
+            ),
         )
     ).one()
     for file, page in zip(upload_pages, new_chapter.pages, strict=True):
-        assert PurePath(file.name).suffix == PurePath(page.image_path).suffix
+        for image in page.images:
+            assert PurePath(file.name).suffix == image.path.suffix
+
+    for page in new_chapter.pages:
+        assert page.images
 
     expected = {
         "__typename": "MangaChapter",
@@ -191,7 +202,14 @@ async def test_ok(
                 "__typename": "MangaPage",
                 "id": str(page.id),
                 "number": page.number,
-                "image": await s3_mock.url(page.image_path),
+                "images": [
+                    {
+                        "url": await s3_mock.url(path=image.path.as_posix()),
+                        "width": image.width,
+                        "height": image.height,
+                    }
+                    for image in page.images
+                ],
             }
             for page in new_chapter.pages
         ],

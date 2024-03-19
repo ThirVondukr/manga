@@ -51,7 +51,6 @@ class ChapterMutationGQL:
                 chapter=None,
                 error=dto.err_value,
             )
-
         result = await command.execute(
             user=await info.context.user,
             dto=dto.ok_value,

@@ -1,7 +1,6 @@
 import random
 from collections.abc import Sequence
 from datetime import datetime
-from pathlib import PurePath
 from typing import Annotated, Self
 from uuid import UUID
 
@@ -11,6 +10,7 @@ from aioinject.ext.strawberry import inject
 from strawberry import Private
 
 from app.adapters.graphql.apps.chapters.types import MangaChapterGQL
+from app.adapters.graphql.apps.images.types import ImageGQL
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.dto import DTOMixin
 from app.adapters.graphql.extensions import AuthExtension
@@ -32,10 +32,8 @@ from app.core.domain.manga.manga.loaders import (
     MangaArtsLoader,
     MangaTagLoader,
 )
-from app.core.storage import FileStorage
 from app.db.models import (
     AltTitle,
-    Image,
     Manga,
     MangaArt,
     MangaBookmark,
@@ -96,29 +94,6 @@ class MangaBookmarkGQL(DTOMixin[MangaBookmark]):
             id=strawberry.ID(f"{model.manga_id}:{model.user_id}"),
             created_at=model.created_at,
         )
-
-
-@strawberry.type(name="Image")
-class ImageGQL(DTOMixin[Image]):
-    _path: Private[PurePath]
-    id: strawberry.ID
-    width: int
-    height: int
-
-    @classmethod
-    def from_dto(cls, model: Image) -> Self:
-        w, h = model.dimensions
-        return cls(
-            id=strawberry.ID(str(model.id)),
-            _path=model.path,
-            width=w,
-            height=h,
-        )
-
-    @strawberry.field
-    @inject
-    async def url(self, storage: Annotated[FileStorage, Inject]) -> str:
-        return await storage.url(path=self._path.as_posix())
 
 
 @strawberry.type(name="MangaArt")

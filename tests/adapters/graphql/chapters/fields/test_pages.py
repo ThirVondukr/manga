@@ -1,7 +1,8 @@
 import uuid
+from pathlib import PurePath
 
 from app.core.storage import FileStorage
-from app.db.models import MangaChapter, MangaPage
+from app.db.models import Image, MangaChapter, MangaPage
 from lib.db import DBContext
 from tests.adapters.graphql.client import GraphQLClient
 
@@ -12,7 +13,11 @@ QUERY = """query ($id: ID!) {
       __typename
       id
       number
-      image
+      images {
+        url
+        width
+        height
+      }
     }
   }
 }"""
@@ -28,8 +33,14 @@ async def test_ok(
     pages = [
         MangaPage(
             number=i,
-            image_path=f"{uuid.uuid4()}.jpg",
             chapter=manga_chapter,
+            images=[
+                Image(
+                    path=PurePath(f"{uuid.uuid4()}.png"),
+                    width=1000,
+                    height=1800,
+                ),
+            ],
         )
         for i in range(collection_size)
     ]
@@ -49,7 +60,14 @@ async def test_ok(
                         "__typename": "MangaPage",
                         "id": str(page.id),
                         "number": page.number,
-                        "image": await image_storage.url(page.image_path),
+                        "images": [
+                            {
+                                "url": await image_storage.url(str(image.path)),
+                                "width": image.width,
+                                "height": image.height,
+                            }
+                            for image in page.images
+                        ],
                     }
                     for page in pages
                 ],

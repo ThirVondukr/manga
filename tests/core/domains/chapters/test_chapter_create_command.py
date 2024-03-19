@@ -1,5 +1,4 @@
 import uuid
-from io import BytesIO
 from pathlib import PurePath
 
 import pytest
@@ -16,7 +15,7 @@ from app.db.models import Group, Manga, MangaBranch, MangaChapter, User
 from app.settings import ImagePaths
 from lib.files import InMemoryFile
 from tests.types import Resolver
-from tests.utils import TestFileStorage
+from tests.utils import TestFileStorage, create_dummy_image
 
 
 @pytest.fixture
@@ -27,7 +26,7 @@ async def command(resolver: Resolver) -> ChapterCreateCommand:
 @pytest.fixture
 def dto(manga_branch: MangaBranch) -> ChapterCreateDTO:
     file = InMemoryFile(
-        _buffer=BytesIO(),
+        buffer=create_dummy_image(),
         size=0,
         content_type="image/png",
         filename=PurePath("1.png"),
@@ -94,7 +93,8 @@ async def test_ok(
 
     assert len(chapter.pages) == len(dto.pages)
     for chapter_page in chapter.pages:
-        assert chapter_page.image_path in s3_mock.files
+        for image in chapter_page.images:
+            assert image.path.as_posix() in s3_mock.files
 
     assert s3_mock.files == [
         PurePath(

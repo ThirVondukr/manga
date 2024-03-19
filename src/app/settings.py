@@ -1,4 +1,5 @@
 import enum
+from collections.abc import Sequence
 from datetime import timedelta
 from types import SimpleNamespace
 from typing import Literal
@@ -74,6 +75,7 @@ class AppSettings(BaseSettings):
 
 class ImageSettings(BaseSettings):
     preview_width: int = 400
+    src_set: Sequence[int] = (256, 640, 896, 1200)
 
 
 class ImagePaths(SimpleNamespace):

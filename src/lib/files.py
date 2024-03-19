@@ -47,13 +47,13 @@ class StarletteFile(File):
 
 @dataclasses.dataclass(slots=True, kw_only=True, frozen=True)
 class InMemoryFile(File):
-    _buffer: BytesIO
+    buffer: BytesIO
 
     async def read(self, size: int = -1) -> bytes:
-        return self._buffer.read(size)
+        return self.buffer.read(size)
 
     async def seek(self, offset: int) -> None:
-        self._buffer.seek(offset)
+        self.buffer.seek(offset)
 
 
 @dataclasses.dataclass(slots=True, kw_only=True, frozen=True)

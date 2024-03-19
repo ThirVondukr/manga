@@ -11,6 +11,7 @@ from app.settings import (
     AppSettings,
     AuthSettings,
     DatabaseSettings,
+    ImageSettings,
     S3Settings,
     SentrySettings,
 )
@@ -37,11 +38,12 @@ modules: Iterable[Iterable[Provider[Any]]] = [
 ]
 
 settings_classes: Iterable[type[BaseSettings]] = [
+    AppSettings,
     AuthSettings,
     DatabaseSettings,
-    SentrySettings,
+    ImageSettings,
     S3Settings,
-    AppSettings,
+    SentrySettings,
 ]
 
 

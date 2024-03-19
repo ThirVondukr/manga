@@ -8,7 +8,7 @@ from typing import final
 import PIL.Image
 
 from app.core.storage import FileStorage, FileUpload
-from lib.files import File, InMemoryFile
+from lib.files import InMemoryFile
 
 
 def casefold(string: str) -> str:
@@ -19,18 +19,18 @@ def casefold_obj(obj: object) -> object:
     return casefold(obj) if isinstance(obj, str) else obj
 
 
-def create_dummy_image() -> BytesIO:
-    image = PIL.Image.new("RGB", (32, 32))
+def create_dummy_image(size: tuple[int, int] = (32, 32)) -> BytesIO:
+    image = PIL.Image.new("RGB", size=size)
     io = BytesIO()
     image.save(io, format="png")
     io.seek(0)
     return io
 
 
-def create_dummy_image_file() -> File:
-    buffer = create_dummy_image()
+def create_dummy_image_file(size: tuple[int, int] = (32, 32)) -> InMemoryFile:
+    buffer = create_dummy_image(size=size)
     return InMemoryFile(
-        _buffer=buffer,
+        buffer=buffer,
         content_type="image/png",
         size=buffer.getbuffer().nbytes,
         filename=PurePath(f"{uuid.uuid4()}.png"),

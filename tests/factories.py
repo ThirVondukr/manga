@@ -64,12 +64,8 @@ class UserFactory(GenericFactory[User]):
 
 class ImageFactory(GenericFactory[Image]):
     path = factory.Faker("pystr")
-    dimensions = factory.Faker(
-        "pytuple",
-        nb_elements=2,
-        variable_nb_elements=False,
-        value_types=[int],
-    )
+    width = factory.Faker("pyint")
+    height = factory.Faker("pyint")
 
 
 class MangaArtFactory(GenericFactory[MangaArt]):

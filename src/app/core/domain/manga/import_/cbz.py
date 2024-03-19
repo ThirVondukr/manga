@@ -94,7 +94,11 @@ async def collect_pages(
             )
 
     return [
-        MangaPage(chapter=chapter, number=page, image_path=path.result())
+        MangaPage(
+            chapter=chapter,
+            number=page,
+            images=[],
+        )
         for page, path in tasks.items()
     ]
 
@@ -166,7 +170,7 @@ class ImportCBZCommand:
                     volume=chapter.volume,
                     pages=[
                         InMemoryFile(
-                            _buffer=buffer,
+                            buffer=buffer,
                             content_type="image/png",
                             size=buffer.getbuffer().nbytes,
                             filename=PurePath(page.filename),
