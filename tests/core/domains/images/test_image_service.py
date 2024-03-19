@@ -11,7 +11,7 @@ async def test_upload_scr_set(
     image_service: ImageService,
     image_settings: ImageSettings,
 ) -> None:
-    size = max(image_settings.src_set) + 100
+    size = max(image_settings.default_src_set) + 100
     image_file = create_dummy_image_file(size=(size, size))
 
     path = PurePath("test/1.png")
@@ -21,12 +21,12 @@ async def test_upload_scr_set(
     )
     async with image_service.upload_src_set(upload=upload) as images:
         pass
-    assert len(images) == len(image_settings.src_set) + 1
+    assert len(images) == len(image_settings.default_src_set) + 1
 
     for image in images:
         assert image.path.as_posix() in s3_mock.files
         if image.width != size:
             assert image.path.stem == f"{path.stem}-{image.width}w"
 
-    for width in (*image_settings.src_set, size):
+    for width in (*image_settings.default_src_set, size):
         assert width in (img.width for img in images)

@@ -75,7 +75,8 @@ class AppSettings(BaseSettings):
 
 class ImageSettings(BaseSettings):
     preview_width: int = 400
-    src_set: Sequence[int] = (256, 640, 896, 1200)
+    default_src_set: Sequence[int] = (256, 640, 896, 1200)
+    manga_page_src_set: Sequence[int] = (256, 896)
 
 
 class ImagePaths(SimpleNamespace):

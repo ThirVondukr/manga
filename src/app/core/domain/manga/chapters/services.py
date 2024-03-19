@@ -22,7 +22,7 @@ from app.db.models import (
     MangaPage,
     User,
 )
-from app.settings import AppSettings, ImagePaths
+from app.settings import AppSettings, ImagePaths, ImageSettings
 from lib.db import DBContext
 from lib.files import File
 
@@ -46,6 +46,7 @@ class ChapterService:
         permissions: ChapterPermissionService,
         repository: ChapterRepository,
         app_settings: AppSettings,
+        image_settings: ImageSettings,
     ) -> None:
         self._db_context = db_context
         self._image_storage = image_storage
@@ -53,6 +54,7 @@ class ChapterService:
         self._permissions = permissions
         self._repository = repository
         self._app_settings = app_settings
+        self._image_settings = image_settings
 
     async def create(
         self,
@@ -128,7 +130,10 @@ class ChapterService:
 
         async with limiter:
             return await exit_stack.enter_async_context(
-                self._image_service.upload_src_set(upload=upload),
+                self._image_service.upload_src_set(
+                    upload=upload,
+                    src_set=self._image_settings.manga_page_src_set,
+                ),
             )
 
     def _update_manga(self, manga: Manga, chapter: MangaChapter) -> None:

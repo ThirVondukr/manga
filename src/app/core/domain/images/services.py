@@ -41,6 +41,7 @@ class ImageService:
     async def upload_src_set(
         self,
         upload: FileUpload,
+        src_set: Sequence[int] | None = None,
     ) -> AsyncIterator[Sequence[Image]]:
         io = BytesIO(await upload.file.read())
         await upload.file.seek(0)
@@ -59,8 +60,12 @@ class ImageService:
                 height=thumbnail.height,
             )
             images.append(image_record)
-
-            for width in self._settings.src_set:
+            src_set = (
+                src_set
+                if src_set is not None
+                else self._settings.default_src_set
+            )
+            for width in src_set:
                 if width >= image.width:
                     continue
 
