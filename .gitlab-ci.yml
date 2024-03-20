@@ -181,10 +181,10 @@ build-image:
   only:
     - dev
     - main
-  tags:
-    - manga
-    - k8s
-    - shared
+#  tags:
+#    - manga
+#    - k8s
+#    - shared
 
 .deploy:
   image: $IMAGE_HELM
