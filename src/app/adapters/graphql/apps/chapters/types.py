@@ -5,7 +5,7 @@ from uuid import UUID
 import strawberry
 from strawberry import Private
 
-from app.adapters.graphql.apps.images.types import ImageGQL
+from app.adapters.graphql.apps.images.types import ImageSetGQL
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.dto import DTOMixin
 from app.core.domain.manga.chapters.loaders import (
@@ -31,12 +31,11 @@ class MangaPageGQL(DTOMixin[MangaPage]):
         )
 
     @strawberry.field
-    async def images(self, info: Info) -> Sequence[ImageGQL]:
-        return ImageGQL.from_dto_list(
-            await info.context.loaders.map(MangaPageImagesLoader).load(
-                self._id,
-            ),
+    async def image(self, info: Info) -> ImageSetGQL:
+        images = await info.context.loaders.map(MangaPageImagesLoader).load(
+            self._id,
         )
+        return ImageSetGQL.from_images(images)
 
 
 @strawberry.type(name="MangaChapter")

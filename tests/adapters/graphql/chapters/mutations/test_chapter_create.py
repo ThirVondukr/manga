@@ -35,10 +35,12 @@ QUERY = """mutation($input: ChapterCreateInput!, $pages: [Upload!]!) {
           __typename
           id
           number
-          images {
-            url
-            width
-            height
+          image {
+            alternatives {
+              url
+              width
+              height
+            }
           }
         }
       }
@@ -202,14 +204,18 @@ async def test_ok(
                 "__typename": "MangaPage",
                 "id": str(page.id),
                 "number": page.number,
-                "images": [
-                    {
-                        "url": await s3_mock.url(path=image.path.as_posix()),
-                        "width": image.width,
-                        "height": image.height,
-                    }
-                    for image in page.images
-                ],
+                "image": {
+                    "alternatives": [
+                        {
+                            "url": await s3_mock.url(
+                                path=image.path.as_posix(),
+                            ),
+                            "width": image.width,
+                            "height": image.height,
+                        }
+                        for image in page.images
+                    ],
+                },
             }
             for page in new_chapter.pages
         ],

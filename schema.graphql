@@ -76,6 +76,11 @@ type Image {
   url: String!
 }
 
+type ImageSet {
+  original: Image!
+  alternatives: [Image!]!
+}
+
 type InvalidCredentialsError implements Error {
   message: String!
 }
@@ -109,7 +114,7 @@ type MangaArt {
   id: ID!
   volume: Int!
   language: LanguageEnum!
-  images: [Image!]!
+  image: ImageSet!
 }
 
 input MangaArtAddInput {
@@ -212,7 +217,7 @@ type MangaPage {
   Id: UUID!
   id: ID!
   number: Int!
-  images: [Image!]!
+  image: ImageSet!
 }
 
 type MangaPagePaginationResult {

@@ -14,10 +14,12 @@ QUERY = """query ($id: ID!) {
       __typename
       id
       number
-      images {
-        url
-        width
-        height
+      image {
+        alternatives {
+          url
+          width
+          height
+        }
       }
     }
   }
@@ -61,14 +63,18 @@ async def test_ok(
                         "__typename": "MangaPage",
                         "id": str(page.id),
                         "number": page.number,
-                        "images": [
-                            {
-                                "url": await image_storage.url(str(image.path)),
-                                "width": image.width,
-                                "height": image.height,
-                            }
-                            for image in page.images
-                        ],
+                        "image": {
+                            "alternatives": [
+                                {
+                                    "url": await image_storage.url(
+                                        str(image.path),
+                                    ),
+                                    "width": image.width,
+                                    "height": image.height,
+                                }
+                                for image in page.images
+                            ],
+                        },
                     }
                     for page in pages
                 ],

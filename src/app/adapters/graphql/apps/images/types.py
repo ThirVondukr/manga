@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from pathlib import PurePath
 from typing import Annotated, Self
 
@@ -31,3 +32,17 @@ class ImageGQL(DTOMixin[Image]):
     @inject
     async def url(self, storage: Annotated[FileStorage, Inject]) -> str:
         return await storage.url(path=self._path.as_posix())
+
+
+@strawberry.type(name="ImageSet")
+class ImageSetGQL:
+    original: ImageGQL
+    alternatives: Sequence[ImageGQL]
+
+    @classmethod
+    def from_images(cls, images: Sequence[Image]) -> Self:
+        image = max(images, key=lambda image: image.width)
+        return cls(
+            original=ImageGQL.from_dto(image),
+            alternatives=ImageGQL.from_dto_list(images),
+        )

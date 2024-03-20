@@ -10,7 +10,7 @@ from aioinject.ext.strawberry import inject
 from strawberry import Private
 
 from app.adapters.graphql.apps.chapters.types import MangaChapterGQL
-from app.adapters.graphql.apps.images.types import ImageGQL
+from app.adapters.graphql.apps.images.types import ImageSetGQL
 from app.adapters.graphql.context import Info
 from app.adapters.graphql.dto import DTOMixin
 from app.adapters.graphql.extensions import AuthExtension
@@ -113,11 +113,11 @@ class MangaArtGQL(DTOMixin[MangaArt]):
         )
 
     @strawberry.field
-    async def images(self, info: Info) -> Sequence[ImageGQL]:
+    async def image(self, info: Info) -> ImageSetGQL:
         images = await info.context.loaders.map(MangaArtImagesLoader).load(
             key=self._id,
         )
-        return ImageGQL.from_dto_list(images)
+        return ImageSetGQL.from_images(images)
 
 
 @strawberry.type(name="MangaRating")
