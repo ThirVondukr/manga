@@ -1,5 +1,10 @@
 api:
   replicaCount: 3
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCpuUtilization: 80
   ingress:
     enabled: true
     className: "nginx"

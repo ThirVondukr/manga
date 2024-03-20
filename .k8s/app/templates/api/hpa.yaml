@@ -1,0 +1,23 @@
+{{- if and .Values.api.enabled .Values.api.hpa.enabled -}}
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "api.name" . }}
+  labels:
+    {{- include "api.labels" . | nindent 4 }}
+spec:
+  minReplicas: {{ .Values.api.hpa.minReplicas }}
+  maxReplicas: {{ .Values.api.hpa.maxReplicas }}
+  scaleTargetRef:
+    apiVersion: v1
+    kind: Deployment
+    name: {{ include "api.name" . }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          averageUtilization: {{- .Values.api.hpa.targetCpuUtilization }}
+          type: Utilization
+{{- end -}}

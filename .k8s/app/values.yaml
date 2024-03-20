@@ -29,6 +29,11 @@ api:
   args: []
   replicaCount: 3
   probePath: /health
+  hpa:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCpuUtilization: 80
   antiAffinity:
     enable: true
   resources:

@@ -1,12 +1,7 @@
 {
-  "$schema": "https://json-schema.org/2022-12/schema#",
   "$defs": {
-    "k8s.pullPolicy": {
-      "type": "string",
-      "enum": ["Always", "Never", "IfNotPresent"]
-    },
     "k8s.podSecurityContext": {
-      "type": "object",
+      "additionalProperties": false,
       "properties": {
         "fsGroup": {
           "type": "integer"
@@ -15,51 +10,15 @@
       "required": [
         "fsGroup"
       ],
-      "additionalProperties": false
+      "type": "object"
     },
-    "k8s.volume": {
-      "type": "object",
-      "required": [
-        "name",
-        "secret"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "secret": {
-          "type": "object",
-          "required": [
-            "secretName"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "secretName": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "k8s.volumeMount": {
-      "type": "object",
-      "required": [
-        "name",
-        "mountPath"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "mountPath": {
-          "type": "string"
-        },
-        "readOnly": {
-          "type": "boolean"
-        }
-      }
+    "k8s.pullPolicy": {
+      "type": "string",
+      "enum": [
+        "Always",
+        "Never",
+        "IfNotPresent"
+      ]
     },
     "k8s.resource": {
       "type": "object",
@@ -126,6 +85,50 @@
       ],
       "additionalProperties": false
     },
+    "k8s.volume": {
+      "type": "object",
+      "required": [
+        "name",
+        "secret"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "secret": {
+          "additionalProperties": false,
+          "properties": {
+            "secretName": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "secretName"
+          ],
+          "type": "object"
+        }
+      }
+    },
+    "k8s.volumeMount": {
+      "type": "object",
+      "required": [
+        "name",
+        "mountPath"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "mountPath": {
+          "type": "string"
+        },
+        "readOnly": {
+          "type": "boolean"
+        }
+      }
+    },
     "secretRef": {
       "type": "object",
       "properties": {
@@ -142,9 +145,8 @@
       "additionalProperties": false
     }
   },
+  "$schema": "https://json-schema.org/2022-12/schema#",
   "additionalProperties": false,
-  "title": "Values",
-  "type": "object",
   "properties": {
     "image": {
       "properties": {
@@ -178,6 +180,29 @@
             "type": "string"
           }
         },
+        "hpa": {
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "minReplicas": {
+              "type": "integer"
+            },
+            "maxReplicas": {
+              "type": "integer"
+            },
+            "targetCpuUtilization": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "enabled",
+            "minReplicas",
+            "maxReplicas",
+            "targetCpuUtilization"
+          ],
+          "type": "object"
+        },
         "probePath": {
           "type": "string"
         },
@@ -199,7 +224,11 @@
             "sizeLimit": {
               "type": "string"
             }
-          }
+          },
+          "required": [
+            "enabled",
+            "sizeLimit"
+          ]
         },
         "antiAffinity": {
           "type": "object",
@@ -281,6 +310,7 @@
         "args",
         "enabled",
         "probePath",
+        "hpa",
         "ingress",
         "port",
         "replicaCount",
@@ -416,5 +446,7 @@
     "podAnnotations",
     "podSecurityContext",
     "securityContext"
-  ]
+  ],
+  "title": "Values",
+  "type": "object"
 }
