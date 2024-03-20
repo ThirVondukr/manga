@@ -70,7 +70,7 @@ install-dependencies:
     - pdm list
   tags:
     - manga
-    - k8
+    - k8s
     - shared
 
 typecheck:
