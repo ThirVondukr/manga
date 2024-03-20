@@ -147,10 +147,9 @@ build-image:
   stage: build
   image:
     name: $IMAGE_DOCKER
-    entrypoint: [""]
+    entrypoint: []
 
   variables:
-    FF_KUBERNETES_HONOR_ENTRYPOINT: true
     RUNTIME_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
     BRANCH_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH
     BUILD_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH-build
