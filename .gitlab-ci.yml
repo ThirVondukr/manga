@@ -1,5 +1,5 @@
 variables:
-  IMAGE_DOCKER: docker
+  IMAGE_DOCKER: gcr.io/kaniko-project/executor
   IMAGE_PYTHON: python:3.11.7-slim-bookworm
   IMAGE_HELM: alpine/helm:3.13.2
   GIT_STRATEGY: clone
@@ -158,27 +158,15 @@ build-image:
     BUILD_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH-build
 
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
-    - docker pull $BUILD_IMAGE || true
-    - docker pull $BRANCH_IMAGE || true
-
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - >
-      docker build
-      --cache-from $BUILD_IMAGE
-      --tag $BUILD_IMAGE
-      --build-arg="PYTHON_IMAGE=$IMAGE_PYTHON"
-      --target build .
-    - >
-      docker build
-      --cache-from $BUILD_IMAGE
-      --cache-from $BRANCH_IMAGE
-      --build-arg="PYTHON_IMAGE=$IMAGE_PYTHON"
-      --tag $RUNTIME_IMAGE .
-
-    - docker tag $RUNTIME_IMAGE $BRANCH_IMAGE
-    - docker push $BUILD_IMAGE
-    - docker push $RUNTIME_IMAGE
-    - docker push $BRANCH_IMAGE
+      /kaniko/executor
+      --context $CI_PROJECT_DIR
+      --dockerfile $CI_PROJECT_DIR/Dockerfile
+      --build-arg "PYTHON_IMAGE=$IMAGE_PYTHON"
+      --cache=true
+      --cache-repo=$CI_REGISTRY_IMAGE
+      --destination=$RUNTIME_IMAGE
   only:
     - dev
     - main
