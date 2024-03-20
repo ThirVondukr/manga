@@ -68,10 +68,10 @@ install-dependencies:
   script:
     - pdm sync -G:all --clean
     - pdm list
-#  tags:
-#    - manga
-#    - k8
-#    - shared
+  tags:
+    - manga
+    - k8
+    - shared
 
 typecheck:
   extends: .lint-job
@@ -152,6 +152,7 @@ build-image:
 
   variables:
     DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: localhost:2375
     RUNTIME_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
     BRANCH_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH
     BUILD_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH-build
@@ -181,10 +182,10 @@ build-image:
   only:
     - dev
     - main
-#  tags:
-#    - manga
-#    - k8s
-#    - shared
+  tags:
+    - manga
+    - k8s
+    - shared
 
 .deploy:
   image: $IMAGE_HELM
