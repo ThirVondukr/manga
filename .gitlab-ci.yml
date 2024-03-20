@@ -159,7 +159,7 @@ build-image:
     - >
       /kaniko/executor
       --context $CI_PROJECT_DIR
-      --dockerfile $CI_PROJECT_DIR/Dockerfile
+      --dockerfile $CI_PROJECT_DIR/dockerfile
       --build-arg "PYTHON_IMAGE=$IMAGE_PYTHON"
       --cache=true
       --cache-repo=$CI_REGISTRY_IMAGE
