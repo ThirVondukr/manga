@@ -68,10 +68,10 @@ install-dependencies:
   script:
     - pdm sync -G:all --clean
     - pdm list
-  tags:
-    - manga
-    - k8s
-    - shared
+#  tags:
+#    - manga
+#    - k8
+#    - shared
 
 typecheck:
   extends: .lint-job
