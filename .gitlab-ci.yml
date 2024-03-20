@@ -147,7 +147,7 @@ build-image:
   stage: build
   image:
     name: $IMAGE_DOCKER
-    entrypoint: []
+#    entrypoint: []
 
   variables:
     RUNTIME_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
