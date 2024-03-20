@@ -57,6 +57,10 @@ stages:
     GIT_STRATEGY: clone
     CACHE_POLICY: "pull"
     RUNNER: "pdm run"
+  tags:
+    - manga
+    - k8s
+    - shared
 
 install-dependencies:
   extends: .setup
@@ -64,6 +68,10 @@ install-dependencies:
   script:
     - pdm sync -G:all --clean
     - pdm list
+  tags:
+    - manga
+    - k8s
+    - shared
 
 typecheck:
   extends: .lint-job
@@ -173,6 +181,10 @@ build-image:
   only:
     - dev
     - main
+  tags:
+    - manga
+    - k8s
+    - shared
 
 .deploy:
   image: $IMAGE_HELM
