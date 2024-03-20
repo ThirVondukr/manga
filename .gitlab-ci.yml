@@ -145,14 +145,11 @@ test:
 
 build-image:
   stage: build
-  image: $IMAGE_DOCKER
-  services:
-    - name: docker:dind
-      alias: docker
+  image:
+    name: $IMAGE_DOCKER
+    entrypoint: [""]
 
   variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_HOST: localhost:2375
     RUNTIME_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
     BRANCH_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH
     BUILD_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH-build
