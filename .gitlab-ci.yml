@@ -163,7 +163,6 @@ build-image:
       --snapshot-mode=redo
       --cache=true
       --cache-repo=$REGISTRY_IMAGE
-      --single-snapshot
       --skip-tls-verify-registry $REGISTRY_URL
       --destination=$RUNTIME_IMAGE
   only:
