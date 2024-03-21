@@ -6,6 +6,8 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   VENV_DIR: "$CI_PROJECT_DIR/.venv"
 
+  REGISTRY_REPOSITORY: $REGISTRY_URL/manga/$CI_PROJECT_NAME
+
 default:
   image: $IMAGE_PYTHON
 
@@ -43,7 +45,7 @@ stages:
       - "**/*.py"
       - pdm.lock
       - pyproject.toml
-      - .gitlab-ci.yml
+#      - .gitlab-ci.yml
       - Taskfile.yml
 
 .lint-job:
@@ -150,8 +152,7 @@ build-image:
 #    entrypoint: []
 
   variables:
-    REGISTRY_IMAGE: $REGISTRY_URL/manga/$CI_PROJECT_NAME
-    RUNTIME_IMAGE: $REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    RUNTIME_IMAGE: $REGISTRY_REPOSITORY:$CI_COMMIT_SHORT_SHA
 
   script:
     - echo "{\"auths\":{\"$REGISTRY_URL\":{\"username\":\"$REGISTRY_USERNAME\",\"password\":\"$REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
@@ -162,7 +163,7 @@ build-image:
       --build-arg "PYTHON_IMAGE=$IMAGE_PYTHON"
       --snapshot-mode=redo
       --cache=true
-      --cache-repo=$REGISTRY_IMAGE
+      --cache-repo=$REGISTRY_REPOSITORY
       --skip-tls-verify-registry $REGISTRY_URL
       --destination=$RUNTIME_IMAGE
   only:
@@ -183,7 +184,7 @@ build-image:
       helm upgrade $APP_NAME ./.k8s/app
       --install
       --namespace $NAMESPACE
-      --set image.repository=$CI_REGISTRY_IMAGE,image.tag=$CI_COMMIT_SHORT_SHA
+      --set image.repository=$REGISTRY_REPOSITORY,image.tag=$CI_COMMIT_SHORT_SHA
       -f ./.k8s/app/values.yaml
       -f ./.k8s/app/values.$VALUES_FILE.yaml
   when: manual
