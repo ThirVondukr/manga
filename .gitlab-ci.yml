@@ -150,9 +150,8 @@ build-image:
 #    entrypoint: []
 
   variables:
-    RUNTIME_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-    BRANCH_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH
-    BUILD_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH-build
+    REGISTRY_IMAGE: $REGISTRY_URL/manga/$CI_PROJECT_NAME
+    RUNTIME_IMAGE: $REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
 
   script:
     - echo "{\"auths\":{\"$REGISTRY_URL\":{\"username\":\"$REGISTRY_USERNAME\",\"password\":\"$REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
@@ -163,7 +162,7 @@ build-image:
       --build-arg "PYTHON_IMAGE=$IMAGE_PYTHON"
       --snapshot-mode=redo
       --cache=true
-      --cache-repo=$CI_REGISTRY_IMAGE
+      --cache-repo=$REGISTRY_IMAGE
       --destination=$RUNTIME_IMAGE
   only:
     - dev
