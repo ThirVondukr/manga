@@ -155,12 +155,13 @@ build-image:
     BUILD_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH-build
 
   script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - echo "{\"auths\":{\"$REGISTRY_URL\":{\"username\":\"$REGISTRY_USERNAME\",\"password\":\"$REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - >
       /kaniko/executor
       --context $CI_PROJECT_DIR
       --dockerfile $CI_PROJECT_DIR/dockerfile
       --build-arg "PYTHON_IMAGE=$IMAGE_PYTHON"
+      --snapshot-mode=redo
       --cache=true
       --cache-repo=$CI_REGISTRY_IMAGE
       --destination=$RUNTIME_IMAGE
