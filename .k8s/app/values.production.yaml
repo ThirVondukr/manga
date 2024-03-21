@@ -33,7 +33,10 @@ commonEnvFrom:
   - secretRef:
       name: "manga-auth"
     prefix: "AUTH_"
-
+  - configMapRef:
+      name: "manga"
+    prefix: "APP_"
 
 imagePullSecrets:
   - name: "gitlab-dpy"
+  - name: "manga-harbor-pull"
