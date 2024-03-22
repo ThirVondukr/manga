@@ -18,6 +18,7 @@ spec:
       labels:
         {{- include "api.selectorLabels" . | nindent 8 }}
     spec:
+
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       securityContext:

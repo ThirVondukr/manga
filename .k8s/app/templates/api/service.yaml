@@ -12,6 +12,10 @@ spec:
       targetPort: {{ include "api.portName" . }}
       protocol: TCP
       name: {{ include "api.portName" . }}
+    - port: 80
+      targetPort: {{ include "api.portName" . }}
+      protocol: TCP
+
   selector:
     {{- include "api.selectorLabels" . | nindent 4 }}
 {{- end -}}
