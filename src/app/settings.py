@@ -69,14 +69,19 @@ class S3Settings(BaseSettings):
 
 
 class AppSettings(BaseSettings):
+    cors_allow_origins: list[str] = []
+    cors_allow_methods: list[str] = ["*"]
+    cors_allow_headers: list[str] = ["authorization"]
+
     max_upload_size_bytes: int = 250 * _MEGABYTES
     max_concurrent_uploads: int = 5
 
 
 class ImageSettings(BaseSettings):
-    preview_width: int = 400
-    default_src_set: Sequence[int] = (256, 640, 896, 1200)
-    manga_page_src_set: Sequence[int] = (256, 896)
+    default_src_set: Sequence[int] = (128, 256, 384, 640, 896, 1200)
+    manga_page_src_set: Sequence[int] = (400, 640)
+    thumbnail_image_format: Literal["webp"] = "webp"
+    thumbnail_quality: int = 90
 
 
 class ImagePaths(SimpleNamespace):

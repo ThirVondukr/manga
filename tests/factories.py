@@ -48,7 +48,7 @@ class GenericFactory(factory.Factory, Generic[T]):  # type: ignore[misc]
 
 
 class MangaFactory(GenericFactory[Manga]):
-    title = factory.Faker("sentence")
+    title = factory.Faker("pystr")
     title_slug = factory.Faker("sentence")
     description = factory.Faker("sentence")
     status = factory.Faker("enum", enum_cls=MangaStatus)

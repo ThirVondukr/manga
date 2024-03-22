@@ -15,13 +15,14 @@ from lib.files import AsyncBytesIO
 
 def _make_thumbnail(
     image: PIL.Image.Image,
-    width: int | None,
+    width: int,
+    image_format: str,
+    quality: int,
 ) -> tuple[BytesIO, PIL.Image.Image]:
     io = BytesIO()
     thumbnail = image.copy()
-    if width is not None:
-        thumbnail.thumbnail(size=(width, sys.maxsize))
-    thumbnail.save(io, format=image.format)
+    thumbnail.thumbnail(size=(width, sys.maxsize))
+    thumbnail.save(io, format=image_format, quality=quality)
     io.seek(0)
     return io, thumbnail
 
@@ -45,19 +46,17 @@ class ImageService:
     ) -> AsyncIterator[Sequence[Image]]:
         io = BytesIO(await upload.file.read())
         await upload.file.seek(0)
-        image = PIL.Image.open(io)
+        original = PIL.Image.open(io)
 
-        exit_stack = contextlib.AsyncExitStack()
         images = []
-        async with exit_stack:
-            thumbnail_io, thumbnail = _make_thumbnail(image=image, width=None)
+        async with contextlib.AsyncExitStack() as exit_stack:
             path = await exit_stack.enter_async_context(
-                self._storage.upload_context(file=upload),
+                self._storage.upload_context(upload),
             )
             image_record = Image(
                 path=PurePath(path),
-                width=thumbnail.width,
-                height=thumbnail.height,
+                width=original.width,
+                height=original.height,
             )
             images.append(image_record)
             src_set = (
@@ -66,12 +65,14 @@ class ImageService:
                 else self._settings.default_src_set
             )
             for width in src_set:
-                if width >= image.width:
+                if width >= original.width:
                     continue
 
                 thumbnail_io, thumbnail = _make_thumbnail(
-                    image=image,
+                    image=original,
                     width=width,
+                    image_format=self._settings.thumbnail_image_format,
+                    quality=self._settings.thumbnail_quality,
                 )
                 thumbnail_upload = FileUpload(
                     file=AsyncBytesIO(buffer=thumbnail_io),
