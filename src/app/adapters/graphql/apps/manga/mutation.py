@@ -7,6 +7,7 @@ from aioinject.ext.strawberry import inject
 from result import Err
 
 from app.adapters.graphql.apps.manga.input import (
+    MangaAddBookmarkInputGQL,
     MangaArtsAddInputGQL,
     MangaCreateInputGQL,
     MangaSetCoverArtInputGQL,
@@ -103,18 +104,16 @@ class MangaMutationsGQL:
     @inject
     async def add_bookmark(
         self,
-        id: strawberry.ID,
         info: Info,
+        input: MangaAddBookmarkInputGQL,
         command: Annotated[MangaBookmarkAddCommand, Inject],
     ) -> MangaBookmarkPayloadGQL:
-        if isinstance(manga_id := validate_uuid(id), Err):
-            return MangaBookmarkPayloadGQL(
-                error=NotFoundErrorGQL(entity_id=id),
-            )
+        if isinstance(dto := validate_callable(input.to_dto), Err):
+            return MangaBookmarkPayloadGQL(error=dto.err_value)
 
         result = await command.execute(
             user=await info.context.user,
-            manga_id=manga_id.ok_value,
+            dto=dto.ok_value,
         )
         if isinstance(result, Err):
             return MangaBookmarkPayloadGQL(

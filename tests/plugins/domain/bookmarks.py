@@ -3,7 +3,7 @@ import pytest
 from app.core.domain.manga.bookmarks.repositories import BookmarkRepository
 from app.core.domain.manga.bookmarks.services import BookmarkService
 from app.db.models import User
-from app.db.models.manga import Manga, MangaBookmark
+from app.db.models.manga import Manga, MangaBookmark, MangaBookmarkStatus
 from tests.types import Resolver
 
 
@@ -23,4 +23,8 @@ async def manga_bookmark(
     manga: Manga,
     user: User,
 ) -> MangaBookmark:
-    return await bookmark_service.add_bookmark(manga=manga, user=user)
+    return await bookmark_service.add_bookmark(
+        manga=manga,
+        user=user,
+        status=MangaBookmarkStatus.reading,
+    )

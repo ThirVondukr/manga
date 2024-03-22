@@ -11,9 +11,9 @@ from app.db.models.manga import Manga, MangaBookmark
 from tests.adapters.graphql.client import GraphQLClient
 from tests.adapters.graphql.utils import assert_not_authenticated
 
-QUERY = """mutation($id: ID!) {
+QUERY = """mutation($input: MangaAddBookmarkInput!) {
   manga {
-    addBookmark(id: $id) {
+    addBookmark(input: $input) {
       error {
         __typename
       }
@@ -44,21 +44,24 @@ def _tpl(manga: object = None, error: object = None) -> object:
 async def test_requires_auth(graphql_client: GraphQLClient) -> None:
     response = await graphql_client.query(
         QUERY,
-        variables={"id": str(uuid.uuid4())},
+        variables={
+            "input": {"mangaId": str(uuid.uuid4()), "status": "READING"},
+        },
     )
     assert_not_authenticated(response)
 
 
 @pytest.mark.parametrize(
-    "manga_id",
+    ("manga_id", "error_typename"),
     [
-        "not-uuid",
-        str(uuid.uuid4()),
+        ("not-uuid", "ValidationErrors"),
+        (str(uuid.uuid4()), "NotFoundError"),
     ],
 )
 async def test_not_found(
     authenticated_graphql_client: GraphQLClient,
     manga_id: str,
+    error_typename: str,
 ) -> None:
     with patch.object(
         MangaBookmarkAddCommand,
@@ -67,10 +70,10 @@ async def test_not_found(
     ):
         response = await authenticated_graphql_client.query(
             QUERY,
-            variables={"id": manga_id},
+            variables={"input": {"mangaId": manga_id, "status": "READING"}},
         )
     assert response == _tpl(
-        error={"__typename": "NotFoundError"},
+        error={"__typename": error_typename},
     )
 
 
@@ -88,7 +91,9 @@ async def test_ok(
     ):
         response = await authenticated_graphql_client.query(
             QUERY,
-            variables={"id": str(manga.id)},
+            variables={
+                "input": {"mangaId": str(manga.id), "status": "READING"},
+            },
         )
     assert response == _tpl(
         manga={"__typename": "Manga", "id": str(manga.id)},

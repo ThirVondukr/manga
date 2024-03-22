@@ -6,6 +6,7 @@ import strawberry
 from app.adapters.graphql.types import (
     GraphQLFile,
     LanguageGQL,
+    MangaBookmarkStatusGQL,
     MangaStatusGQL,
     SortDirectionGQL,
 )
@@ -14,6 +15,7 @@ from app.core.domain.manga.art.dto import (
     MangaArtsAddDTO,
     MangaSetCoverArtDTO,
 )
+from app.core.domain.manga.bookmarks.dto import BookmarkAddDTO
 from app.core.domain.manga.manga.dto import MangaCreateDTO, MangaUpdateDTO
 from app.core.domain.manga.manga.filters import (
     MangaFilter,
@@ -146,4 +148,16 @@ class MangaSetRatingInputGQL:
         return MangaSetRatingDTO(
             manga_id=self.manga_id,  # type: ignore[arg-type]
             rating=self.rating,
+        )
+
+
+@strawberry.input(name="MangaAddBookmarkInput")
+class MangaAddBookmarkInputGQL:
+    manga_id: strawberry.ID
+    status: MangaBookmarkStatusGQL
+
+    def to_dto(self) -> BookmarkAddDTO:
+        return BookmarkAddDTO(
+            manga_id=self.manga_id,  # type: ignore[arg-type]
+            status=self.status,
         )

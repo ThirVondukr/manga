@@ -1,6 +1,7 @@
 from app.core.domain.manga.bookmarks.repositories import BookmarkRepository
 from app.db.models import User
 from app.db.models.manga import Manga, MangaBookmark
+from app.db.models.manga._bookmarks import MangaBookmarkStatus
 from lib.db import DBContext
 
 
@@ -13,11 +14,18 @@ class BookmarkService:
         self._db_context = db_context
         self._repository = repository
 
-    async def add_bookmark(self, manga: Manga, user: User) -> MangaBookmark:
+    async def add_bookmark(
+        self,
+        manga: Manga,
+        user: User,
+        status: MangaBookmarkStatus,
+    ) -> MangaBookmark:
         if bookmark := await self._repository.get(manga=manga, user=user):
+            bookmark.status = status
+            self._db_context.add(bookmark)
             return bookmark
 
-        bookmark = MangaBookmark(manga=manga, user=user)
+        bookmark = MangaBookmark(manga=manga, user=user, status=status)
         self._db_context.add(bookmark)
         await self._repository.change_bookmark_count(manga_id=manga.id, delta=1)
         return bookmark

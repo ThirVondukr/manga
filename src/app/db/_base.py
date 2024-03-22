@@ -62,11 +62,6 @@ class HasTimestamps(MappedAsDataclass):
     )
 
 
-class RegConfigLanguage(enum.Enum):
-    eng = "english"
-    ukr = "ukrainian"
-
-
 class Base(DeclarativeBase):
     __mapper_args__ = {"eager_defaults": True}  # noqa: RUF012
     metadata = meta

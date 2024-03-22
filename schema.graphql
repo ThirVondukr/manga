@@ -87,6 +87,7 @@ type InvalidCredentialsError implements Error {
 
 enum LanguageEnum {
   ENG
+  JPN
   UKR
 }
 
@@ -108,6 +109,11 @@ type Manga {
   bookmark: MangaBookmark @isAuthenticated
   arts: [MangaArt!]!
   coverArt: MangaArt
+}
+
+input MangaAddBookmarkInput {
+  mangaId: ID!
+  status: MangaBookmarkStatus!
 }
 
 type MangaArt {
@@ -140,11 +146,18 @@ type MangaBookmark {
   createdAt: DateTime!
 }
 
-union MangaBookmarkError = NotFoundError
+union MangaBookmarkError = NotFoundError | ValidationErrors
 
 type MangaBookmarkPayload {
   manga: Manga
   error: MangaBookmarkError
+}
+
+enum MangaBookmarkStatus {
+  PLAN_TO_READ
+  READING
+  COMPLETED
+  DROPPED
 }
 
 type MangaBranch {
@@ -206,7 +219,7 @@ input MangaFilter {
 type MangaMutations {
   create(input: MangaCreateInput!): MangaCreatePayload! @isAuthenticated
   update(input: MangaUpdateInput!): MangaUpdatePayload! @isAuthenticated
-  addBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
+  addBookmark(input: MangaAddBookmarkInput!): MangaBookmarkPayload! @isAuthenticated
   removeBookmark(id: ID!): MangaBookmarkPayload! @isAuthenticated
   addArts(input: MangaArtsAddInput!): MangaArtsAddPayload! @isAuthenticated
   setCoverArt(input: MangaSetCoverArtInput!): MangaSetCoverArtPayload! @isAuthenticated

@@ -3,10 +3,11 @@ import uuid
 import pytest
 
 from app.core.domain.manga.bookmarks.commands import MangaBookmarkAddCommand
+from app.core.domain.manga.bookmarks.dto import BookmarkAddDTO
 from app.core.domain.manga.bookmarks.repositories import BookmarkRepository
 from app.core.errors import NotFoundError
 from app.db.models import User
-from app.db.models.manga import Manga
+from app.db.models.manga import Manga, MangaBookmarkStatus
 from tests.types import Resolver
 
 
@@ -20,7 +21,13 @@ async def test_manga_not_found(
     user: User,
 ) -> None:
     manga_id = uuid.uuid4()
-    result = await command.execute(manga_id=manga_id, user=user)
+    result = await command.execute(
+        dto=BookmarkAddDTO(
+            manga_id=manga_id,
+            status=MangaBookmarkStatus.reading,
+        ),
+        user=user,
+    )
     assert result.unwrap_err() == NotFoundError(entity_id=str(manga_id))
 
 
@@ -29,8 +36,9 @@ async def test_already_exists(
     user: User,
     manga: Manga,
 ) -> None:
-    bookmark1 = (await command.execute(manga_id=manga.id, user=user)).unwrap()
-    bookmark2 = (await command.execute(manga_id=manga.id, user=user)).unwrap()
+    dto = BookmarkAddDTO(manga_id=manga.id, status=MangaBookmarkStatus.reading)
+    bookmark1 = (await command.execute(dto=dto, user=user)).unwrap()
+    bookmark2 = (await command.execute(dto=dto, user=user)).unwrap()
 
     assert bookmark1.bookmark is bookmark2.bookmark
 
@@ -42,7 +50,8 @@ async def test_ok(
     bookmark_repository: BookmarkRepository,
 ) -> None:
     assert manga.bookmark_count == 0
-    result = (await command.execute(manga_id=manga.id, user=user)).unwrap()
+    dto = BookmarkAddDTO(manga_id=manga.id, status=MangaBookmarkStatus.reading)
+    result = (await command.execute(dto=dto, user=user)).unwrap()
 
     assert (
         await bookmark_repository.get(manga=manga, user=user) == result.bookmark

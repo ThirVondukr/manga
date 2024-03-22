@@ -4,8 +4,9 @@ import strawberry
 from starlette.datastructures import UploadFile
 from strawberry.file_uploads import Upload
 
+from app.db.models.manga import MangaBookmarkStatus
 from lib.sort import SortDirection
-from lib.types import Language, MangaStatus, Unset
+from lib.types import Language, MangaStatus
 
 T = TypeVar("T")
 
@@ -18,5 +19,7 @@ if TYPE_CHECKING:
 else:
     GraphQLFile = Upload
 
-
-UnsetGQL = strawberry.enum(Unset, name="Unset")
+MangaBookmarkStatusGQL = strawberry.enum(
+    MangaBookmarkStatus,
+    name="MangaBookmarkStatus",
+)

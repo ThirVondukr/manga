@@ -13,6 +13,7 @@ DatetimeInt = Annotated[datetime, PlainSerializer(lambda t: int(t.timestamp()))]
 
 class Language(enum.Enum):
     eng = "eng"
+    jpn = "jpn"
     ukr = "ukr"
 
 

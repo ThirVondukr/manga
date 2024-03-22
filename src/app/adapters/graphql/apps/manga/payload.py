@@ -43,7 +43,7 @@ class MangaUpdatePayloadGQL:
 
 
 MangaBookmarkErrorGQL = Annotated[
-    NotFoundErrorGQL,
+    NotFoundErrorGQL | ValidationErrorsGQL,
     strawberry.union("MangaBookmarkError"),
 ]
 
