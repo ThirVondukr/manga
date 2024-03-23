@@ -153,6 +153,7 @@ build-image:
 
   variables:
     RUNTIME_IMAGE: $REGISTRY_REPOSITORY:$CI_COMMIT_SHORT_SHA
+    GODEBUG: "http2client=0"
 
   script:
     - echo "{\"auths\":{\"$REGISTRY_URL\":{\"username\":\"$REGISTRY_USERNAME\",\"password\":\"$REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
@@ -184,7 +185,7 @@ build-image:
       helm upgrade $APP_NAME ./.k8s/app
       --install
       --namespace $NAMESPACE
-      --set image.repository=$REGISTRY_REPOSITORY,image.tag=$CI_COMMIT_SHORT_SHA
+      --set image.repository=$REGISTRY_REPOSITORY,image.tag="$CI_COMMIT_SHORT_SHA"
       -f ./.k8s/app/values.yaml
       -f ./.k8s/app/values.$VALUES_FILE.yaml
   when: manual
