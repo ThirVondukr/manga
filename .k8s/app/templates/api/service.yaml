@@ -15,6 +15,7 @@ spec:
     - port: 80
       targetPort: {{ include "api.portName" . }}
       protocol: TCP
+      name: "http80"
 
   selector:
     {{- include "api.selectorLabels" . | nindent 4 }}
