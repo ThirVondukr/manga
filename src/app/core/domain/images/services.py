@@ -76,7 +76,9 @@ class ImageService:
                 )
                 thumbnail_upload = FileUpload(
                     file=AsyncBytesIO(buffer=thumbnail_io),
-                    path=upload.path.with_stem(f"{upload.path.stem}-{width}w"),
+                    path=upload.path.with_stem(
+                        f"{upload.path.stem}-{width}w",
+                    ).with_suffix(f".{self._settings.thumbnail_image_format}"),
                 )
                 path = await exit_stack.enter_async_context(
                     self._storage.upload_context(file=thumbnail_upload),
