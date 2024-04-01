@@ -192,7 +192,7 @@ build-image:
   tags:
     - deployment
     - k8s
-    - home
+    - manga
   only:
     - main
 
