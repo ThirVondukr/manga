@@ -108,6 +108,7 @@ omit = [
     "src/app/adapters/cli/*",
     "src/app/db/migrations/*",
     "src/app/adapters/cli/seed.py",
+    "src/app/adapters/image_resizer/*",
     "src/app/core/storage.py",  # S3 Client
     "src/app/core/domain/manga/import_/cbz.py",
 ]

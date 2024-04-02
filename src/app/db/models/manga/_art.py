@@ -24,7 +24,7 @@ from app.db._base import (
 from lib.types import Language
 
 if TYPE_CHECKING:
-    from app.db.models import Image
+    from app.db.models import ImageSet
     from app.db.models.manga import Manga
 
 
@@ -71,4 +71,8 @@ class MangaArt(
         default=None,
         foreign_keys=[manga_id],
     )
-    images: Mapped[list[Image]] = relationship(secondary=manga_art__image)
+    image_set_id: Mapped[UUID] = mapped_column(
+        ForeignKey("image_set.id"),
+        init=False,
+    )
+    image_set: Mapped[ImageSet] = relationship()

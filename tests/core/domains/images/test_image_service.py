@@ -19,14 +19,11 @@ async def test_upload_scr_set(
         file=image_file,
         path=path,
     )
-    async with image_service.upload_src_set(upload=upload) as images:
+    async with image_service.upload_image_set(upload=upload) as image_set:
         pass
-    assert len(images) == len(image_settings.default_src_set) + 1
+    assert len(image_set.images) == 1
 
-    for image in images:
+    for image in image_set.images:
         assert image.path.as_posix() in s3_mock.files
         if image.width != size:
             assert image.path.stem == f"{path.stem}-{image.width}w"
-
-    for width in (*image_settings.default_src_set, size):
-        assert width in (img.width for img in images)

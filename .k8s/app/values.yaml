@@ -60,6 +60,20 @@ api:
   service:
     type: ClusterIP
 
+imageResizer:
+  replicaCount: 1
+  entrypoint:
+    - "python"
+    - "m"
+    - "app.adapters.image_resizer"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 256Mi
+
 cronjobs:
   resources:
     requests:

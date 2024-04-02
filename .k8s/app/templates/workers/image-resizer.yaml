@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "imageResizer.name" . }}
+  labels:
+    {{- include "imageResizer.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.imageResizer.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "imageResizer.selectorLabels" . | nindent 6 }}
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      annotations:
+        {{- .Values.podAnnotations | toYaml | nindent 8 }}
+      labels:
+        {{- include "imageResizer.selectorLabels" . | nindent 8 }}
+    spec:
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ include "imageResizer.name" . }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            {{ range .Values.imageResizer.entrypoint }}
+            - {{ . | quote }}
+            {{ end }}
+          envFrom:
+            {{- .Values.commonEnvFrom | toYaml | nindent 12 }}
+          resources:
+            {{- toYaml .Values.imageResizer.resources | nindent 12 }}

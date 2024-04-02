@@ -1,6 +1,5 @@
 import asyncio
 import contextlib
-from collections.abc import Sequence
 from contextlib import AbstractAsyncContextManager
 from pathlib import PurePath
 
@@ -15,7 +14,7 @@ from app.core.errors import EntityAlreadyExistsError, PermissionDeniedError
 from app.core.storage import FileStorage, FileUpload
 from app.db.models import (
     Group,
-    Image,
+    ImageSet,
     User,
 )
 from app.db.models.manga import (
@@ -103,7 +102,7 @@ class ChapterService:
             results = [task.result() for task in tasks]
             chapter.pages = [
                 MangaPage(
-                    images=list(images),
+                    images=list(images.images),
                     number=number,
                     chapter=chapter,
                 )
@@ -122,7 +121,7 @@ class ChapterService:
         file: File,
         exit_stack: contextlib.AsyncExitStack,
         limiter: AbstractAsyncContextManager[None],
-    ) -> Sequence[Image]:
+    ) -> ImageSet:
         upload = FileUpload(
             path=PurePath(
                 f"{ImagePaths.chapter_images}/{branch.manga_id}/{chapter.id}/{number}{file.filename.suffix}",
@@ -132,7 +131,7 @@ class ChapterService:
 
         async with limiter:
             return await exit_stack.enter_async_context(
-                self._image_service.upload_src_set(
+                self._image_service.upload_image_set(
                     upload=upload,
                     src_set=self._image_settings.manga_page_src_set,
                 ),

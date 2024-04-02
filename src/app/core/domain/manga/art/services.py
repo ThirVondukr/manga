@@ -1,6 +1,5 @@
 import asyncio
 import contextlib
-from collections.abc import Sequence
 from pathlib import PurePath
 from uuid import UUID
 
@@ -11,7 +10,7 @@ from app.core.domain.images.services import ImageService
 from app.core.domain.manga.art.dto import MangaArtAddDTO, MangaArtsAddDTO
 from app.core.errors import EntityAlreadyExistsError, NotFoundError
 from app.core.storage import FileUpload
-from app.db.models import Image
+from app.db.models import ImageSet
 from app.db.models.manga import Manga, MangaArt
 from app.settings import ImagePaths
 from lib.db import DBContext
@@ -52,10 +51,11 @@ class MangaArtService:
                 ]
 
             for art_dto, task in zip(dto.arts, tasks, strict=True):
+                image_set = task.result()
                 art = MangaArt(
                     language=art_dto.language,
                     volume=art_dto.volume,
-                    images=list(task.result()),
+                    image_set=image_set,
                 )
                 manga.arts.append(art)
             self._db_context.add(manga)
@@ -68,7 +68,7 @@ class MangaArtService:
         manga_id: UUID,
         art_dto: MangaArtAddDTO,
         exit_stack: contextlib.AsyncExitStack,
-    ) -> Sequence[Image]:
+    ) -> ImageSet:
         upload = FileUpload(
             file=art_dto.image,
             path=PurePath(
@@ -78,7 +78,7 @@ class MangaArtService:
             ).with_suffix(art_dto.image.filename.suffix),
         )
         return await exit_stack.enter_async_context(
-            self._image_service.upload_src_set(upload),
+            self._image_service.upload_image_set(upload),
         )
 
     async def set_cover_art(

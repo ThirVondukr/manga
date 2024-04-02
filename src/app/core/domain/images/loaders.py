@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlalchemy import select
 
-from app.db.models import Image
+from app.db.models import Image, ImageSet
 from app.db.models.manga import MangaArt
 from lib.loaders import SQLAListLoader, SQLALoader
 
@@ -20,6 +20,7 @@ class MangaArtImagesLoader(SQLAListLoader[UUID, Image]):
     stmt = (
         select(MangaArt.id, Image)
         .select_from(MangaArt)
-        .join(MangaArt.images)
+        .join(MangaArt.image_set)
+        .join(ImageSet.images)
         .order_by(Image.width.desc())
     )

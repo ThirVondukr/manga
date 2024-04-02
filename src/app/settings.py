@@ -86,6 +86,13 @@ class ImageSettings(BaseSettings):
     thumbnail_quality: int = 90
 
 
+class ImageScaleSettings(BaseSettings):
+    workers: int = 4
+    worker_batch_size: int = 5
+    poll_interval: float = 5.0
+    poll_jitter: float = 1.0
+
+
 class ImagePaths(SimpleNamespace):
     chapter_images = "chapters"
     manga_arts = "manga-art"

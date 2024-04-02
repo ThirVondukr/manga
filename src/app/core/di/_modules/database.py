@@ -13,8 +13,11 @@ from lib.types import Providers
 
 @contextlib.asynccontextmanager
 async def create_engine() -> AsyncIterator[AsyncEngine]:  # pragma: no cover
-    yield engine
-    await engine.dispose()
+    try:
+        yield engine
+    except:
+        await engine.dispose()
+        raise
 
 
 @contextlib.asynccontextmanager

@@ -45,6 +45,9 @@ class TestFileStorage(FileStorage):
         self._prefix = str(uuid.uuid4())
         self.files: list[str] = []
 
+    async def download_file(self, path: PurePath) -> InMemoryFile:
+        raise NotImplementedError
+
     async def upload_file(
         self,
         file: FileUpload,

@@ -11,6 +11,7 @@ from app.settings import (
     AppSettings,
     AuthSettings,
     DatabaseSettings,
+    ImageScaleSettings,
     ImageSettings,
     S3Settings,
     SentrySettings,
@@ -44,6 +45,7 @@ settings_classes: Iterable[type[BaseSettings]] = [
     ImageSettings,
     S3Settings,
     SentrySettings,
+    ImageScaleSettings,
 ]
 
 

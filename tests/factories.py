@@ -12,7 +12,7 @@ import factory  # type: ignore[import-untyped]
 from faker import Faker
 
 from app.core.domain.types import TagCategory
-from app.db.models import Image, User
+from app.db.models import Image, ImageSet, User
 from app.db.models.manga import (
     AltTitle,
     Manga,
@@ -67,11 +67,15 @@ class ImageFactory(GenericFactory[Image]):
     height = factory.Faker("pyint")
 
 
+class ImageSetFactory(GenericFactory[ImageSet]):
+    original = factory.SubFactory(ImageFactory)
+    images = factory.LazyFunction(lambda: ImageFactory.create_batch(size=5))
+
+
 class MangaArtFactory(GenericFactory[MangaArt]):
     volume = factory.Sequence(lambda n: n)
     language = factory.Faker("enum", enum_cls=Language)
-
-    images = factory.LazyFunction(lambda: ImageFactory.create_batch(size=5))
+    image_set = factory.SubFactory(ImageSetFactory)
 
 
 class MangaBranchFactory(GenericFactory[MangaBranch]):

@@ -145,7 +145,7 @@ async def test_ok(
                             "width": image.width,
                             "height": image.height,
                         }
-                        for image in art.images
+                        for image in art.image_set.images
                     ],
                 },
                 "language": art.language.name.upper(),

@@ -3,14 +3,19 @@ import dataclasses
 import mimetypes
 from collections.abc import AsyncIterator, Collection
 from contextlib import AbstractAsyncContextManager
+from io import BytesIO
 from pathlib import PurePath
-from typing import Protocol, final, runtime_checkable
+from typing import TYPE_CHECKING, NewType, Protocol, final, runtime_checkable
 
 import aioboto3
-from types_aiobotocore_s3 import S3Client
+
+if TYPE_CHECKING:
+    from types_aiobotocore_s3 import S3Client
+else:
+    S3Client = NewType("S3Client", str)
 
 from app.settings import S3Settings
-from lib.files import FileProtocol
+from lib.files import FileProtocol, InMemoryFile
 
 
 @contextlib.asynccontextmanager
@@ -34,6 +39,7 @@ class FileUpload:
 
 @runtime_checkable
 class FileStorage(Protocol):
+    async def download_file(self, path: PurePath) -> InMemoryFile: ...
 
     async def upload_file(self, file: FileUpload) -> str: ...
 
@@ -49,9 +55,32 @@ class FileStorage(Protocol):
 
 @final
 class S3FileStorage(FileStorage):
-    def __init__(self, client: S3Client, settings: S3Settings) -> None:
+    def __init__(
+        self,
+        client: S3Client,
+        settings: S3Settings,
+    ) -> None:
         self._client = client
         self._settings = settings
+
+    async def download_file(self, path: PurePath) -> InMemoryFile:
+        io = BytesIO()
+        head = await self._client.head_object(
+            Bucket=self._settings.bucket,
+            Key=path.as_posix(),
+        )
+        await self._client.download_fileobj(
+            Bucket=self._settings.bucket,
+            Key=path.as_posix(),
+            Fileobj=io,
+        )
+        io.seek(0)
+        return InMemoryFile(
+            buffer=io,
+            content_type=head["ContentType"],
+            filename=PurePath(path.name),
+            size=head["ContentLength"],
+        )
 
     async def upload_file(self, file: FileUpload) -> str:
         path = file.path.as_posix()
@@ -103,6 +132,7 @@ class S3FileStorage(FileStorage):
         file: FileUpload,
     ) -> AsyncIterator[str]:
         path_str = await self.upload_file(file=file)
+        del file
         try:
             yield path_str
         except:
