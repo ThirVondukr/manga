@@ -64,7 +64,7 @@ imageResizer:
   replicaCount: 1
   entrypoint:
     - "python"
-    - "m"
+    - "-m"
     - "app.adapters.image_resizer"
   resources:
     requests:
