@@ -118,6 +118,7 @@ class ImageService:
                 width=thumbnail.width,
                 height=thumbnail.height,
             )
+            image_set.images.append(image_record)
             del thumbnail
             self._db_context.add(image_record)
             self._db_context.add(image_set)
