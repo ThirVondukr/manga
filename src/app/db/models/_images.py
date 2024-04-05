@@ -57,7 +57,7 @@ class ImageSetScaleTask(PkUUID, MappedAsDataclass, Base, kw_only=True):
     __tablename__ = "image_set_scale_task"
 
     image_set_id: Mapped[UUID] = mapped_column(
-        ForeignKey("image_set.id"),
+        ForeignKey("image_set.id", ondelete="CASCADE"),
         init=False,
     )
     image_set: Mapped[ImageSet] = relationship()
