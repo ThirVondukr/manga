@@ -1,4 +1,4 @@
-ARG PYTHON_IMAGE=python:3.11.7-slim-bookworm
+ARG PYTHON_IMAGE=python:3.12.3-slim-bookworm
 
 
 FROM $PYTHON_IMAGE as build

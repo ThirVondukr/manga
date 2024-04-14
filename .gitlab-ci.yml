@@ -1,6 +1,6 @@
 variables:
   IMAGE_DOCKER: gcr.io/kaniko-project/executor:debug
-  IMAGE_PYTHON: python:3.11.7-slim-bookworm
+  IMAGE_PYTHON: python:3.12.3-slim-bookworm
   IMAGE_HELM: alpine/helm:3.13.2
   GIT_STRATEGY: clone
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
