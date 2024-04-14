@@ -7,12 +7,12 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 import app.db.models  # noqa: F401
-from app import sentry
+from app import telemetry
 from app.db import Base
 from app.settings import DatabaseSettings
 from lib.settings import get_settings
 
-sentry.init_sentry()
+telemetry.setup_telemetry()
 config = context.config
 
 if config.config_file_name is not None:

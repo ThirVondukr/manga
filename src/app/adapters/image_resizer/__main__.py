@@ -3,9 +3,9 @@ import random
 
 import aioinject
 
+from app import telemetry
 from app.core.di import create_container
 from app.core.domain.images.workers import ImageScaleTask
-from app.sentry import setup_logging
 from app.settings import ImageScaleSettings
 from lib.settings import get_settings
 
@@ -29,7 +29,7 @@ async def worker(
 
 
 async def main() -> None:
-    setup_logging()
+    telemetry.setup_telemetry()
     settings = get_settings(ImageScaleSettings)
     async with (
         create_container() as container,
