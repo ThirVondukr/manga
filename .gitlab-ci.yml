@@ -109,13 +109,6 @@ test:
     KEYCLOAK_BASE_URL: ""
     KEYCLOAK_REALM: "manga"
 
-    AUTH_PUBLIC_KEY: |
-      -----BEGIN PUBLIC KEY-----
-      MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDD+kP/va1niViA4a1N+cIUBTa9
-      UXdTDQ0c+b3h/Et6Ix9LjGM9lBnG79LoGtDeKa/2jV88dOn7sJaWU7FCU7AF+fHk
-      9bv7waqsr3BzY2FbvuQUqmp+5yplnKRGNQisBmOl15DYsb37QQvuNU+neiB60lu0
-      efih1032Z0EViiCxWwIDAQAB
-      -----END PUBLIC KEY-----
     AUTH_PRIVATE_KEY: |
       -----BEGIN PRIVATE KEY-----
       MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAMP6Q/+9rWeJWIDh
@@ -133,6 +126,15 @@ test:
       rF75x7Mdv+KC2Q3bTDINQ9w50i3olzkme8TFXFV2Zdim115bXXRYVOmXz5YF7sLO
       Bke+IZK0VZQtig==
       -----END PRIVATE KEY-----
+
+    TEST_AUTH_PUBLIC_KEY: |
+      -----BEGIN PUBLIC KEY-----
+      MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDD+kP/va1niViA4a1N+cIUBTa9
+      UXdTDQ0c+b3h/Et6Ix9LjGM9lBnG79LoGtDeKa/2jV88dOn7sJaWU7FCU7AF+fHk
+      9bv7waqsr3BzY2FbvuQUqmp+5yplnKRGNQisBmOl15DYsb37QQvuNU+neiB60lu0
+      efih1032Z0EViiCxWwIDAQAB
+      -----END PUBLIC KEY-----
+    TEST_AUTH_PRIVATE_KEY: $AUTH_PRIVATE_KEY
 
   services:
     - name: groonga/pgroonga:3.1.7-alpine-16-slim
