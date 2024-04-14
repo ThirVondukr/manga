@@ -5,6 +5,7 @@ from types import SimpleNamespace
 from typing import Literal
 from urllib.parse import quote_plus
 
+from litestar.types import Method
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -12,9 +13,9 @@ _MEGABYTES = 1024 * 1024
 
 
 class SentryEnvironment(enum.StrEnum):
-    development = enum.auto()
-    staging = enum.auto()
-    production = enum.auto()
+    development = "1"
+    staging = "2"
+    production = "3"
 
 
 class DatabaseSettings(BaseSettings):
@@ -86,7 +87,7 @@ class AppSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="app_")
 
     cors_allow_origins: list[str] = []
-    cors_allow_methods: list[str] = ["*"]
+    cors_allow_methods: list[Literal["*"] | Method] = ["*"]
     cors_allow_headers: list[str] = ["authorization"]
 
     max_upload_size_bytes: int = 250 * _MEGABYTES

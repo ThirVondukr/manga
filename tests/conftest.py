@@ -10,9 +10,8 @@ import httpx
 import pytest
 from _pytest.fixtures import SubRequest
 from aioinject import Object
-from asgi_lifespan import LifespanManager
 from faker import Faker
-from fastapi import FastAPI
+from litestar import Litestar
 from pydantic_core import Url
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -50,20 +49,20 @@ def anyio_backend() -> str:
 
 
 @pytest.fixture(scope="session")
-async def fastapi_app() -> AsyncIterator[FastAPI]:
+async def http_app() -> AsyncIterator[Litestar]:
     from app.adapters.api.app import create_app
 
     app = create_app()
-    async with LifespanManager(app=app):
+    async with app.lifespan():
         yield app
 
 
 @pytest.fixture
 async def http_transport(
-    fastapi_app: FastAPI,
+    http_app: Litestar,
 ) -> AsyncIterator[httpx.AsyncBaseTransport]:
     async with httpx.ASGITransport(
-        app=fastapi_app,  # type: ignore[arg-type]
+        app=http_app,  # type: ignore[arg-type]
     ) as transport:
         yield transport
 

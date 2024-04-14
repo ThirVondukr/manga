@@ -36,6 +36,9 @@ commonEnvFrom:
   - configMapRef:
       name: "manga"
     prefix: "APP_"
+  - configMapRef:
+      name: "manga-keycloak"
+    prefix: "KEYCLOAK_"
 
 imagePullSecrets:
   - name: "gitlab-dpy"
