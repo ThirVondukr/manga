@@ -18,7 +18,7 @@ async def test_create_access_token_ok(
         result = token_service.create_access_token(user)
 
     claims = result.claims
-    decoded_token = token_service.decode(result.token).unwrap()
+    decoded_token = (await token_service.decode(result.token)).unwrap()
 
     assert (
         claims.token_type == decoded_token.token_type == "access"  # noqa: S105

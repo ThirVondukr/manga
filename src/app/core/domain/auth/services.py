@@ -14,14 +14,22 @@ from app.core.domain.users.errors import UserAlreadyExistsError
 from app.core.domain.users.filters import UserFilter
 from app.core.domain.users.repositories import UserRepository
 from app.db.models import User
-from app.settings import AuthSettings
+from app.settings import AuthSettings, KeycloakSettings
+from lib.connectors.keycloak import KeycloakClient
 from lib.db import DBContext
 from lib.time import utc_now
 
 
 class TokenService:
-    def __init__(self, settings: AuthSettings) -> None:
+    def __init__(
+        self,
+        settings: AuthSettings,
+        keycloak_client: KeycloakClient,
+        keycloak_settings: KeycloakSettings,
+    ) -> None:
         self._settings = settings
+        self._keycloak_client = keycloak_client
+        self._keycloak_settings = keycloak_settings
 
     def create_access_token(self, user: User) -> TokenWrapper:
         now = utc_now()
@@ -43,11 +51,19 @@ class TokenService:
         )
         return self._encode(claims=access)
 
-    def decode(self, token: str) -> Result[TokenClaims, TokenDecodeError]:
+    async def decode(self, token: str) -> Result[TokenClaims, TokenDecodeError]:
+        realm = await self._keycloak_client.realm_info(
+            realm=self._keycloak_settings.realm,
+        )
+        if realm is None:
+            raise ValueError
+
         try:
             claims = jwt.decode(
                 jwt=token,
-                key=self._settings.public_key,
+                key=self._settings.public_key_begin
+                + realm.public_key
+                + self._settings.public_key_end,
                 algorithms=[self._settings.algorithm],
             )
         except PyJWTError as error:  # pragma: no cover

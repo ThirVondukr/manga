@@ -13,6 +13,7 @@ from app.settings import (
     DatabaseSettings,
     ImageScaleSettings,
     ImageSettings,
+    KeycloakSettings,
     S3Settings,
     SentrySettings,
 )
@@ -23,6 +24,7 @@ from ._modules import (
     database,
     groups,
     images,
+    keycloak,
     manga,
     s3,
     users,
@@ -33,6 +35,7 @@ modules: Iterable[Iterable[Provider[Any]]] = [
     database.providers,
     groups.providers,
     images.providers,
+    keycloak.providers,
     manga.providers,
     s3.providers,
     users.providers,
@@ -42,10 +45,11 @@ settings_classes: Iterable[type[BaseSettings]] = [
     AppSettings,
     AuthSettings,
     DatabaseSettings,
+    ImageScaleSettings,
     ImageSettings,
+    KeycloakSettings,
     S3Settings,
     SentrySettings,
-    ImageScaleSettings,
 ]
 
 

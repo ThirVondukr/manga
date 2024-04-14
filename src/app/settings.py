@@ -46,13 +46,21 @@ class AuthSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="auth_")
 
     algorithm: Literal["RS256"] = "RS256"
-    public_key: str
     private_key: str
     access_token_lifetime: timedelta = timedelta(minutes=15)
     refresh_token_lifetime: timedelta = timedelta(days=3)
     refresh_token_cookie: str = "refresh-token"
 
+    public_key_begin: str = "-----BEGIN PUBLIC KEY-----\n"
+    public_key_end: str = "-----END PUBLIC KEY-----"
+
     hashing_schemes: list[str] = ["argon2"]
+
+
+class TestAuthSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="test_auth_")
+    public_key: str
+    private_key: str
 
 
 class S3Settings(BaseSettings):
@@ -66,6 +74,12 @@ class S3Settings(BaseSettings):
     bucket: str = "manga"
 
     multipart_upload_chunk_size: int = 5 * _MEGABYTES
+
+
+class KeycloakSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="keycloak_")
+    base_url: str
+    realm: str
 
 
 class AppSettings(BaseSettings):

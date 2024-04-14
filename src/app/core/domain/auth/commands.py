@@ -35,7 +35,7 @@ class AuthenticateAccessTokenCommand:
 
         token = token.removeprefix("Bearer ")
 
-        claims = self._token_service.decode(token=token)
+        claims = await self._token_service.decode(token=token)
         if isinstance(claims, Err):  # pragma: no cover
             return None
 

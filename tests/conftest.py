@@ -2,6 +2,7 @@ import pkgutil
 from collections.abc import AsyncIterator, Iterator
 from datetime import datetime
 from typing import cast
+from unittest.mock import patch
 
 import aioinject
 import dotenv
@@ -12,6 +13,7 @@ from aioinject import Object
 from asgi_lifespan import LifespanManager
 from faker import Faker
 from fastapi import FastAPI
+from pydantic_core import Url
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import tests.plugins
@@ -19,6 +21,9 @@ from app.core.di import create_container
 from app.core.domain.auth.dto import TokenWrapper
 from app.core.storage import FileStorage
 from app.db.models import User
+from app.settings import AuthSettings, TestAuthSettings
+from lib.connectors.keycloak import KeycloakClient, RealmInfo
+from lib.settings import get_settings
 from lib.time import utc_now
 from tests.types import Resolver
 from tests.utils import TestFileStorage
@@ -124,6 +129,34 @@ def s3_mock(container: aioinject.Container) -> Iterator[TestFileStorage]:
     storage = TestFileStorage()
     with container.override(Object(storage, type_=FileStorage)):
         yield storage
+
+
+@pytest.fixture(autouse=True)
+def _keycloak_mock(auth_settings: AuthSettings) -> Iterator[None]:
+    settings = get_settings(TestAuthSettings)
+
+    url = Url("https://127.0.0.1")
+
+    async def realm_func(
+        self: KeycloakClient,  # noqa: ARG001
+        realm: str,
+    ) -> RealmInfo:
+        return RealmInfo(
+            realm=realm,
+            public_key=settings.public_key.removeprefix(
+                auth_settings.public_key_begin,
+            ).removesuffix(auth_settings.public_key_end),
+            token_service=url,
+            account_service=url,
+            tokens_not_before=0,
+        )
+
+    with patch.object(
+        KeycloakClient,
+        KeycloakClient.realm_info.__name__,
+        realm_func,
+    ):
+        yield
 
 
 @pytest.fixture
