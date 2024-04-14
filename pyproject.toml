@@ -34,7 +34,6 @@ dependencies = [
     "sqlalchemy>=2.0.29",
     "starlette>=0.37.2",
     "strawberry-graphql>=0.224.2",
-    "types-aiobotocore-s3>=2.12.3",
     "uuid-utils>=0.6.1",
     "uvicorn>=0.29.0",
     "uvloop>=0.19.0; sys_platform != \"win32\"",
@@ -81,6 +80,7 @@ types = [
     "types-aiofiles>=23.2.0.20240403",
     "types-passlib>=1.7.7.20240327",
     "types-Pillow>=10.2.0.20240406",
+    "types-aiobotocore-s3>=2.12.3",
 ]
 
 [tool.pdm.scripts]
