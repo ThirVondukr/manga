@@ -10,10 +10,13 @@ from lib.types import DatetimeInt
 
 
 class TokenClaims(BaseModel):
-    token_type: Literal["access", "refresh"]
     sub: UUID
     iat: DatetimeInt
     exp: DatetimeInt
+    aud: str
+    typ: Literal["Bearer"]
+    email: str
+    preferred_username: str
 
 
 @dataclasses.dataclass

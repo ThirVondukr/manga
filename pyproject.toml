@@ -21,7 +21,6 @@ dependencies = [
     "httpx>=0.27.0",
     "litestar>=2.8.2",
     "orjson>=3.10.0",
-    "passlib>=1.7.4",
     "pydantic-core>=2.18.1",
     "pydantic-settings>=2.2.1",
     "pydantic[email]>=2.7.0",
@@ -38,6 +37,7 @@ dependencies = [
     "uvicorn>=0.29.0",
     "uvloop>=0.19.0; sys_platform != \"win32\"",
     "fastapi>=0.110.1",
+    "types-aiobotocore-s3>=2.12.3",
 ]
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
@@ -109,11 +109,11 @@ filterwarnings = [
 source = ["src"]
 omit = [
     "src/app/adapters/cli/*",
-    "src/app/db/migrations/*",
-    "src/app/adapters/cli/seed.py",
     "src/app/adapters/image_resizer/*",
-    "src/app/core/storage.py",  # S3 Client
     "src/app/core/domain/manga/import_/cbz.py",
+    "src/app/core/storage.py",  # S3 Client
+    "src/app/db/migrations/*",
+    "src/lib/connectors/keycloak.py",  # Keycloak client
 ]
 command_line = "-m pytest -vvv --reuse-db"
 concurrency = ["greenlet"]

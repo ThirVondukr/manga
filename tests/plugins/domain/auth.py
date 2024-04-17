@@ -1,13 +1,15 @@
 import uuid
+from datetime import timedelta
 
-import aioinject
+import jwt
 import pytest
-from pydantic import SecretStr
 
-from app.core.domain.auth.dto import TokenWrapper, UserRegisterDTO
-from app.core.domain.auth.services import AuthService, TokenService
+from app.core.domain.auth.dto import TokenClaims, TokenWrapper
+from app.core.domain.auth.services import TokenService
 from app.db.models import User
+from app.settings import AuthSettings, TestAuthSettings
 from lib.db import DBContext
+from lib.time import utc_now
 from tests.types import Resolver
 
 
@@ -17,30 +19,42 @@ async def token_service(resolver: Resolver) -> TokenService:
 
 
 @pytest.fixture(scope="session")
-async def user_token(container: aioinject.Container) -> TokenWrapper:
-    async with container.context() as ctx:
-        token_service = await ctx.resolve(TokenService)
-        return token_service.create_access_token(
-            user=User(username="", email="", password_hash=""),
-        )
+async def user_token(
+    auth_settings: AuthSettings,
+    test_auth_settings: TestAuthSettings,
+) -> TokenWrapper:
+    now = utc_now()
+    claims = TokenClaims(
+        sub=uuid.uuid4(),
+        aud=auth_settings.audience,
+        email="test@example.com",
+        exp=now + timedelta(minutes=10),
+        iat=now,
+        preferred_username="test",
+        typ="Bearer",
+    )
+    token = jwt.encode(
+        payload=claims.model_dump(mode="json"),
+        key=test_auth_settings.private_key,
+        algorithm=auth_settings.algorithm,
+    )
+    return TokenWrapper(
+        token=token,
+        claims=claims,
+    )
 
 
 @pytest.fixture
 async def user(
     user_token: TokenWrapper,
     db_context: DBContext,
-    user_password: str,
-    auth_service: AuthService,
 ) -> User:
-    result = await auth_service.sign_up(
-        dto=UserRegisterDTO(
-            username=str(uuid.uuid4()),
-            email="email@example.org",
-            password=SecretStr(user_password),
-        ),
+    user = User(
+        id=user_token.claims.sub,
+        username=user_token.claims.preferred_username,
+        email=user_token.claims.email,
+        password_hash="",
     )
-    user = result.unwrap()
-    user.id = user_token.claims.sub
     db_context.add(user)
     return user
 
@@ -53,15 +67,12 @@ async def make_user_superuser(user: User, db_context: DBContext) -> User:
 
 
 @pytest.fixture
-async def other_user(
-    user_password: str,
-    auth_service: AuthService,
-) -> User:
-    result = await auth_service.sign_up(
-        dto=UserRegisterDTO(
-            username=str(uuid.uuid4()),
-            email="email-other@example.org",
-            password=SecretStr(user_password),
-        ),
+async def other_user(db_context: DBContext) -> User:
+    user = User(
+        id=uuid.uuid4(),
+        username="User_2",
+        email="user_2@example.com",
+        password_hash="",
     )
-    return result.unwrap()
+    db_context.add(user)
+    return user

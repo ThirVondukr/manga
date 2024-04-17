@@ -13,7 +13,6 @@ from strawberry.schema.config import StrawberryConfig
 from strawberry.schema.name_converter import NameConverter
 from strawberry.tools import merge_types
 
-from app.adapters.graphql.apps.auth.mutation import AuthMutationsGQL
 from app.adapters.graphql.apps.branches.mutations import MangaBranchMutationGQL
 from app.adapters.graphql.apps.chapters.mutations import ChapterMutationGQL
 from app.adapters.graphql.apps.chapters.query import ChaptersQuery
@@ -33,10 +32,6 @@ Query = merge_types(
 
 @strawberry.type
 class Mutation:
-    @strawberry.field
-    async def auth(self) -> AuthMutationsGQL:
-        return AuthMutationsGQL()
-
     @strawberry.field
     async def manga(self) -> MangaMutationsGQL:
         return MangaMutationsGQL()

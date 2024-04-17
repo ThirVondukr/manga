@@ -5,14 +5,10 @@ from collections.abc import AsyncIterator, Collection
 from contextlib import AbstractAsyncContextManager
 from io import BytesIO
 from pathlib import PurePath
-from typing import TYPE_CHECKING, NewType, Protocol, final, runtime_checkable
+from typing import Protocol, final, runtime_checkable
 
 import aioboto3
-
-if TYPE_CHECKING:
-    from types_aiobotocore_s3 import S3Client
-else:
-    S3Client = NewType("S3Client", str)
+from types_aiobotocore_s3 import S3Client
 
 from app.settings import S3Settings
 from lib.files import FileProtocol, InMemoryFile

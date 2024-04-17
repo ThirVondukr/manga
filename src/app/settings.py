@@ -47,13 +47,13 @@ class AuthSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="auth_")
 
     algorithm: Literal["RS256"] = "RS256"
-    private_key: str
     access_token_lifetime: timedelta = timedelta(minutes=15)
     refresh_token_lifetime: timedelta = timedelta(days=3)
     refresh_token_cookie: str = "refresh-token"
 
     public_key_begin: str = "-----BEGIN PUBLIC KEY-----\n"
     public_key_end: str = "-----END PUBLIC KEY-----"
+    audience: str = "account"
 
     hashing_schemes: list[str] = ["argon2"]
 

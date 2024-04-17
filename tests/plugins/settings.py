@@ -1,14 +1,19 @@
 import pytest
 
-from app.settings import AuthSettings, ImageSettings
-from tests.types import Resolver
+from app.settings import AuthSettings, ImageSettings, TestAuthSettings
+from lib.settings import get_settings
 
 
-@pytest.fixture
-async def auth_settings(resolver: Resolver) -> AuthSettings:
-    return await resolver(AuthSettings)
+@pytest.fixture(scope="session")
+async def auth_settings() -> AuthSettings:
+    return get_settings(AuthSettings)
 
 
-@pytest.fixture
-async def image_settings(resolver: Resolver) -> ImageSettings:
-    return await resolver(ImageSettings)
+@pytest.fixture(scope="session")
+def test_auth_settings() -> TestAuthSettings:
+    return get_settings(TestAuthSettings)
+
+
+@pytest.fixture(scope="session")
+async def image_settings() -> ImageSettings:
+    return get_settings(ImageSettings)

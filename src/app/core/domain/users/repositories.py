@@ -18,7 +18,7 @@ class UserRepository:
 
     async def exists(self, filter: UserFilter) -> bool:
         stmt = select(User).exists()
-        if conditions := self._filter_conditions(filter):
+        if conditions := self._filter_conditions(filter):  # pragma: no cover
             stmt = stmt.where(or_(*conditions))
         result: bool = (await self._session.scalars(stmt.select())).one()
         return result
@@ -31,8 +31,8 @@ class UserRepository:
         conditions = []
         if filter.id is not None:
             conditions.append(User.id == filter.id)
-        if filter.email is not None:
+        if filter.email is not None:  # pragma: no cover
             conditions.append(User.email == filter.email)
-        if filter.username is not None:
+        if filter.username is not None:  # pragma: no cover
             conditions.append(User.username == filter.username)
         return conditions

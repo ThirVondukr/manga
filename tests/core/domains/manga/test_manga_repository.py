@@ -195,7 +195,6 @@ async def test_sort_by_latest_chapter_upload_date(
     db_context: DBContext,
     user: User,
 ) -> None:
-    manga_latest_chapter_dates = {}
     for manga in mangas:
         if random.random() >= 0.5:  # noqa: PLR2004
             continue
@@ -203,25 +202,45 @@ async def test_sort_by_latest_chapter_upload_date(
         chapter = chapter_factory(branch=branch, created_by=user)
         branch.chapters = [chapter]
         manga.branches.append(branch)
-        manga_latest_chapter_dates[manga.id] = chapter.created_at
         manga.latest_chapter_id = chapter.id
         db_context.add(manga)
 
     expected = sorted(
         mangas,
         key=lambda manga: (
-            manga_latest_chapter_dates.get(manga.id, datetime.min)
-            or datetime.min,
-            manga.id,
+            (
+                manga.latest_chapter.created_at
+                if manga.latest_chapter
+                else datetime.min
+            ),
+            manga.id.hex,
         ),
         reverse=direction is SortDirection.desc,
     )
     # Push null values to end
-    expected.sort(key=lambda m: manga_latest_chapter_dates.get(m.id) is None)
+    manga_without_chapters = [m for m in expected if m.latest_chapter is None]
+    manga_without_chapters.sort(
+        key=lambda m: m.id,
+        reverse=direction is SortDirection.desc,
+    )
+    expected = [m for m in expected if m not in manga_without_chapters]
+    expected += manga_without_chapters
 
     result = await manga_repository.paginate(
         filter=MangaFilter(),
         pagination=PagePaginationParamsDTO(page=1, page_size=100),
         sort=Sort(field=MangaSortField.chapter_upload, direction=direction),
     )
-    assert result.items == expected
+    assert [
+        (
+            m.latest_chapter.created_at if m.latest_chapter else datetime.min,
+            m.id,
+        )
+        for m in result.items
+    ] == [
+        (
+            m.latest_chapter.created_at if m.latest_chapter else datetime.min,
+            m.id,
+        )
+        for m in expected
+    ]

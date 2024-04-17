@@ -3,7 +3,6 @@ from collections.abc import AsyncIterator
 
 from aioinject.ext.fastapi import AioInjectMiddleware
 from fastapi import FastAPI
-from litestar.types import ASGIApp, Receive, Scope, Send
 from starlette.middleware.cors import CORSMiddleware
 
 from app import telemetry
@@ -11,19 +10,6 @@ from app.adapters.graphql.app import create_graphql_app
 from app.core.di import create_container
 from app.settings import AppSettings
 from lib.settings import get_settings
-
-
-class _MountWrapper:
-    def __init__(self, app: ASGIApp) -> None:
-        self._app = app
-
-    async def __call__(
-        self,
-        scope: Scope,
-        receive: Receive,
-        send: Send,
-    ) -> None:
-        await self._app(scope, receive, send)
 
 
 def create_app() -> FastAPI:
@@ -53,6 +39,3 @@ def create_app() -> FastAPI:
         return None
 
     return app
-
-
-_app = create_app()
