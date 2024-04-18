@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "Pillow>=10.3.0",
-    "aioboto3>=12.3.0",
+    "aioboto3>=12.4.0",
     "aiofiles>=23.2.1",
     "aioinject>=0.32.0",
     "alembic>=1.13.1",
@@ -21,7 +21,7 @@ dependencies = [
     "httptools>=0.6.1",
     "httpx>=0.27.0",
     "litestar>=2.8.2",
-    "orjson>=3.10.0",
+    "orjson>=3.10.1",
     "pydantic-core>=2.18.1",
     "pydantic-settings>=2.2.1",
     "pydantic[email]>=2.7.0",
@@ -33,7 +33,7 @@ dependencies = [
     "sentry-sdk>=1.45.0",
     "sqlalchemy>=2.0.29",
     "starlette>=0.37.2",
-    "strawberry-graphql>=0.224.2",
+    "strawberry-graphql>=0.226.0",
     "types-aiobotocore-s3>=2.12.3",
     "uuid-utils>=0.6.1",
     "uvicorn>=0.29.0",
@@ -53,10 +53,10 @@ dev = [
     "aiofiles>=23.2.1",
     "black>=24.4.0",
     "deptry>=0.16.1",
-    "faker>=24.9.0",
+    "faker>=24.11.0",
     "mypy>=1.9.0",
     "radon>=6.0.1",
-    "ruff>=0.3.7",
+    "ruff>=0.4.0",
     "ipython>=8.23.0",
 ]
 graphql = [
@@ -138,15 +138,13 @@ fail_under = 100
 exclude = ["src/app/adapters/cli/seed\\.py"]
 [tool.deptry.per_rule_ignores]
 DEP002 = [
-    "argon2-cffi",
-    "asyncpg",
+    "asyncpg",  # SQLAlchemy
     "cryptography", # PyJWT
-    "httptools",
+    "httptools",  # uvicorn
     "orjson",
-    "python-multipart",
-    "result",
-    "uvicorn",
-    "uvloop",
+    "python-multipart",  # fastapi
+    "uvicorn",  # web server
+    "uvloop",  # uvicorn
 ]
 
 [tool.deptry.package_module_name_map]
