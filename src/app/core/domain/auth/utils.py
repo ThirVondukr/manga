@@ -9,7 +9,7 @@ from app.core.domain.users.repositories import UserRepository
 from app.db.models import User
 
 
-class UserGetter:  # pragma: no cover
+class UserGetter:
     def __init__(
         self,
         container: aioinject.Container,

@@ -113,6 +113,7 @@ omit = [
     "src/app/core/storage.py",  # S3 Client
     "src/app/db/migrations/*",
     "src/lib/connectors/keycloak.py",  # Keycloak client
+    "src/app/core/domain/auth/utils.py",
 ]
 command_line = "-m pytest -vvv --reuse-db"
 concurrency = ["greenlet"]
