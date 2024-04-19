@@ -34,7 +34,7 @@ class Context:
     @cached_property
     def user(self) -> Awaitable[User]:
         if not self._user:
-            raise ValueError
+            raise ValueError  # pragma: no cover
         return await_maybe(self._user)
 
 
