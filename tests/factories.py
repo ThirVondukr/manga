@@ -58,7 +58,6 @@ class MangaFactory(GenericFactory[Manga]):
 class UserFactory(GenericFactory[User]):
     username = factory.Faker("pystr")
     email = factory.Faker("email")
-    password_hash = ""
 
 
 class ImageFactory(GenericFactory[Image]):

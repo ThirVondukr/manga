@@ -9,6 +9,10 @@ QUERY = """query ($id: ID!) {
       __typename
       id
       createdAt
+      manga {
+        __typename
+        id
+      }
     }
   }
 }"""
@@ -58,8 +62,12 @@ async def test_ok(
                 "id": str(manga.id),
                 "bookmark": {
                     "__typename": "MangaBookmark",
-                    "id": f"{manga_bookmark.manga_id}:{manga_bookmark.user_id}",
+                    "id": f"{manga_bookmark.user_id}:{manga_bookmark.manga_id}",
                     "createdAt": manga_bookmark.created_at.isoformat(),
+                    "manga": {
+                        "__typename": "Manga",
+                        "id": str(manga.id),
+                    },
                 },
             },
         },

@@ -9,6 +9,7 @@ from aioinject import Inject
 from aioinject.ext.strawberry import inject
 from strawberry import Private
 
+from app.adapters.graphql.apps.bookmarks.types import MangaBookmarkGQL
 from app.adapters.graphql.apps.chapters.types import MangaChapterGQL
 from app.adapters.graphql.apps.images.types import ImageSetGQL
 from app.adapters.graphql.context import Info
@@ -19,7 +20,10 @@ from app.adapters.graphql.pagination import (
     PagePaginationResultGQL,
     map_page_pagination,
 )
-from app.adapters.graphql.types import LanguageGQL, MangaStatusGQL
+from app.adapters.graphql.types import (
+    LanguageGQL,
+    MangaStatusGQL,
+)
 from app.core.domain.images.loaders import MangaArtImagesLoader
 from app.core.domain.manga.bookmarks.loaders import (
     MangaBookmarkLoader,
@@ -36,7 +40,6 @@ from app.db.models.manga import (
     AltTitle,
     Manga,
     MangaArt,
-    MangaBookmark,
     MangaRating,
     MangaTag,
 )
@@ -80,19 +83,6 @@ class AltTitleGQL(DTOMixin[AltTitle]):
             id=strawberry.ID(str(model.id)),
             language=LanguageGQL(model.language.value),
             title=model.title,
-        )
-
-
-@strawberry.type(name="MangaBookmark")
-class MangaBookmarkGQL(DTOMixin[MangaBookmark]):
-    id: strawberry.ID
-    created_at: datetime
-
-    @classmethod
-    def from_dto(cls, model: MangaBookmark) -> Self:
-        return cls(
-            id=strawberry.ID(f"{model.manga_id}:{model.user_id}"),
-            created_at=model.created_at,
         )
 
 

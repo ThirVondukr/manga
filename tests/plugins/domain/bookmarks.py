@@ -1,9 +1,12 @@
+from collections.abc import Sequence
+
 import pytest
 
 from app.core.domain.manga.bookmarks.repositories import BookmarkRepository
 from app.core.domain.manga.bookmarks.services import BookmarkService
 from app.db.models import User
 from app.db.models.manga import Manga, MangaBookmark, MangaBookmarkStatus
+from tests.factories import MangaFactory
 from tests.types import Resolver
 
 
@@ -28,3 +31,20 @@ async def manga_bookmark(
         user=user,
         status=MangaBookmarkStatus.reading,
     )
+
+
+@pytest.fixture
+async def user_bookmark_collection(
+    collection_size: int,
+    user: User,
+    bookmark_service: BookmarkService,
+) -> Sequence[MangaBookmark]:
+    mangas = MangaFactory.build_batch(size=collection_size)
+    return [
+        await bookmark_service.add_bookmark(
+            user=user,
+            manga=manga,
+            status=MangaBookmarkStatus.reading,
+        )
+        for manga in mangas
+    ]

@@ -6,16 +6,6 @@ type AltTitle {
   title: String!
 }
 
-type AuthMutations {
-  signUp(input: SignUpInput!): SignUpPayload!
-  signIn(input: SignInInput!): SignInPayload!
-}
-
-type AuthenticationResult {
-  user: PrivateUser!
-  accessToken: String!
-}
-
 union ChapterCreateError = ValidationErrors | FileUploadError | RelationshipNotFoundError | PermissionDeniedError | EntityAlreadyExistsError
 
 input ChapterCreateInput {
@@ -81,10 +71,6 @@ type ImageSet {
   alternatives: [Image!]!
 }
 
-type InvalidCredentialsError implements Error {
-  message: String!
-}
-
 enum LanguageEnum {
   ENG
   JPN
@@ -143,10 +129,17 @@ type MangaArtsAddPayload {
 
 type MangaBookmark {
   id: ID!
+  status: MangaBookmarkStatus!
   createdAt: DateTime!
+  manga: Manga!
 }
 
 union MangaBookmarkError = NotFoundError | ValidationErrors
+
+type MangaBookmarkPagePaginationResult {
+  items: [MangaBookmark!]!
+  pageInfo: PagePaginationInfo!
+}
 
 type MangaBookmarkPayload {
   manga: Manga
@@ -318,7 +311,6 @@ type MangaUpdatePayload {
 }
 
 type Mutation {
-  auth: AuthMutations!
   manga: MangaMutations!
   groups: GroupMutations!
   branches: MangaBranchMutationGQL!
@@ -356,41 +348,17 @@ type PrivateUser implements User {
 }
 
 type Query {
+  myBookmarks(pagination: PagePaginationInput = null): MangaBookmarkPagePaginationResult! @isAuthenticated
   chapter(id: ID!): MangaChapter
   manga(id: ID!): Manga
   mangas(pagination: PagePaginationInput = null, filter: MangaFilter = null, sort: MangaSort = null): MangaPagePaginationResult!
-  me: PrivateUser! @isAuthenticated
   tags: [MangaTag!]!
+  me: PrivateUser! @isAuthenticated
 }
 
 type RelationshipNotFoundError implements Error {
   message: String!
   entityId: ID!
-}
-
-union SignInErrors = InvalidCredentialsError | ValidationErrors
-
-input SignInInput {
-  email: String!
-  password: String!
-}
-
-type SignInPayload {
-  result: AuthenticationResult
-  error: SignInErrors
-}
-
-union SignUpErrors = EntityAlreadyExistsError | ValidationErrors
-
-input SignUpInput {
-  email: String!
-  username: String!
-  password: String!
-}
-
-type SignUpPayload {
-  result: AuthenticationResult
-  error: SignUpErrors
 }
 
 enum SortDirection {

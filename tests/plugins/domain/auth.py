@@ -53,7 +53,6 @@ async def user(
         id=user_token.claims.sub,
         username=user_token.claims.preferred_username,
         email=user_token.claims.email,
-        password_hash="",
     )
     db_context.add(user)
     return user
@@ -72,7 +71,6 @@ async def other_user(db_context: DBContext) -> User:
         id=uuid.uuid4(),
         username="User_2",
         email="user_2@example.com",
-        password_hash="",
     )
     db_context.add(user)
     return user

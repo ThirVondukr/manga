@@ -13,6 +13,7 @@ from strawberry.schema.config import StrawberryConfig
 from strawberry.schema.name_converter import NameConverter
 from strawberry.tools import merge_types
 
+from app.adapters.graphql.apps.bookmarks.query import BookmarkQuery
 from app.adapters.graphql.apps.branches.mutations import MangaBranchMutationGQL
 from app.adapters.graphql.apps.chapters.mutations import ChapterMutationGQL
 from app.adapters.graphql.apps.chapters.query import ChaptersQuery
@@ -26,7 +27,13 @@ from app.core.di import create_container
 
 Query = merge_types(
     name="Query",
-    types=(ChaptersQuery, MangaQuery, UserQuery, TagsQueryGQL),
+    types=(
+        BookmarkQuery,
+        ChaptersQuery,
+        MangaQuery,
+        TagsQueryGQL,
+        UserQuery,
+    ),
 )
 
 

@@ -1,11 +1,16 @@
 from typing import Literal
 from uuid import UUID
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import User
 from app.db.models.manga import Manga, MangaBookmark
+from lib.pagination.pagination import (
+    PagePaginationParamsDTO,
+    PagePaginationResultDTO,
+)
+from lib.pagination.sqla import page_paginate
 
 
 class BookmarkRepository:
@@ -18,6 +23,25 @@ class BookmarkRepository:
             MangaBookmark.user == user,
         )
         return (await self._session.scalars(stmt)).one_or_none()
+
+    async def user_bookmarks(
+        self,
+        user_id: UUID,
+        pagination: PagePaginationParamsDTO,
+    ) -> PagePaginationResultDTO[MangaBookmark]:
+        base_stmt = select(MangaBookmark).where(
+            MangaBookmark.user_id == user_id,
+        )
+        stmt = base_stmt.join(MangaBookmark.manga).order_by(
+            Manga.title,
+            Manga.id,
+        )
+        return await page_paginate(
+            stmt=stmt,
+            session=self._session,
+            pagination=pagination,
+            count_query=select(func.count()).select_from(base_stmt.subquery()),
+        )
 
     async def delete(self, manga: Manga, user: User) -> None:
         stmt = delete(MangaBookmark).where(

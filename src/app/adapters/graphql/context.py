@@ -39,4 +39,4 @@ class Context:
         )
 
 
-Info = StrawberryInfo[Context]
+Info = StrawberryInfo[Context, None]
