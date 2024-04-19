@@ -1,6 +1,6 @@
 from result import Err
 
-from app.core.domain.auth.dto import TokenClaims
+from app.core.domain.auth.dto import AuthResultDTO
 from app.core.domain.auth.services import TokenService
 from app.core.domain.users.services import UserService
 
@@ -14,7 +14,7 @@ class AuthenticateAccessTokenCommand:
         self._token_service = token_service
         self._user_service = user_service
 
-    async def execute(self, token: str | None) -> TokenClaims | None:
+    async def execute(self, token: str | None) -> AuthResultDTO | None:
         if not token or not token.startswith("Bearer "):
             return None
 
@@ -23,6 +23,5 @@ class AuthenticateAccessTokenCommand:
         if isinstance(claims, Err):  # pragma: no cover
             return None
 
-        await self._user_service.sync_token_data(claims=claims.ok_value)
-
-        return claims.ok_value
+        user = await self._user_service.sync_token_data(claims=claims.ok_value)
+        return AuthResultDTO(user=user, claims=claims.ok_value)

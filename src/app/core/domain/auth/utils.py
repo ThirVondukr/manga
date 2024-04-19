@@ -23,6 +23,7 @@ class UserGetter:  # pragma: no cover
     async def _fetch_user(self) -> User:
         if self._token is None:
             raise ValueError
+
         if not self._cache:
             async with self._lock:
                 if not self._cache:

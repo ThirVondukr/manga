@@ -2,10 +2,9 @@ import dataclasses
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, SecretStr
+from pydantic import BaseModel
 
 from app.db.models import User
-from lib.dto import BaseDTO
 from lib.types import DatetimeInt
 
 
@@ -25,18 +24,7 @@ class TokenWrapper:
     token: str
 
 
-class SignInDTO(BaseDTO):
-    email: str
-    password: SecretStr
-
-
-class UserRegisterDTO(BaseDTO):
-    username: str
-    password: SecretStr
-    email: EmailStr
-
-
-class UserAuthResultDTO(BaseDTO):
+@dataclasses.dataclass
+class AuthResultDTO:
     user: User
-    access_token: TokenWrapper
-    refresh_token: TokenWrapper
+    claims: TokenClaims

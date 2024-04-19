@@ -7,10 +7,9 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.websockets import WebSocket
 from strawberry.types import Info as StrawberryInfo
+from strawberry.utils.await_maybe import await_maybe
 
-from app.core.di import create_container
 from app.core.domain.auth.dto import TokenClaims
-from app.core.domain.auth.utils import UserGetter
 from app.db.models import User
 from lib.loaders import Dataloaders
 
@@ -24,6 +23,7 @@ class Context:
     loaders: Dataloaders
 
     maybe_access_token: TokenClaims | None
+    _user: User | None
 
     @property
     def access_token(self) -> TokenClaims:
@@ -33,10 +33,9 @@ class Context:
 
     @cached_property
     def user(self) -> Awaitable[User]:
-        return UserGetter(
-            container=create_container(),
-            token=self.maybe_access_token,
-        )
+        if not self._user:
+            raise ValueError
+        return await_maybe(self._user)
 
 
 Info = StrawberryInfo[Context, None]

@@ -5,7 +5,7 @@ from strawberry.asgi import GraphQL
 
 from app.core.di import create_container
 from app.core.domain.auth.commands import AuthenticateAccessTokenCommand
-from app.core.domain.auth.dto import TokenClaims
+from app.core.domain.auth.dto import AuthResultDTO
 from lib.loaders import Dataloaders
 
 from .context import Context
@@ -18,18 +18,19 @@ class GraphQLApp(GraphQL[Context, None]):
         request: Request | WebSocket,
         response: Response | None = None,
     ) -> Context:
-        claims = await self._authenticate_user(request=request)
+        auth = await self._authenticate_user(request=request)
         return Context(
             request=request,
             response=response,
             loaders=Dataloaders(),
-            maybe_access_token=claims,
+            maybe_access_token=auth.claims if auth else None,
+            _user=auth.user if auth else None,
         )
 
     async def _authenticate_user(
         self,
         request: Request | WebSocket,
-    ) -> TokenClaims | None:
+    ) -> AuthResultDTO | None:
         token = request.headers.get("authorization", "")
         async with create_container().context() as ctx:
             command = await ctx.resolve(AuthenticateAccessTokenCommand)
