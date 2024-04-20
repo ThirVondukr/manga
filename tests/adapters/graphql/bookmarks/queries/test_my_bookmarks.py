@@ -4,8 +4,8 @@ from app.db.models.manga import MangaBookmark
 from tests.adapters.graphql.client import GraphQLClient
 from tests.adapters.graphql.utils import assert_not_authenticated
 
-QUERY = """query {
-  myBookmarks {
+QUERY = """query ($sort: MangaBookmarkSort = {direction: ASC}) {
+  myBookmarks(sort: $sort) {
     items {
       id
       status
@@ -37,7 +37,10 @@ async def test_ok(
     user_bookmark_collection: Sequence[MangaBookmark],
     authenticated_graphql_client: GraphQLClient,
 ) -> None:
-    response = await authenticated_graphql_client.query(QUERY)
+    response = await authenticated_graphql_client.query(
+        QUERY,
+        variables={"sort": {"direction": "DESC", "field": "BOOKMARK_ADDED_AT"}},
+    )
     expected = [
         {
             "id": f"{bookmark.user_id}:{bookmark.manga_id}",
