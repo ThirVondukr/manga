@@ -32,9 +32,7 @@ MangaBookmarkSortFieldGQL = strawberry.enum(
 @strawberry.input(name="MangaBookmarkSort")
 @dataclasses.dataclass(frozen=True)
 class MangaBookmarkSortGQL:
-    field: MangaBookmarkSortFieldGQL = (
-        MangaBookmarkSortFieldGQL.chapter_upload
-    )
+    field: MangaBookmarkSortFieldGQL = MangaBookmarkSortFieldGQL.chapter_upload
     direction: SortDirectionGQL = SortDirectionGQL.desc
 
     def to_dto(self) -> Sort[MangaBookmarkSortField]:
