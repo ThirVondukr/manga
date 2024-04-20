@@ -85,7 +85,8 @@ class ImageService:
 
     @contextlib.asynccontextmanager
     async def delete_image_set(
-        self, id: UUID
+        self,
+        id: UUID,
     ) -> AsyncIterator[None]:  # pragma: no cover
         stmt = (
             select(ImageSet)

@@ -21,7 +21,8 @@ class UserGQL:
 
     @strawberry.field
     async def avatar(
-        self, info: Info
+        self,
+        info: Info,
     ) -> ImageSetGQL | None:  # pragma: no cover
         if self._avatar_id is None:
             return None
