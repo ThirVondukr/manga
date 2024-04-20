@@ -45,7 +45,7 @@ stages:
       - "**/*.py"
       - pdm.lock
       - pyproject.toml
-#      - .gitlab-ci.yml
+      - .gitlab-ci.yml
       - Taskfile.yml
 
 .lint-job:
@@ -140,7 +140,6 @@ test:
     - name: groonga/pgroonga:3.1.7-alpine-16-slim
       alias: postgres
 
-  allow_failure: true
   script:
     - task testcov
   coverage: "/^TOTAL.*\\s(\\d*.?\\d*)/"
