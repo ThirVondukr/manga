@@ -3,7 +3,6 @@ from collections.abc import Sequence
 from app.db.models.manga import MangaBookmark
 from tests.adapters.graphql.client import GraphQLClient
 from tests.adapters.graphql.utils import assert_not_authenticated
-from tests.utils import casefold
 
 QUERY = """query {
   myBookmarks {
@@ -49,7 +48,8 @@ async def test_ok(
         }
         for bookmark in sorted(
             user_bookmark_collection,
-            key=lambda b: casefold(b.manga.title),
+            key=lambda b: b.created_at,
+            reverse=True,
         )
     ]
     assert response == _tpl(expected)

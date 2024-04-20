@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Any, assert_never
+from typing import Any, TypeVar, assert_never
 from uuid import UUID
 
 from sqlalchemy import Select, SQLColumnExpression, func, or_, select
@@ -16,6 +16,66 @@ from lib.pagination.sqla import page_paginate
 from lib.sort import SortDirection
 
 from .filters import MangaFilter, MangaFindFilter, MangaSortField, Sort
+
+_T = TypeVar("_T", bound=tuple[Any, ...])
+
+
+def sort_manga_stmt(stmt: Select[_T], sort: Sort[MangaSortField]) -> Select[_T]:
+    field: SQLColumnExpression[Any]
+    match sort.field:
+        case MangaSortField.title:
+            field = Manga.title
+        case MangaSortField.created_at:
+            field = Manga.created_at
+        case MangaSortField.chapter_upload:
+            field = MangaChapter.created_at
+            stmt = stmt.join(Manga.latest_chapter, isouter=True).group_by(
+                MangaChapter.created_at,
+            )
+        case _:  # pragma: no cover
+            assert_never(sort)
+    field = field if sort.direction is SortDirection.asc else field.desc()
+    id_field = (
+        Manga.id if sort.direction is SortDirection.asc else Manga.id.desc()
+    )
+    return stmt.order_by(field.nulls_last(), id_field)
+
+
+def filter_manga_stmt(
+    stmt: Select[_T],
+    filter: MangaFilter,
+) -> Select[_T]:
+    stmt = stmt.group_by(Manga.id)
+    if filter.statuses:
+        stmt = stmt.where(Manga.status.in_(filter.statuses))
+
+    if filter.search_term:
+        stmt = stmt.join(Manga.alt_titles, isouter=True).where(
+            or_(
+                AltTitle.title.op("&@~")(filter.search_term),
+                Manga.title.op("&@~")(filter.search_term),
+            ),
+        )
+    if filter.tags.include:
+        include_alias = aliased(MangaTag, name="tags_include")
+        stmt = (
+            stmt.join(include_alias, Manga.tags)
+            .where(include_alias.id.in_(filter.tags.include))
+            .having(
+                func.count(include_alias.id) >= len(filter.tags.include),
+            )
+        )
+    if filter.tags.exclude:
+        exclude_alias = aliased(MangaTag, name="tags_exclude")
+        stmt = stmt.join(
+            exclude_alias,
+            Manga.tags.and_(
+                exclude_alias.id.in_(filter.tags.exclude),
+            ),
+            isouter=True,
+        ).having(func.count(exclude_alias.id) == 0)
+
+    return stmt
 
 
 class MangaRepository:
@@ -56,73 +116,10 @@ class MangaRepository:
     ) -> PagePaginationResultDTO[Manga]:
         stmt = self._base_stmt
         if filter:
-            stmt = self._filter_stmt(stmt=stmt, filter=filter)
-        stmt = self._sort_stmt(stmt, sort=sort)
+            stmt = filter_manga_stmt(stmt=stmt, filter=filter)
+        stmt = sort_manga_stmt(stmt=stmt, sort=sort)
         return await page_paginate(
             session=self._session,
             stmt=stmt,
             pagination=pagination,
         )
-
-    @classmethod
-    def _sort_stmt(
-        cls,
-        stmt: Select[tuple[Manga]],
-        sort: Sort[MangaSortField],
-    ) -> Select[tuple[Manga]]:
-        field: SQLColumnExpression[Any]
-        match sort.field:
-            case MangaSortField.title:
-                field = Manga.title
-            case MangaSortField.created_at:
-                field = Manga.created_at
-            case MangaSortField.chapter_upload:
-                field = MangaChapter.created_at
-                stmt = stmt.join(Manga.latest_chapter, isouter=True).group_by(
-                    MangaChapter.created_at,
-                )
-            case _:  # pragma: no cover
-                assert_never(sort)
-        field = field if sort.direction is SortDirection.asc else field.desc()
-        id_field = (
-            Manga.id if sort.direction is SortDirection.asc else Manga.id.desc()
-        )
-        return stmt.order_by(field.nulls_last(), id_field)
-
-    @classmethod
-    def _filter_stmt(
-        cls,
-        stmt: Select[tuple[Manga]],
-        filter: MangaFilter,
-    ) -> Select[tuple[Manga]]:
-        stmt = stmt.group_by(Manga.id)
-        if filter.statuses:
-            stmt = stmt.where(Manga.status.in_(filter.statuses))
-
-        if filter.search_term:
-            stmt = stmt.join(Manga.alt_titles, isouter=True).where(
-                or_(
-                    AltTitle.title.op("&@~")(filter.search_term),
-                    Manga.title.op("&@~")(filter.search_term),
-                ),
-            )
-        if filter.tags.include:
-            include_alias = aliased(MangaTag, name="tags_include")
-            stmt = (
-                stmt.join(include_alias, Manga.tags)
-                .where(include_alias.id.in_(filter.tags.include))
-                .having(
-                    func.count(include_alias.id) >= len(filter.tags.include),
-                )
-            )
-        if filter.tags.exclude:
-            exclude_alias = aliased(MangaTag, name="tags_exclude")
-            stmt = stmt.join(
-                exclude_alias,
-                Manga.tags.and_(
-                    exclude_alias.id.in_(filter.tags.exclude),
-                ),
-                isouter=True,
-            ).having(func.count(exclude_alias.id) == 0)
-
-        return stmt

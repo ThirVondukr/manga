@@ -1,3 +1,4 @@
+import random
 from collections.abc import Sequence
 
 import pytest
@@ -44,7 +45,9 @@ async def user_bookmark_collection(
         await bookmark_service.add_bookmark(
             user=user,
             manga=manga,
-            status=MangaBookmarkStatus.reading,
+            status=random.choice(
+                list(MangaBookmarkStatus.__members__.values()),
+            ),
         )
         for manga in mangas
     ]

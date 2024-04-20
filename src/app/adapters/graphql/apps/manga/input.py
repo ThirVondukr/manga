@@ -1,4 +1,3 @@
-import dataclasses
 from collections.abc import Sequence
 
 import strawberry
@@ -40,7 +39,6 @@ class MangaTagFilterGQL:
 
 
 @strawberry.input(name="MangaFilter")
-@dataclasses.dataclass(frozen=True)
 class MangaFilterGQL:
     statuses: Sequence[MangaStatusGQL] | None = None
     search_term: str | None = None
@@ -58,7 +56,6 @@ MangaSortFieldGQL = strawberry.enum(MangaSortField, name="MangaSortField")
 
 
 @strawberry.input(name="MangaSort")
-@dataclasses.dataclass(unsafe_hash=True)
 class MangaSortGQL:
     field: MangaSortFieldGQL = MangaSortFieldGQL.title
     direction: SortDirectionGQL = SortDirectionGQL.asc

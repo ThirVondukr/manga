@@ -5,9 +5,11 @@ import pytest
 from app.core.domain.auth.dto import TokenWrapper
 from app.core.domain.manga.bookmarks.queries import UserBookmarksQuery
 from app.core.domain.manga.bookmarks.services import BookmarkService
+from app.core.domain.manga.manga.filters import MangaBookmarkSortField, Sort
 from app.db.models import User
 from app.db.models.manga import MangaBookmark, MangaBookmarkStatus
 from lib.pagination.pagination import PagePaginationParamsDTO
+from lib.sort import SortDirection
 from tests.factories import MangaFactory
 from tests.types import Resolver
 from tests.utils import casefold
@@ -26,6 +28,10 @@ async def test_ok(
     result = await query.execute(
         user=user_token.claims,
         pagination=PagePaginationParamsDTO(page=1, page_size=100),
+        sort=Sort(
+            field=MangaBookmarkSortField.title,
+            direction=SortDirection.asc,
+        ),
     )
     assert result.items == sorted(
         user_bookmark_collection,
@@ -51,5 +57,9 @@ async def test_other_user_bookmarks(
     result = await query.execute(
         user=user_token.claims,
         pagination=PagePaginationParamsDTO(page=1, page_size=100),
+        sort=Sort(
+            field=MangaBookmarkSortField.bookmark_added_at,
+            direction=SortDirection.desc,
+        ),
     )
     assert result.items == []

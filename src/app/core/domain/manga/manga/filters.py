@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from typing import Generic, TypeVar
 from uuid import UUID
 
+from app.db.models.manga import MangaBookmarkStatus
 from lib.sort import SortDirection
 from lib.types import MangaStatus
 
@@ -16,9 +17,16 @@ class MangaSortField(enum.Enum):
     chapter_upload = enum.auto()
 
 
-@dataclasses.dataclass
+class MangaBookmarkSortField(enum.Enum):
+    title = enum.auto()
+    created_at = enum.auto()
+    chapter_upload = enum.auto()
+    bookmark_added_at = enum.auto()
+
+
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Sort(Generic[_T]):
-    field: MangaSortField
+    field: _T
     direction: SortDirection
 
 
@@ -33,6 +41,12 @@ class MangaFilter:
     search_term: str | None = None
     statuses: Sequence[MangaStatus] | None = None
     tags: TagFilter = dataclasses.field(default_factory=TagFilter)
+
+
+@dataclasses.dataclass
+class MangaBookmarkFilter:
+    manga: MangaFilter | None = None
+    statuses: Sequence[MangaBookmarkStatus] | None = None
 
 
 @dataclasses.dataclass

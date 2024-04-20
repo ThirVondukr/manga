@@ -137,6 +137,11 @@ type MangaBookmark {
 
 union MangaBookmarkError = NotFoundError | ValidationErrors
 
+input MangaBookmarkFilter {
+  manga: MangaFilter = null
+  statuses: [MangaBookmarkStatus!] = null
+}
+
 type MangaBookmarkPagePaginationResult {
   items: [MangaBookmark!]!
   pageInfo: PagePaginationInfo!
@@ -145,6 +150,18 @@ type MangaBookmarkPagePaginationResult {
 type MangaBookmarkPayload {
   manga: Manga
   error: MangaBookmarkError
+}
+
+input MangaBookmarkSort {
+  field: MangaBookmarkSortField! = BOOKMARK_ADDED_AT
+  direction: SortDirection! = DESC
+}
+
+enum MangaBookmarkSortField {
+  TITLE
+  CREATED_AT
+  CHAPTER_UPLOAD
+  BOOKMARK_ADDED_AT
 }
 
 enum MangaBookmarkStatus {
@@ -351,7 +368,7 @@ type PrivateUser implements User {
 }
 
 type Query {
-  myBookmarks(pagination: PagePaginationInput = null): MangaBookmarkPagePaginationResult! @isAuthenticated
+  myBookmarks(pagination: PagePaginationInput = null, filter: MangaBookmarkFilter = null, sort: MangaBookmarkSort = null): MangaBookmarkPagePaginationResult! @isAuthenticated
   chapter(id: ID!): MangaChapter
   manga(id: ID!): Manga
   mangas(pagination: PagePaginationInput = null, filter: MangaFilter = null, sort: MangaSort = null): MangaPagePaginationResult!
