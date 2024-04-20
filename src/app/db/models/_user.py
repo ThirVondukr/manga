@@ -1,11 +1,17 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import String, false
-from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
+from sqlalchemy import ForeignKey, String, false
+from sqlalchemy.orm import (
+    Mapped,
+    MappedAsDataclass,
+    mapped_column,
+    relationship,
+)
 from uuid_utils.compat import uuid7
 
 from app.db import Base
+from app.db.models import ImageSet
 from lib.time import utc_now
 
 
@@ -23,3 +29,8 @@ class User(MappedAsDataclass, Base, kw_only=True):
         default=False,
         server_default=false(),
     )
+    avatar_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("image_set.id"),
+        default=None,
+    )
+    avatar: Mapped[ImageSet | None] = relationship(default=None)

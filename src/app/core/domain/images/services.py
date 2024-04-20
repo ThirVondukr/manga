@@ -4,8 +4,12 @@ import sys
 from collections.abc import AsyncIterator, Sequence
 from io import BytesIO
 from pathlib import PurePath
+from uuid import UUID
 
 import PIL.Image
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.core.storage import FileStorage, FileUpload
 from app.db.models import Image, ImageSet, ImageSetScaleTask
@@ -34,10 +38,12 @@ class ImageService:
         self,
         storage: FileStorage,
         db_context: DBContext,
+        session: AsyncSession,
         settings: ImageSettings,
     ) -> None:
         self._storage = storage
         self._db_context = db_context
+        self._session = session
         self._settings = settings
 
     @contextlib.asynccontextmanager
@@ -76,6 +82,21 @@ class ImageService:
             )
             self._db_context.add(image_set)
             yield image_set
+
+    @contextlib.asynccontextmanager
+    async def delete_image_set(
+        self, id: UUID
+    ) -> AsyncIterator[None]:  # pragma: no cover
+        stmt = (
+            select(ImageSet)
+            .options(selectinload(ImageSet.images))
+            .where(ImageSet.id == id)
+        )
+        image_set = (await self._session.scalars(stmt)).one()
+        keys = [image.path.as_posix() for image in image_set.images]
+        await self._session.delete(image_set)
+        yield
+        await self._storage.delete(keys=keys)
 
     async def scale_image_set(  # pragma: no cover
         self,

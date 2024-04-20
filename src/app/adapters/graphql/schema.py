@@ -21,6 +21,7 @@ from app.adapters.graphql.apps.groups.mutation import GroupMutationsGQL
 from app.adapters.graphql.apps.manga.mutation import MangaMutationsGQL
 from app.adapters.graphql.apps.manga.query import MangaQuery
 from app.adapters.graphql.apps.tags.query import TagsQueryGQL
+from app.adapters.graphql.apps.users.mutation import UserMutationsGQL
 from app.adapters.graphql.apps.users.query import UserQuery
 from app.adapters.graphql.extensions import IsAuthenticated
 from app.core.di import create_container
@@ -39,6 +40,10 @@ Query = merge_types(
 
 @strawberry.type
 class Mutation:
+    @strawberry.field
+    async def user(self) -> UserMutationsGQL:
+        return UserMutationsGQL()
+
     @strawberry.field
     async def manga(self) -> MangaMutationsGQL:
         return MangaMutationsGQL()

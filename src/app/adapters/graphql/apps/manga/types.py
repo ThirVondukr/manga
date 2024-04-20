@@ -24,7 +24,7 @@ from app.adapters.graphql.types import (
     LanguageGQL,
     MangaStatusGQL,
 )
-from app.core.domain.images.loaders import MangaArtImagesLoader
+from app.core.domain.images.loaders import ImageSetLoader
 from app.core.domain.manga.bookmarks.loaders import (
     MangaBookmarkLoader,
     MangaBookmarkLoaderKey,
@@ -89,6 +89,8 @@ class AltTitleGQL(DTOMixin[AltTitle]):
 @strawberry.type(name="MangaArt")
 class MangaArtGQL(DTOMixin[MangaArt]):
     _id: Private[UUID]
+    _image_set_id: Private[UUID]
+
     id: strawberry.ID
     volume: int
     language: LanguageGQL
@@ -97,6 +99,7 @@ class MangaArtGQL(DTOMixin[MangaArt]):
     def from_dto(cls, model: MangaArt) -> Self:
         return cls(
             _id=model.id,
+            _image_set_id=model.image_set_id,
             id=strawberry.ID(str(model.id)),
             volume=model.volume,
             language=model.language,
@@ -104,10 +107,12 @@ class MangaArtGQL(DTOMixin[MangaArt]):
 
     @strawberry.field
     async def image(self, info: Info) -> ImageSetGQL:
-        images = await info.context.loaders.map(MangaArtImagesLoader).load(
-            key=self._id,
+        image_set = await info.context.loaders.map(ImageSetLoader).load(
+            key=self._image_set_id,
         )
-        return ImageSetGQL.from_images(images)
+        if not image_set:
+            raise ValueError  # pragma: no cover
+        return ImageSetGQL.from_dto(image_set)
 
 
 @strawberry.type(name="MangaRating")

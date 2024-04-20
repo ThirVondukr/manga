@@ -111,3 +111,4 @@ class ImageScaleSettings(BaseSettings):
 class ImagePaths(SimpleNamespace):
     chapter_images = "chapters"
     manga_arts = "manga-art"
+    avatars = "users/avatars"

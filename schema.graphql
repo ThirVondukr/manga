@@ -67,6 +67,7 @@ type Image {
 }
 
 type ImageSet {
+  id: ID!
   original: Image!
   alternatives: [Image!]!
 }
@@ -311,6 +312,7 @@ type MangaUpdatePayload {
 }
 
 type Mutation {
+  user: UserMutations!
   manga: MangaMutations!
   groups: GroupMutations!
   branches: MangaBranchMutationGQL!
@@ -344,6 +346,7 @@ type PrivateUser implements User {
   id: ID!
   username: String!
   joinedAt: DateTime!
+  avatar: ImageSet
   email: String!
 }
 
@@ -374,6 +377,18 @@ interface User {
   id: ID!
   username: String!
   joinedAt: DateTime!
+  avatar: ImageSet
+}
+
+union UserAvatarChangeError = FileUploadError
+
+type UserAvatarChangePayload {
+  user: PrivateUser
+  error: UserAvatarChangeError
+}
+
+type UserMutations {
+  changeAvatar(avatar: Upload!): UserAvatarChangePayload! @isAuthenticated
 }
 
 type ValidationError implements Error {
