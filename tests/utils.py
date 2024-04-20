@@ -1,4 +1,5 @@
 import contextlib
+import os
 import uuid
 from collections.abc import AsyncIterator, Collection
 from io import BytesIO
@@ -12,7 +13,9 @@ from lib.files import InMemoryFile
 
 
 def casefold(string: str) -> str:
-    return string.replace(" ", "").casefold()
+    if os.name == "nt":
+        return string.replace(" ", "").casefold()
+    return string
 
 
 def casefold_obj(obj: object) -> object:
