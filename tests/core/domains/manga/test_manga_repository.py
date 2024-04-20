@@ -179,7 +179,9 @@ async def test_sort(
         pagination=PagePaginationParamsDTO(page=1, page_size=100),
         sort=Sort(field=sort_field, direction=direction),
     )
-    assert [m.id for m in result.items] == [m.id for m in expected]
+    assert [(getattr(m, sort_field.name), m.id) for m in result.items] == [
+        (getattr(m, sort_field.name), m.id) for m in expected
+    ]
 
 
 @pytest.mark.parametrize(
